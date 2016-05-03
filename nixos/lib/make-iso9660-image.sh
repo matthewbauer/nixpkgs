@@ -4,8 +4,9 @@ sources_=($sources)
 targets_=($targets)
 
 objects=($objects)
-symlinks=($symlinks)
 
+squashObjects=($squashObjects)
+squashSymlinks=($squashSymlinks)
 
 # Remove the initial slash from a path, since genisofs likes it that way.
 stripSlash() {
@@ -70,6 +71,12 @@ for ((i = 0; i < ${#targets_[@]}; i++)); do
     addPath "$res" "${sources_[$i]}"
 done
 
+# Add the individual files.
+for ((i = 0; i < ${#objects_[@]}; i++)); do
+    stripSlash "${objects_[$i]}"
+    addPath "$res" "${objects_[$i]}"
+done
+
 
 # Add the closures of the top-level store objects.
 storePaths=$(perl $pathsFromGraph closure-*)
@@ -87,9 +94,9 @@ fi
 
 
 # Add symlinks to the top-level store objects.
-for ((n = 0; n < ${#objects[*]}; n++)); do
-    object=${objects[$n]}
-    symlink=${symlinks[$n]}
+for ((n = 0; n < ${#squashObjects[*]}; n++)); do
+    object=${squashObjects[$n]}
+    symlink=${squashSymlinks[$n]}
     if test "$symlink" != "none"; then
         mkdir -p $(dirname ./$symlink)
         ln -s $object ./$symlink

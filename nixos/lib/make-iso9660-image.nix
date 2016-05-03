@@ -16,6 +16,8 @@
   # symlink to `object' that will be added to the CD.
   storeContents ? []
 
+, squashStoreContents ? []
+
 , # Whether this should be an El-Torito bootable CD.
   bootable ? false
 
@@ -58,9 +60,13 @@ stdenv.mkDerivation {
 
   # !!! should use XML.
   objects = map (x: x.object) storeContents;
-  symlinks = map (x: x.symlink) storeContents;
+
+  # !!! should use XML.
+  squashObjects = map (x: x.object) squashStoreContents;
+  squashSymlinks = map (x: x.symlink) squashStoreContents;
 
   # For obtaining the closure of `storeContents'.
   exportReferencesGraph =
-    map (x: [("closure-" + baseNameOf x.object) x.object]) storeContents;
+    map (x: [("closure-" + baseNameOf x.object) x.object]) storeContents ++
+    map (x: [("closure-" + baseNameOf x.object) x.object]) squashStoreContents;
 }

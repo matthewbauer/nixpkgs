@@ -21,7 +21,7 @@ with lib;
   isoImage.volumeID = substring 0 11 "NIXOS_ISO";
 
   # EFI booting
-  isoImage.makeEfiBootable = true;
+  /*isoImage.makeEfiBootable = true;*/
 
   # USB booting
   isoImage.makeUsbBootable = true;
