@@ -1,4 +1,4 @@
-{ stdenv, callPackage, makeWrapper, writeText, CoreServices, cctools, clang }:
+{ stdenv, callPackage, makeWrapper, writeText, CoreServices, cctools}:
 
 let
 
@@ -10,7 +10,8 @@ let
   };
 
   toolchain = callPackage ./toolchain.nix {
-    inherit cctools toolchainName clang;
+    inherit cctools toolchainName;
+    cc = stdenv.cc;
   };
 
   sdk = callPackage ./sdk.nix {
@@ -27,8 +28,6 @@ let
 
   xcconfig = writeText "nix.xcconfig" ''
 SDKROOT=${platformName}
-#CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES=YES
-#FRAMEWORK_SEARCH_PATHS=""
   '';
 
 in

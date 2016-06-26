@@ -1,4 +1,4 @@
-{stdenv, clang, cctools, llvm, writeText, toolchainName}:
+{stdenv, cc, cctools, llvm, writeText, toolchainName}:
 
 let
 
@@ -17,7 +17,7 @@ in
 
 stdenv.mkDerivation {
   name = "nixpkgs.xctoolchain";
-  propagatedBuildInputs = [ clang cctools llvm ];
+  propagatedBuildInputs = [ cc cctools llvm ];
   buildCommand = ''
     mkdir -p $out
     cp ${ToolchainInfo} $out/ToolchainInfo.plist
@@ -29,11 +29,11 @@ stdenv.mkDerivation {
 
     mkdir -p $out/usr/bin
     cd $out/usr/bin
-    ln -s ${clang}/bin/clang
-    ln -s ${clang}/bin/clang++
-    ln -s ${clang}/bin/cpp
-    ln -s clang++ c++
-    ln -s clang cc
+    ln -s ${cc}/bin/cpp
+    ln -s ${cc}/bin/c++
+    ln -s ${cc}/bin/cc
+    ln -s cc clang
+    ln -s c++ clang++
 
     ln -s ${cctools}/bin/ar
     ln -s ${cctools}/bin/as

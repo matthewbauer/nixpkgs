@@ -6,7 +6,7 @@ stdenv.mkDerivation {
     mkdir -p $out/Contents/PlugIns/
 
     # IMPURE!!!
-    cp -r /Applications/Xcode.app/Contents/PlugIns/Xcode3Core.ideplugin/ $out/Contents/PlugIns/Xcode3Core.ideplugin/
+    cp -r /Applications/Xcode.app/Contents/PlugIns/Xcode3Core.ideplugin/ $out/Contents/PlugIns/
 
     mkdir -p $out/Contents/Developer/Platforms/
     cd $out/Contents/Developer/Platforms/
