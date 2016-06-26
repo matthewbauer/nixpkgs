@@ -17,6 +17,10 @@ stdenv.mkDerivation {
     rmdir $out/usr/
   '';
   
-  meta = {
+  meta = with stdenv.lib; {
+    description = "Xcode-compatible build tool.";
+    license = licenses.bsd2;
+    platforms = platforms.unix;
+    maintainers = with maintainers; [ matthewbauer ];
   };
 }

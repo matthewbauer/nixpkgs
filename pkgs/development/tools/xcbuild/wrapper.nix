@@ -50,6 +50,5 @@ stdenv.mkDerivation {
       --set DEVELOPER_DIR "${developer}"
   '';
 
-  meta = {
-  };
+  preferLocalBuild = true;
 }
