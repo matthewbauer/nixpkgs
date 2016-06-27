@@ -1,4 +1,4 @@
-{ stdenv, writeText, toolchainName, platformName }:
+{ stdenv, writeText, toolchainName, sdkName }:
 
 let
 
@@ -8,15 +8,27 @@ SDKSettings = writeText "SDKSettings.plist" ''
 <plist version="1.0">
 <dict>
 <key>CanonicalName</key>
-<string>${platformName}</string>
+<string>${sdkName}</string>
 <key>DisplayName</key>
-<string>${platformName}</string>
+<string>${sdkName}</string>
 <key>Toolchains</key>
 <array>
 <string>${toolchainName}</string>
 </array>
 <key>Version</key>
 <string>10.9</string>
+	<key>MaximumDeploymentTarget</key>
+	<string>10.9</string>
+	<key>MinimalDisplayName</key>
+	<string>10.9</string>
+	<key>MinimumSupportedToolsVersion</key>
+	<string>3.2</string>
+	<key>SupportedBuildToolComponents</key>
+	<array>
+		<string>com.apple.compilers.gcc.headers.4_2</string>
+	</array>
+	<key>isBaseSDK</key>
+	<string>YES</string>
 </dict>
 </plist>
 '';

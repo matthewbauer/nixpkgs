@@ -7,27 +7,95 @@ Info = writeText "Info.plist" ''
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-<key>Identifier</key>
-<string>${platformName}</string>
-<key>Name</key>
-<string>${platformName}</string>
-<key>Version</key>
-<string>1.1</string>
-<key>DefaultProperties</key>
-<dict>
-<key>DEFAULT_COMPILER</key>
-<string>com.apple.compilers.llvm.clang.1_0</string>
-<key>DEPLOYMENT_TARGET_CLANG_ENV_NAME</key>
-<string>MACOSX_DEPLOYMENT_TARGET</string>
-<key>DEPLOYMENT_TARGET_CLANG_FLAG_NAME</key>
-<string>mmacosx-version-min</string>
-<key>DEPLOYMENT_TARGET_SETTING_NAME</key>
-<string>MACOSX_DEPLOYMENT_TARGET</string>
-<key>EMBEDDED_PROFILE_NAME</key>
-<string>embedded.provisionprofile</string>
-</dict>
-<key>DTCompiler</key>
-<string>com.apple.compilers.llvm.clang.1_0</string>
+	<key>AdditionalInfo</key>
+	<dict>
+		<key>BuildMachineOSBuild</key>
+		<string>$(MAC_OS_X_PRODUCT_BUILD_VERSION)</string>
+		<key>CFBundleSupportedPlatforms</key>
+		<array>
+			<string>MacOSX</string>
+		</array>
+		<key>DTCompiler</key>
+		<string>$(GCC_VERSION)</string>
+		<key>DTPlatformBuild</key>
+		<string>$(PLATFORM_PRODUCT_BUILD_VERSION)</string>
+		<key>DTPlatformVersion</key>
+		<string>GM</string>
+		<key>DTSDKBuild</key>
+		<string>$(SDK_PRODUCT_BUILD_VERSION)</string>
+		<key>DTSDKName</key>
+		<string>$(SDK_NAME)</string>
+		<key>DTXcode</key>
+		<string>$(XCODE_VERSION_ACTUAL)</string>
+		<key>DTXcodeBuild</key>
+		<string>$(XCODE_PRODUCT_BUILD_VERSION)</string>
+	</dict>
+	<key>BuildMachineOSBuild</key>
+	<string>15A283</string>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleIdentifier</key>
+	<string>${platformName}</string>
+	<key>CFBundleName</key>
+	<string>OS X platform</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.1</string>
+	<key>CFBundleSupportedPlatforms</key>
+	<array>
+		<string>MacOSX</string>
+	</array>
+	<key>CFBundleVersion</key>
+	<string>10010</string>
+	<key>DTCompiler</key>
+	<string>com.apple.compilers.llvm.clang.1_0</string>
+	<key>DTPlatformBuild</key>
+	<string>7D163a</string>
+	<key>DTPlatformVersion</key>
+	<string>GM</string>
+	<key>DTSDKBuild</key>
+	<string>15A284</string>
+	<key>DTSDKName</key>
+	<string>macosx10.11internal</string>
+	<key>DTXcode</key>
+	<string>0730</string>
+	<key>DTXcodeBuild</key>
+	<string>7D163a</string>
+	<key>DefaultDebuggerSettings</key>
+	<dict>
+		<key>RunInDebugger</key>
+		<string>YES</string>
+	</dict>
+	<key>DefaultProperties</key>
+	<dict>
+		<key>DEFAULT_COMPILER</key>
+		<string>com.apple.compilers.llvm.clang.1_0</string>
+		<key>DEPLOYMENT_TARGET_CLANG_ENV_NAME</key>
+		<string>MACOSX_DEPLOYMENT_TARGET</string>
+		<key>DEPLOYMENT_TARGET_CLANG_FLAG_NAME</key>
+		<string>mmacosx-version-min</string>
+		<key>DEPLOYMENT_TARGET_SETTING_NAME</key>
+		<string>MACOSX_DEPLOYMENT_TARGET</string>
+		<key>EMBEDDED_PROFILE_NAME</key>
+		<string>embedded.provisionprofile</string>
+	</dict>
+	<key>Description</key>
+	<string>OS X</string>
+	<key>FamilyIdentifier</key>
+	<string>macosx</string>
+	<key>FamilyName</key>
+	<string>OS X</string>
+	<key>Icon</key>
+	<string>OS X.icns</string>
+	<key>Identifier</key>
+	<string>${platformName}</string>
+	<key>MinimumSDKVersion</key>
+	<string>10.11</string>
+	<key>Name</key>
+	<string>macosx</string>
+	<key>Type</key>
+	<string>Platform</string>
+	<key>Version</key>
+	<string>1.1</string>
 </dict>
 </plist>
 '';

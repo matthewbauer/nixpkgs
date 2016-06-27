@@ -2,8 +2,9 @@
 
 let
 
-  toolchainName = "nix.nixpkgs.toolchain";
-  platformName = "nix.nixpkgs.sdk";
+  toolchainName = "com.apple.dt.toolchain.XcodeDefault";
+  platformName = "com.apple.platform.macosx";
+  sdkName = "macosx10.9";
 
   xcbuild = callPackage ./default.nix {
     inherit CoreServices;
@@ -15,7 +16,7 @@ let
   };
 
   sdk = callPackage ./sdk.nix {
-    inherit toolchainName platformName;
+    inherit toolchainName sdkName;
   };
 
   platform = callPackage ./platform.nix {
@@ -27,7 +28,7 @@ let
   };
 
   xcconfig = writeText "nix.xcconfig" ''
-SDKROOT=${platformName}
+SDKROOT=${sdkName}
   '';
 
 in
@@ -43,8 +44,13 @@ stdenv.mkDerivation {
 
   installPhase = ''
     mkdir -p $out/bin
-    cd ${xcbuild}/bin
-    makeWrapper ${xcbuild}/bin/xcodebuild $out/bin/xcodebuild \
+    cd $out/bin/
+
+    for file in ${xcbuild}/bin/*; do
+      ln -s $file
+    done
+
+    wrapProgram $out/bin/xcodebuild \
       --add-flags "-xcconfig ${xcconfig}" \
       --set DEVELOPER_DIR "${developer}"
   '';
