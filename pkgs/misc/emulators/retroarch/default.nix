@@ -4,6 +4,7 @@
 , alsaLib ? null, libv4l ? null
 , udev ? null, libX11 ? null, libXext ? null, libXxf86vm ? null
 , libXdmcp ? null, SDL ? null, libpulseaudio ? null
+, xcbuild ? null
 }:
 
 with stdenv.lib;
@@ -34,7 +35,8 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ pkgconfig ffmpeg mesa freetype libxml2 coreutils python34 which SDL ]
                 ++ optional enableNvidiaCgToolkit nvidia_cg_toolkit
-                ++ optionals stdenv.isLinux [ udev alsaLib libX11 libXext libXxf86vm libXdmcp libv4l libpulseaudio ];
+                ++ optionals stdenv.isLinux [ udev alsaLib libX11 libXext libXxf86vm libXdmcp libv4l libpulseaudio ]
+		++ optionals stdenv.isDarwin [ xcbuild ];
 
   configureScript = "sh configure";
 
@@ -42,6 +44,11 @@ stdenv.mkDerivation rec {
     export GLOBAL_CONFIG_DIR=$out/etc
     sed -e 's#/bin/true#${coreutils}/bin/true#' -i qb/qb.libs.sh
   '';
+
+  buildPhase = if stdenv.isDarwin then ''
+      make
+      xcodebuild -verbose -target RetroArch -configuration Release -project pkg/apple/RetroArch.xcodeproj DERIVED_DATA_DIR=`pwd`
+  '' else null;
 
   postInstall = ''
     mkdir -p $out/share/icons/hicolor/scalable/apps

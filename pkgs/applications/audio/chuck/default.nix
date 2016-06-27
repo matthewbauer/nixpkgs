@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, alsaLib, bison, flex, libsndfile, which }:
+{ stdenv, fetchurl, alsaLib, bison, flex, libsndfile, which, xcbuild }:
 
 stdenv.mkDerivation rec {
   version = "1.3.5.1";
@@ -10,13 +10,13 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [ bison flex libsndfile which ]
-    ++ stdenv.lib.optional (!stdenv.isDarwin) alsaLib;
+    ++ stdenv.lib.optional (!stdenv.isDarwin) alsaLib
+    ++ stdenv.lib.optional stdenv.isDarwin xcbuild;
 
   patches = [ ./darwin-limits.patch ];
 
   postPatch = ''
     substituteInPlace src/makefile --replace "/usr/bin" "$out/bin"
-    substituteInPlace src/makefile.osx --replace "xcodebuild" "/usr/bin/xcodebuild"
     substituteInPlace src/makefile.osx --replace "weak_framework" "framework"
   '';
 

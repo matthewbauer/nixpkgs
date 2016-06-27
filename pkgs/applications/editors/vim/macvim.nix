@@ -1,6 +1,6 @@
 { stdenv, fetchFromGitHub, ncurses, gettext
 , pkgconfig, cscope, python, ruby, tcl, perl, luajit
-, darwin
+, darwin, xcbuild
 }:
 
 stdenv.mkDerivation rec {
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
   enableParallelBuilding = true;
 
   buildInputs = [
-    gettext ncurses pkgconfig luajit ruby tcl perl python
+    gettext ncurses pkgconfig luajit ruby tcl perl python xcbuild
   ];
 
   patches = [ ./macvim.patch ];
@@ -29,9 +29,6 @@ stdenv.mkDerivation rec {
     # Don't create custom icons.
     substituteInPlace src/MacVim/icons/Makefile --replace '$(MAKE) -C makeicns' ""
     substituteInPlace src/MacVim/icons/make_icons.py --replace "dont_create = False" "dont_create = True"
-
-    # Full path to xcodebuild
-    substituteInPlace src/Makefile --replace "xcodebuild" "/usr/bin/xcodebuild"
   '';
 
   configureFlags = [
@@ -56,22 +53,6 @@ stdenv.mkDerivation rec {
   ];
 
   makeFlags = ''PREFIX=$(out) CPPFLAGS="-Wno-error"'';
-
-  # This is unfortunate, but we need to use the same compiler as XCode,
-  # but XCode doesn't provide a way to configure the compiler.
-  #
-  # If you're willing to modify the system files, you can do this:
-  #   http://hamelot.co.uk/programming/add-gcc-compiler-to-xcode-6/
-  #
-  # But we don't have that option.
-  preConfigure = ''
-    CC=/usr/bin/clang
-
-    DEV_DIR=$(/usr/bin/xcode-select -print-path)/Platforms/MacOSX.platform/Developer
-    configureFlagsArray+=(
-      "--with-developer-dir=$DEV_DIR"
-    )
-  '';
 
   postConfigure = ''
     substituteInPlace src/auto/config.mk --replace "PERL_CFLAGS	=" "PERL_CFLAGS	= -I${darwin.libutil}/include"

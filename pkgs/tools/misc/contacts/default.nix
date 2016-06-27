@@ -1,4 +1,4 @@
-{ stdenv, fetchurl }:
+{ stdenv, fetchurl, xcbuild }:
 
 stdenv.mkDerivation rec {
   version = "1.1a-3";
@@ -9,10 +9,12 @@ stdenv.mkDerivation rec {
     sha256 = "0wdqc1ndgrdhqapvvgx5xihc750szv08lp91x4l6n0gh59cpxpg3";
   };
 
-  preBuild = ''
-    substituteInPlace Makefile --replace "xcodebuild" "/usr/bin/xcodebuild"
-  '';
+  buildInputs = [ xcbuild ];
 
+  preFixup = ''
+    rm Makefile
+  '';
+  
   installPhase = ''
     mkdir -p $out/bin
     cp ./build/Deployment/contacts $out/bin
