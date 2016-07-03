@@ -17683,6 +17683,8 @@ with pkgs;
 
   cataclysm-dda = callPackage ../games/cataclysm-dda { };
 
+  cataclysm-dda-git = callPackage ../games/cataclysm-dda/git.nix { };
+
   chessdb = callPackage ../games/chessdb { };
 
   chessx = libsForQt5.callPackage ../games/chessx { };
