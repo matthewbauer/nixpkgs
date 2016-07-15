@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, cmake }:
+{ stdenv, lib, fetchurl, cmake }:
 
 let
   version = "1.7";
@@ -17,14 +17,14 @@ stdenv.mkDerivation rec {
   
   cmakeFlags = [ "-DCMAKE_INSTALL_LIBDIR=lib" ];
 
-  meta = {
+  meta = with lib; {
     description = "Objective-C runtime for use with GNUstep";
   
     homepage = http://gnustep.org/;
   
-    license = stdenv.lib.licenses.mit;
+    license = licenses.mit;
   
-    maintainers = with stdenv.lib.maintainers; [ ashalkhakov matthewbauer ];
-    platforms = stdenv.lib.platforms.all;
+    maintainers = with maintainers; [ ashalkhakov matthewbauer ];
+    platforms = platforms.all;
   };
 }
