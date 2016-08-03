@@ -1,12 +1,15 @@
-{ back, base, gui, gsmakeDerivation
+{ mkDerivation
+, back, base, gui
 , fetchurl
 , sqlite
 , system_preferences
 }:
+
 let
   version = "0.9.3";
 in
-gsmakeDerivation {
+
+mkDerivation {
   name = "gworkspace-${version}";
   src = fetchurl {
     url = "ftp://ftp.gnustep.org/pub/gnustep/usr-apps/gworkspace-${version}.tar.gz";

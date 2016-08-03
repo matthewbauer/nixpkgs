@@ -1,8 +1,10 @@
-{ fetchurl, base, back, gsmakeDerivation, gui }:
+{ mkDerivation, fetchurl, base, back, gui }:
+
 let
   version = "1.2.22";
 in
-gsmakeDerivation {
+
+mkDerivation {
   name = "gorm-${version}";
   
   src = fetchurl {

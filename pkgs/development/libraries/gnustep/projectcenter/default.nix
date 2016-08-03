@@ -1,11 +1,13 @@
-{ fetchurl
-, base, back, gsmakeDerivation, gui, gorm
+{ mkDerivation, fetchurl
+, base, back, gui, gorm
 , gnumake, gdb
 }:
+
 let
   version = "0.6.2";
 in
-gsmakeDerivation {
+
+mkDerivation {
   name = "projectcenter-${version}";
   src = fetchurl {
     url = "ftp://ftp.gnustep.org/pub/gnustep/dev-apps/ProjectCenter-${version}.tar.gz";

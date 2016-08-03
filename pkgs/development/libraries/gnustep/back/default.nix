@@ -1,4 +1,4 @@
-{ gsmakeDerivation
+{ mkDerivation
 , cairo
 , fetchurl
 , base, gui
@@ -6,10 +6,12 @@
 , freetype
 , pkgconfig
 }:
+
 let
   version = "0.25.0";
 in
-gsmakeDerivation {
+
+mkDerivation {
   name = "gnustep-back-${version}";
   src = fetchurl {
     url = "ftp://ftp.gnustep.org/pub/gnustep/core/gnustep-back-${version}.tar.gz";
