@@ -1,8 +1,10 @@
-{ gsmakeDerivation, fetchurl, base }:
+{ mkDerivation, fetchurl, base }:
+
 let
   version = "0.25.0";
 in
-gsmakeDerivation {
+
+mkDerivation {
   name = "gnustep-gui-${version}";
   src = fetchurl {
     url = "ftp://ftp.gnustep.org/pub/gnustep/core/gnustep-gui-${version}.tar.gz";
