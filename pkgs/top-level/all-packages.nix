@@ -6572,7 +6572,8 @@ in
 
   node_webkit = node_webkit_0_9;
 
-  nwjs_0_12 = callPackage ../development/tools/node-webkit/nw12.nix {
+  nwjs = callPackage ../development/tools/nwjs/default.nix {};
+
   nwjs_0_12 = callPackage ../development/tools/nwjs/nw12.nix {
     gconf = pkgs.gnome.GConf;
   };
