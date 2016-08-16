@@ -6573,14 +6573,15 @@ in
   node_webkit = node_webkit_0_9;
 
   nwjs_0_12 = callPackage ../development/tools/node-webkit/nw12.nix {
+  nwjs_0_12 = callPackage ../development/tools/nwjs/nw12.nix {
     gconf = pkgs.gnome.GConf;
   };
 
-  node_webkit_0_11 = callPackage ../development/tools/node-webkit/nw11.nix {
+  node_webkit_0_11 = callPackage ../development/tools/nwjs/nw11.nix {
     gconf = pkgs.gnome.GConf;
   };
 
-  node_webkit_0_9 = callPackage ../development/tools/node-webkit/nw9.nix {
+  node_webkit_0_9 = callPackage ../development/tools/nwjs/nw9.nix {
     gconf = pkgs.gnome.GConf;
   };
 
