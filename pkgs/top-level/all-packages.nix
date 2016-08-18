@@ -4012,6 +4012,10 @@ in
 
   xxkb = callPackage ../applications/misc/xxkb { };
 
+  unarchiver = callPackage ../tools/archivers/unarchiver {
+    stdenv = clangStdenv; # for objective c
+  };
+
   ugarit = callPackage ../tools/backup/ugarit { };
 
   ugarit-manifest-maker = callPackage ../tools/backup/ugarit-manifest-maker { };
