@@ -11212,6 +11212,11 @@ in modules // {
       ../development/python-modules/gyp/no-darwin-cflags.patch
     ];
 
+    patchPhase = ''
+      substituteInPlace pylib/gyp/xcode_emulation.py \
+        --replace "sw_vers" "/usr/bin/sw_vers"
+    '';
+
     meta = {
       description = "A tool to generate native build files";
       homepage = https://chromium.googlesource.com/external/gyp/+/master/README.md;
