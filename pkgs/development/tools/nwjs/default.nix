@@ -2,9 +2,7 @@
 
 let
 
-  version = "0.14.0";
-  node_version = "6.3.1";
-  chromium_version = "52.0.2743.116";
+  version = "0.16.1";
 
   # a lot of these aren't needed but it's not exactly clear which
   deps = ( import ./deps.nix { inherit fetchgit; }) // {
@@ -12,20 +10,20 @@ let
     "content/nw" = fetchFromGitHub {
       owner = "nwjs";
       repo = "nw.js";
-      rev = "v${version}";
-      sha256 = "1bm1p1s98j46w3cv0q3ig404vlcg4pyzf8bpcmc17cckgya7zhs9";
+      rev = "1d6387ea8a51e9ef7e290b5d4a7277fe45ffe376";
+      sha256 = "15xx54yyf0q2bwq3ivd2fqm7x6i0srwpmhmlykp85bkgr9s73pr9";
     };
     "v8" = fetchFromGitHub {
       owner = "nwjs";
       repo = "v8";
-      rev = "2a9e6e168da1d6c391ae4de883ae83a0d78069fc";
-      sha256 = "0z0r7v2l21rpz5y9j165lzh9i5al1j7ckplkld65bs83zsdqf6kd";
+      rev = "53e928e4905f64279cc2873c1881720cb042c266";
+      sha256 = "0i24qja0kb32d7sv3sans8vfvy1md7kavap6lipcdxdj7p9idgbs";
     };
     "third_party/node" = fetchFromGitHub {
       owner = "nwjs";
       repo = "node";
-      rev = "7af389e81e82cb2170a7df06f93107fa6c30965d";
-      sha256 = "1gv63s95kg5qxjp3rn0qcgafv1jh8hq1qmg0hhq3fvp4f9qfkpl8";
+      rev = "80ede2065782db05f7ebcc7af5e5870068411548";
+      sha256 = "1bf14mxr8c3lzj4sh2lzz3wm2g5j9mxajs0pbd2ar8zxj4nimx4l";
     };
   };
 
@@ -44,6 +42,7 @@ let
   buildTargets = [ "nwjs" ];
 
   gypFlags = mkGypFlags ({
+    proprietary_codecs = false;
     use_cups = false;
     disable_nacl = true;
   });
@@ -56,8 +55,8 @@ stdenv.mkDerivation {
   src = fetchFromGitHub {
     owner = "nwjs";
     repo = "chromium.src";
-    rev = "c6612225ec9254f73cf9654235824b85ab7b0f4a";
-    sha256 = "0gssdm86k1zrm1gcp8kbkc8hr0hnpg4xxsfaa3hpypmm6q059din";
+    rev = "f529e82ad7009a4196321e7851c448e73da3b50f";
+    sha256 = "156dxc852izkd1q7206v5nq5wwkg678gf56pvqkbpjq5b90ial7l";
   };
 
   postUnpack = ''
@@ -87,7 +86,7 @@ stdenv.mkDerivation {
     echo "Precompiling .py files to prevent race conditions..." >&2
     python -m compileall -q -f . > /dev/null 2>&1 || : # ignore errors
 
-    python build/gyp_chromium.py -f ninja --depth . ${gypFlags}
+    python build/gyp_chromium.py -f ninja --depth . ${gypFlags} --no-parallel
   '';
 
   buildPhase = let
