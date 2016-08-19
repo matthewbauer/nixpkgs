@@ -6574,15 +6574,15 @@ in
 
   nwjs = callPackage ../development/tools/nwjs/default.nix {};
 
-  nwjs_0_12 = callPackage ../development/tools/nwjs/nw12.nix {
+  nwjs_0_12 = callPackage ../development/tools/nwjs/12.nix {
     gconf = pkgs.gnome.GConf;
   };
 
-  node_webkit_0_11 = callPackage ../development/tools/nwjs/nw11.nix {
+  node_webkit_0_11 = callPackage ../development/tools/nwjs/11.nix {
     gconf = pkgs.gnome.GConf;
   };
 
-  node_webkit_0_9 = callPackage ../development/tools/nwjs/nw9.nix {
+  node_webkit_0_9 = callPackage ../development/tools/nwjs/9.nix {
     gconf = pkgs.gnome.GConf;
   };
 
