@@ -329,6 +329,9 @@ let
       # Whether we should run paxctl to pax-mark binaries.
       needsPax = isLinux;
 
+      # the library suffix to use for the stdenv
+      libSuff = if isDarwin then "dylib" else "so";
+
       inherit mkDerivation;
 
       # For convenience, bring in the library functions in lib/ so
