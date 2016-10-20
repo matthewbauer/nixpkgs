@@ -6361,6 +6361,8 @@ in
   swig = swig3;
   swigWithJava = swig;
 
+  swift = callPackage ../development/compilers/swift {};
+
   swfmill = callPackage ../tools/video/swfmill { };
 
   swftools = callPackage ../tools/video/swftools { };
