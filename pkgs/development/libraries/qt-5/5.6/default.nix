@@ -109,7 +109,8 @@ let
         qtwebsockets qtx11extras qtxmlpatterns
       ];
 
-      makeQtWrapper = makeSetupHook { deps = [ makeWrapper ]; } ./make-qt-wrapper.sh;
+      makeQtWrapper = makeSetupHook { deps = [ makeWrapper ]; }
+        (if stdenv.isDarwin then ./make-qt-wrapper-darwin.sh else ./make-qt-wrapper.sh);
       qmakeHook = makeSetupHook { deps = [ self.qtbase.dev ]; } ./qmake-hook.sh;
 
     };
