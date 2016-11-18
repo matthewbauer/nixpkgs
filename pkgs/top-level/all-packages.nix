@@ -15144,6 +15144,8 @@ in
       ++ optional (cfg.enableVbaM or false) vba-m
       );
 
+  retroarch-mac = callPackage ../misc/emulators/retroarch/darwin.nix {};
+
   wrapRetroArch = { retroarch }: callPackage ../misc/emulators/retroarch/wrapper.nix {
     inherit retroarch;
     cores = retroArchCores;
