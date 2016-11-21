@@ -16,13 +16,13 @@ let
   };
 in stdenv.mkDerivation rec {
   name    = "xcbuild-${stdenv.lib.substring 0 8 version}";
-  version = "0ab861abcc11185a17d59608f96a015752a6fadc";
+  version = "157e4a2cde365cc32845eb766d6da0e34d935157";
 
   src = fetchFromGitHub {
     owner  = "facebook";
     repo   = "xcbuild";
     rev    = version;
-    sha256 = "12h0rn8v0js2vph2pwp5wvcrfkj12nz365i5qxw9miyfn4msnz26";
+    sha256 = "0cp23rxp4dclpz3f9nqfflz6x93x7wvvikvi9h153z39fpazsyb2";
   };
 
   prePatch = ''

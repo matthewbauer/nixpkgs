@@ -46,8 +46,10 @@ stdenv.mkDerivation {
       ln -s $file
     done
 
-    mkdir -p $out/Library/Xcode/
-    ln -s ${xcbuild}/Library/Xcode/Specifications $out/Library/Xcode/Specifications
+    mkdir -p $out/Library/Xcode/Specifications/
+    cp ${xcbuild}/Library/Xcode/Specifications/* $out/Library/Xcode/Specifications
+    rm $out/Library/Xcode/Specifications/com.apple.compilers.llvm.clang.1_0.xcspec
+    cp ${./compiler.xcspec} $out/Library/Xcode/Specifications/com.apple.compilers.llvm.clang.1_0.xcspec
 
     mkdir -p $out/Platforms/
     ln -s ${platform} $out/Platforms/
