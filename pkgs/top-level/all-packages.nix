@@ -6557,7 +6557,7 @@ in
   xc3sprog = callPackage ../development/tools/misc/xc3sprog { };
 
   xcbuild  = callPackage ../development/tools/xcbuild/wrapper.nix {
-    inherit (darwin.apple_sdk.frameworks) CoreServices CoreGraphics ImageIO;
+    inherit (darwin.apple_sdk.frameworks) CoreServices CoreGraphics ImageIO Kernel;
     inherit (darwin) cctools bootstrap_cmds binutils;
     stdenv = clangStdenv;
   };
@@ -15045,7 +15045,12 @@ in
 
   virtinst = callPackage ../applications/virtualization/virtinst {};
 
-  virtualbox = callPackage ../applications/virtualization/virtualbox {
+  virtualbox = if stdenv.isDarwin then callPackage ../applications/virtualization/virtualbox/darwin.nix {
+    inherit (gnome2) libIDL;
+    inherit (darwin) cf-private;
+    inherit (darwin.apple_sdk.frameworks) DirectoryService;
+  }
+  else callPackage ../applications/virtualization/virtualbox {
     stdenv = stdenv_32bit;
     inherit (gnome2) libIDL;
     enableExtensionPack = config.virtualbox.enableExtensionPack or false;

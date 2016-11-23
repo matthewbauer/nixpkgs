@@ -1,5 +1,5 @@
 { stdenv, callPackage, makeWrapper, writeText, CoreServices, ImageIO, CoreGraphics
-, cctools, bootstrap_cmds, binutils}:
+, cctools, bootstrap_cmds, binutils, Kernel}:
 
 let
 
@@ -16,7 +16,7 @@ let
   };
 
   sdk = callPackage ./sdk.nix {
-    inherit toolchainName sdkName xcbuild;
+    inherit toolchainName sdkName xcbuild Kernel;
   };
 
   platform = callPackage ./platform.nix {
@@ -66,6 +66,7 @@ stdenv.mkDerivation {
 
   passthru = {
     raw = xcbuild;
+    inherit toolchain platform sdk;
   };
 
   preferLocalBuild = true;

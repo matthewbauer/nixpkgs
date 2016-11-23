@@ -35,6 +35,11 @@ stdenv.mkDerivation {
     ln -s c++ clang++
     ln -s cc clang
 
+    ln -s c++ llvm-g++
+    ln -s cc llvm-gcc
+    ln -s c++ llvm-g++-4.2
+    ln -s cc llvm-gcc-4.2
+
     ln -s ${llvm}/bin/llvm-cov
     ln -s ${llvm}/bin/llvm-dsymutil
     ln -s ${llvm}/bin/llvm-dwarfdump

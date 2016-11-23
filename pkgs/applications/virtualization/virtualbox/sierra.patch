@@ -1,0 +1,96 @@
+diff --git a/configure b/configure
+index a63bf8c..9323b86 100755
+--- a/configure
++++ b/configure
+@@ -2320,89 +2320,8 @@ check_xcode_sdk_path()
+ #
+ check_darwinversion()
+ {
+-  test_header "Darwin version"
+-  darwin_ver=`uname -r`
+-  case "$darwin_ver" in
+-    15\.*)
+-      check_xcode_sdk_path "$WITH_XCODE_DIR"
+-      [ $? -eq 1 ] || fail
+-      darwin_ver="10.11" # El Capitan
+-      sdk=$WITH_XCODE_DIR/Developer/SDKs/MacOSX10.6.sdk
+-      cnf_append "VBOX_WITH_MACOSX_COMPILERS_FROM_DEVEL" "1"
+-      cnf_append "VBOX_PATH_MACOSX_DEVEL_ROOT" "$WITH_XCODE_DIR/Developer"
+-      ;;
+-    14\.*)
+-      check_xcode_sdk_path "$WITH_XCODE_DIR"
+-      [ $? -eq 1 ] || fail
+-      darwin_ver="10.10" # Yosemite
+-      sdk=$WITH_XCODE_DIR/Developer/SDKs/MacOSX10.6.sdk
+-      cnf_append "VBOX_WITH_MACOSX_COMPILERS_FROM_DEVEL" "1"
+-      cnf_append "VBOX_PATH_MACOSX_DEVEL_ROOT" "$WITH_XCODE_DIR/Developer"
+-      ;;
+-    13\.*)
+-      check_xcode_sdk_path "$WITH_XCODE_DIR"
+-      [ $? -eq 1 ] || fail
+-      darwin_ver="10.9" # Mavericks
+-      sdk=$WITH_XCODE_DIR/Developer/SDKs/MacOSX10.6.sdk
+-      cnf_append "VBOX_WITH_MACOSX_COMPILERS_FROM_DEVEL" "1"
+-      cnf_append "VBOX_PATH_MACOSX_DEVEL_ROOT" "$WITH_XCODE_DIR/Developer"
+-      ;;
+-    12\.*)
+-      darwin_ver="10.8" # Mountain Lion
+-      if [ ! -z "$WITH_XCODE_DIR" ]; then
+-        sdk=$WITH_XCODE_DIR/Developer/SDKs/MacOSX10.6.sdk
+-        cnf_append "VBOX_WITH_MACOSX_COMPILERS_FROM_DEVEL" "1"
+-        cnf_append "VBOX_PATH_MACOSX_DEVEL_ROOT" "$WITH_XCODE_DIR/Developer"
+-      else
+-        sdk=/Developer/SDKs/MacOSX10.6.sdk
+-      fi
+-      CXX_FLAGS="-mmacosx-version-min=10.6 -isysroot $sdk -Wl,-syslibroot,$sdk"
+-      ;;
+-    11\.*)
+-      darwin_ver="10.7" # Lion
+-      sdk=/Developer/SDKs/MacOSX10.6.sdk
+-      CXX_FLAGS="-mmacosx-version-min=10.6 -isysroot $sdk -Wl,-syslibroot,$sdk"
+-      ;;
+-    10\.*)
+-      darwin_ver="10.6" # Snow Leopard
+-      if [ "$BUILD_MACHINE" = "x86" ]; then
+-          sdk=/Developer/SDKs/MacOSX10.5.sdk
+-          CXX_FLAGS="-mmacosx-version-min=10.5 -isysroot $sdk -Wl,-syslibroot,$sdk"
+-          cnf_append "VBOX_MACOS_10_5_WORKAROUND" "1"
+-      else
+-          sdk=/Developer/SDKs/MacOSX10.6.sdk
+-          CXX_FLAGS="-mmacosx-version-min=10.6 -isysroot $sdk -Wl,-syslibroot,$sdk"
+-      fi
+-#      test "$CC" = "gcc" && CC="gcc-4.0"
+-#      test "$CXX" = "g++" && CXX="g++-4.0"
+-      cnf_append "VBOX_WITHOUT_VBOXPYTHON_FOR_OSX_10_7" "1"
+-      ;;
+-    9\.*)
+-      darwin_ver="10.5" # Leopard
+-      sdk=/Developer/SDKs/MacOSX10.5.sdk
+-      CXX_FLAGS="-mmacosx-version-min=10.5 -isysroot $sdk -Wl,-syslibroot,$sdk"
+-#      test "$CC" = "gcc" && CC="gcc-4.0"
+-#      test "$CXX" = "g++" && CXX="g++-4.0"
+-      cnf_append "VBOX_WITHOUT_VBOXPYTHON_FOR_OSX_10_6" "1"
+-      cnf_append "VBOX_WITHOUT_VBOXPYTHON_FOR_OSX_10_7" "1"
+-      ;;
+-    8\.*)
+-      darwin_ver="10.4" # Tiger
+-      sdk=/Developer/SDKs/MacOSX10.4u.sdk
+-      CXX_FLAGS="-mmacosx-version-min=10.4 -isysroot $sdk -Wl,-syslibroot,$sdk"
+-#      test "$CC" = "gcc" && CC="gcc-4.0"
+-#      test "$CXX" = "g++" && CXX="g++-4.0"
+-      cnf_append "VBOX_WITH_COCOA_QT" ""
+-      cnf_append "VBOX_WITHOUT_VBOXPYTHON_FOR_OSX_10_6" "1"
+-      cnf_append "VBOX_WITHOUT_VBOXPYTHON_FOR_OSX_10_7" "1"
+-      ;;
+-    *)
+-      echo "  failed to determine Darwin version. (uname -r: $darwin_ver)"
+-      fail
+-      darwin_ver="unknown"
+-      ;;
+-  esac
+-  log_success "found version $darwin_ver (SDK: $sdk)"
++    cnf_append "VBOX_WITH_MACOSX_COMPILERS_FROM_DEVEL" "1"
++    cnf_append "VBOX_PATH_MACOSX_DEVEL_ROOT" "$WITH_XCODE_DIR"
+ }
+ 
+ 

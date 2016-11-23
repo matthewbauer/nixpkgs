@@ -1,4 +1,4 @@
-{ stdenv, writeText, toolchainName, sdkName, xcbuild }:
+{ stdenv, writeText, toolchainName, sdkName, xcbuild, Kernel }:
 
 let
 
@@ -24,6 +24,9 @@ stdenv.mkDerivation {
   buildCommand = ''
     mkdir -p $out/
     plutil -convert xml1 -o $out/SDKSettings.plist ${writeText "SDKSettings.json" (builtins.toJSON SDKSettings)}
+
+    mkdir -p $out/System/Library/Frameworks
+    ln -s ${Kernel}/Library/Frameworks/Kernel.framework $out/System/Library/Frameworks
 
     mkdir -p $out/System/Library/CoreServices/
     plutil -convert xml1 -o $out/System/Library/CoreServices/SystemVersion.plist ${writeText "SystemVersion.plist" (builtins.toJSON SystemVersion)}
