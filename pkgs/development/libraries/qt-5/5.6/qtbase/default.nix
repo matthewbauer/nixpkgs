@@ -79,7 +79,7 @@ stdenv.mkDerivation {
     '' + lib.optionalString stdenv.isDarwin ''
       sed -i \
           -e 's|! /usr/bin/xcode-select --print-path >/dev/null 2>&1;|false;|' \
-          -e 's|! /usr/bin/xcrun -find xcrun >/dev/null 2>&1;|false;|' \
+          -e 's|! /usr/bin/xcrun -find xcodebuild >/dev/null 2>&1;|false;|' \
           -e 's|sysroot=$(/usr/bin/xcodebuild -sdk $sdk -version Path 2>/dev/null)|sysroot="${darwin.apple_sdk.sdk}"|' \
           -e 's|QMAKE_CONF_COMPILER=`getXQMakeConf QMAKE_CXX`|QMAKE_CXX="clang++"\nQMAKE_CONF_COMPILER="clang++"|' \
           -e 's|XCRUN=`/usr/bin/xcrun -sdk macosx clang -v 2>&1`|XCRUN="clang -v 2>&1"|' \
