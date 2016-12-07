@@ -1,9 +1,10 @@
 { fetchurl, stdenv, gettext, intltool, makeWrapper, pkgconfig
 , geoclue2
-, guiSupport ? true, hicolor_icon_theme, librsvg, gtk3, python, pygobject3, pyxdg
-, drmSupport ? true, libdrm
-, randrSupport ? true, libxcb
-, vidModeSupport ? true, libX11, libXxf86vm
+, guiSupport ? !stdenv.isDarwin, hicolor_icon_theme, librsvg, gtk3, python, pygobject3, pyxdg
+, drmSupport ? !stdenv.isDarwin, libdrm
+, randrSupport ? !stdenv.isDarwin, libxcb
+, vidModeSupport ? !stdenv.isDarwin, libX11, libXxf86vm
+, darwin
 }:
 
 let
@@ -20,12 +21,14 @@ stdenv.mkDerivation rec {
     url = "https://github.com/jonls/redshift/releases/download/v${version}/redshift-${version}.tar.xz";
   };
 
-  buildInputs = [ geoclue2 ]
+  buildInputs = [ ]
+    ++ stdenv.lib.optionals stdenv.isLinux [ geoclue2 ]
     ++ stdenv.lib.optionals guiSupport [ hicolor_icon_theme librsvg gtk3
       python pygobject3 pyxdg ]
     ++ stdenv.lib.optionals drmSupport [ libdrm ]
     ++ stdenv.lib.optionals randrSupport [ libxcb ]
-    ++ stdenv.lib.optionals vidModeSupport [ libX11 libXxf86vm ];
+    ++ stdenv.lib.optionals vidModeSupport [ libX11 libXxf86vm ]
+    ++ stdenv.lib.optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [ CoreLocation Quartz ]);
   nativeBuildInputs = [ gettext intltool makeWrapper pkgconfig ];
 
   configureFlags = [
