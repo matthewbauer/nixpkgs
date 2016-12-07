@@ -97,6 +97,7 @@ let
       qtwebengine = callPackage ./qtwebengine {};
       qtwebkit = callPackage ./qtwebkit {};
       qtwebsockets = callPackage ./qtwebsockets.nix {};
+      qtmacextras = callPackage ./qtmacextras.nix {};
       /* qtwinextras = not packaged */
       qtx11extras = callPackage ./qtx11extras.nix {};
       qtxmlpatterns = callPackage ./qtxmlpatterns.nix {};
