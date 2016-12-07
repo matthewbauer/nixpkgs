@@ -76,7 +76,9 @@ _qtRmTmp() {
         done
 
         cat "$NIX_QT5_TMP/nix-support/qt-inputs" | while read dir; do
-            if [ -d "$NIX_QT5_TMP/$dir" ]; then
+            if [ -L "$NIX_QT5_TMP/$dir" ]; then
+                rm "$NIX_QT5_TMP/$dir"
+            elif [ -d "$NIX_QT5_TMP/$dir" ]; then
                 rmdir --ignore-fail-on-non-empty -p "$NIX_QT5_TMP/$dir"
             fi
         done
