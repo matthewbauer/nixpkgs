@@ -60,7 +60,9 @@ stdenv.mkDerivation {
       --add-flags "DERIVED_DATA_DIR=." \
       --set DEVELOPER_DIR "$out"
     wrapProgram $out/bin/xcrun \
-      --add-flags "-sdk ${sdkName}" \
+      --set SDKROOT ${sdkName} \
+      --set DEVELOPER_DIR "$out"
+    wrapProgram $out/bin/xcode-select \
       --set DEVELOPER_DIR "$out"
   '';
 
