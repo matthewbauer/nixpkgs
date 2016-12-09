@@ -1,6 +1,7 @@
 { stdenv, fetchurl, pkgconfig, intltool, file, makeWrapper
 , openssl, curl, libevent, inotify-tools, systemd, zlib
 , enableGTK3 ? false, gtk3
+, xcbuild
 }:
 
 let
@@ -17,17 +18,22 @@ stdenv.mkDerivation rec {
     sha256 = "0pykmhi7pdmzq47glbj8i2im6iarp4wnj4l1pyvsrnba61f0939s";
   };
 
-  buildInputs = [ pkgconfig intltool file openssl curl libevent inotify-tools zlib ]
+  buildInputs = [ pkgconfig intltool file openssl curl libevent zlib ]
     ++ optionals enableGTK3 [ gtk3 makeWrapper ]
-    ++ optional stdenv.isLinux systemd;
+    ++ optionals stdenv.isLinux [ inotify-tools systemd ]
+    ++ optional stdenv.isDarwin [ xcbuild ];
+
+  dontUseXcbuild = true;
 
   postPatch = ''
     substituteInPlace ./configure \
       --replace "libsystemd-daemon" "libsystemd" \
-      --replace "/usr/bin/file"     "${file}/bin/file"
+      --replace "/usr/bin/file"     "${file}/bin/file" \
+      --replace "test ! -d /Developer/SDKs/MacOSX10.5.sdk" "false"
   '';
 
-  configureFlags = [ "--with-systemd-daemon" ]
+  configureFlags = [ ]
+    ++ optional stdenv.isLinux "--with-systemd-daemon"
     ++ [ "--enable-cli" ]
     ++ optional enableGTK3 "--with-gtk";
 
