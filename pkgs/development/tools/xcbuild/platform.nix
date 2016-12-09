@@ -125,6 +125,12 @@ let
       Name = "Dynamic Library";
       PackageTypes = [ "com.apple.package-type.mach-o-dylib" ];
     }
+    {
+      Identifier = "com.apple.product-type.library.static";
+      Type = "ProductType";
+      Name = "Static Library";
+      PackageTypes = [ "com.apple.package-type.mach-o-dylib" ];
+    }
   ];
 
 in
