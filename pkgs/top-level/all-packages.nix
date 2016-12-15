@@ -10709,6 +10709,22 @@ in
     stubs = callPackages ../os-specific/darwin/stubs {};
 
     usr-include = callPackage ../os-specific/darwin/usr-include {};
+
+    nettools = let
+      NET_CMDS = "arp route ifconfig netstat";
+      SHELL_CMDS = "hostname";
+    in
+      runCommand "nettools-darwin" {
+        buildInputs = [ darwin.shell_cmds darwin.network_cmds ];
+      } ''
+        mkdir -p $out/bin
+        for cmd in ${NET_CMDS}; do
+          ln -s ${darwin.network_cmds}/bin/$cmd $out/bin/$cmd
+        done
+        for cmd in ${SHELL_CMDS}; do
+          ln -s ${darwin.shell_cmds}/bin/$cmd $out/bin/$cmd
+        done
+      '';
   };
 
   devicemapper = lvm2;
@@ -11303,7 +11319,8 @@ in
 
   musl = callPackage ../os-specific/linux/musl { };
 
-  nettools = callPackage ../os-specific/linux/net-tools { };
+  nettools = if stdenv.isDarwin then darwin.nettools
+    else callPackage ../os-specific/linux/net-tools { };
 
   nftables = callPackage ../os-specific/linux/nftables { };
 
