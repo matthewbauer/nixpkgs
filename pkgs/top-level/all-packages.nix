@@ -6139,6 +6139,7 @@ in
 
   cmake = callPackage ../development/tools/build-managers/cmake {
     inherit (darwin) ps;
+    inherit (darwin.apple_sdk.frameworks) CoreServices ApplicationServices;
   };
 
   cmakeCurses = cmake.override { useNcurses = true; };
