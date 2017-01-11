@@ -6439,7 +6439,11 @@ in
 
   node_webkit = node_webkit_0_9;
 
-  nwjs_0_12 = callPackage ../development/tools/node-webkit/nw12.nix {
+  nwjs_0_12 = callPackage ../development/tools/node-webkit/src.nix {
+    inherit (darwin.apple_sdk.frameworks) Carbon;
+  };
+
+  nwjs_0_12_bin = callPackage ../development/tools/node-webkit/nw12.nix {
     gconf = pkgs.gnome2.GConf;
   };
 
