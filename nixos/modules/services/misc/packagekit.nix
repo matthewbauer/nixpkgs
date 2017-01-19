@@ -43,6 +43,8 @@ in
   config = mkIf cfg.enable {
 
     services.dbus.packages = [ pkgs.packagekit ];
+#   services.polkit.packages = [ pkgs.packagekit ];
+    environment.systemPackages = [ pkgs.packagekit ];
 
     systemd.services.packagekit = {
       description = "PackageKit Daemon";
