@@ -1,14 +1,14 @@
 { stdenv, fetchurl, cmake, pkgconfig, gettext, intltool
 , xmlto, docbook_xsl, docbook_xml_dtd_45
-, glib, xapian, libxml2, libyaml, gobjectIntrospection
+, glib, xapian, libxml2, libyaml, gobjectIntrospection, itstool
 }:
 
 stdenv.mkDerivation {
-  name = "appstream-0.9.5";
+  name = "appstream-0.10.6";
 
   src = fetchurl {
-    url = "https://github.com/ximion/appstream/archive/APPSTREAM_0_8_0.tar.gz";
-    sha256 = "16a3b38avrwyl1pp8jdgfjv6cd5mccbmk4asni92l40y5r0xfycr";
+    url = "https://github.com/ximion/appstream/archive/APPSTREAM_0_10_6.tar.gz";
+    sha256 = "0i4l9g4fj84yvlnygld05rlfidrb1zw2lwvmcgq4vnjy6xmgij6a";
   };
 
   nativeBuildInputs = [
@@ -17,7 +17,10 @@ stdenv.mkDerivation {
     gobjectIntrospection
   ];
 
-  buildInputs = [ glib xapian libxml2 libyaml ];
+  buildInputs = [ glib xapian libxml2 libyaml itstool ];
+
+  # todo: add libstemmer to nixpkgs
+  cmakeFlags = [ "-DSTEMMING=NO" ];
 
   meta = with stdenv.lib; {
     description = "Software metadata handling library";
