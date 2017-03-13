@@ -1,4 +1,5 @@
-{ stdenv, fetchFromGitHub, autoreconfHook, pkgconfig, udev, libusb }:
+{ stdenv, fetchFromGitHub, autoreconfHook, pkgconfig, udev, libusb
+, darwin, fox }:
 
 stdenv.mkDerivation rec {
   name = "hidapi-0.8.0-rc1";
@@ -10,7 +11,9 @@ stdenv.mkDerivation rec {
     sha256 = "13d5jkmh9nh4c2kjch8k8amslnxapa9vkqzrk1z6rqmw8qgvzbkj";
   };
 
-  buildInputs = [ autoreconfHook pkgconfig udev libusb ];
+  buildInputs = [ autoreconfHook pkgconfig fox ]
+    ++ stdenv.lib.optionals stdenv.isLinux [ udev libusb ]
+    ++ stdenv.lib.optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [ IOKit Cocoa ]);
 
   meta = with stdenv.lib; {
     homepage = https://github.com/signal11/hidapi;
