@@ -14,6 +14,10 @@ buildGoPackage rec {
     sha256 = "0zh4j5p0v41v7i6v084dgsdchx1azjs2mjb3dlfdv671rsnwi54z";
   };
 
+  postInstall = stdenv.lib.optionalString stdenv.isDarwin ''
+      install_name_tool -delete_rpath $out/lib $bin/bin/consul
+  '';
+
   # Keep consul.ui for backward compatability
   passthru.ui = consul-ui;
 
