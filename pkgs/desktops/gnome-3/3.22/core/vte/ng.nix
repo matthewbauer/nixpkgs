@@ -18,6 +18,8 @@ gnome3.vte.overrideAttrs (oldAttrs: rec {
     ./fix_vteseq_n_lookup_declaration.patch
   ];
 
+  configureFlags = [ "--disable-Bsymbolic" ];
+
   preConfigure = oldAttrs.preConfigure + "; ./autogen.sh";
 
   nativeBuildInputs = [ gtk_doc autoconf automake gettext libtool gperf ];
