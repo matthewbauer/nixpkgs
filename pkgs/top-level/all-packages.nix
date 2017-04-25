@@ -18559,4 +18559,5 @@ with pkgs;
 
   xib2nib = callPackage ../development/tools/xib2nib {};
 
+  xi-editor = callPackage ../development/tools/xi-editor {};
 }
