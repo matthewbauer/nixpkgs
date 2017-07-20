@@ -19160,4 +19160,6 @@ with pkgs;
   undaemonize = callPackage ../tools/system/undaemonize {};
 
   houdini = callPackage ../applications/misc/houdini {};
+
+  gn = callPackage ../development/tools/build-managers/gn {};
 }
