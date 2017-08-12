@@ -14,6 +14,6 @@ stdenv.mkDerivation (args // {
     license = stdenv.lib.licenses.lgpl2Plus;
 
     maintainers = with stdenv.lib.maintainers; [ ashalkhakov matthewbauer ];
-    platforms = stdenv.lib.platforms.linux;
+    platforms = stdenv.lib.platforms.unix;
   } // (if builtins.hasAttr "meta" args then args.meta else {});
 })
