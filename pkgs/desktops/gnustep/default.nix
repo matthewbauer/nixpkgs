@@ -3,8 +3,9 @@
 let
   callPackage = newScope self;
 
+  stdenv = pkgs.clangStdenv;
+
   self = rec {
-    stdenv = pkgs.clangStdenv;
 
     gsmakeDerivation = callPackage ./make/gsmakeDerivation.nix {};
     gorm = callPackage ./gorm {};
