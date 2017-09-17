@@ -19414,4 +19414,6 @@ with pkgs;
   };
 
   duti = callPackage ../os-specific/darwin/duti {};
+
+  jdee-server = callPackage ../applications/editors/emacs-modes/jdee/jdee-server.nix {};
 }
