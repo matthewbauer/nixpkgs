@@ -2,8 +2,8 @@
 , buildPlatform, hostPlatform, targetPlatform
 
 # build-tools
-, bootPkgs, alex, happy, hscolour
-, autoconf, automake, coreutils, fetchurl, fetchpatch, perl, python3, m4
+, bootPkgs, alex, happy
+, autoconf, automake, coreutils, fetchurl, perl, python3
 
 , libffi, libiconv ? null, ncurses
 
@@ -15,21 +15,21 @@
 
 , # If enabled, GHC will be built with the GPL-free but slower integer-simple
   # library instead of the faster but GPLed integer-gmp library.
-  enableIntegerSimple ? false, gmp ? null
+  enableIntegerSimple ? targetPlatform.useAndroidPrebuilt
+                     || targetPlatform.useiOSPrebuilt
+
+, gmp ? null
+
+, m4
 
 , # If enabled, use -fPIC when compiling static libs.
   enableRelocatedStaticLibs ? targetPlatform != hostPlatform
 
 , # Whether to build dynamic libs for the standard library (on the target
   # platform). Static libs are always built.
-  enableShared ? !targetPlatform.isWindows && !targetPlatform.useAndroidPrebuilt
+  enableShared ? true
 
-, # Whetherto build terminfo.
-  enableTerminfo ? !targetPlatform.isWindows
-
-, # What flavour to build. An empty string indicates no
-  # specific flavour and falls back to ghc default values.
-  ghcFlavour ? stdenv.lib.optionalString (targetPlatform != hostPlatform) "perf-cross"
+, version ? "8.4.2"
 }:
 
 assert !enableIntegerSimple -> gmp != null;
@@ -43,14 +43,11 @@ let
     "${targetPlatform.config}-";
 
   buildMK = ''
-    BuildFlavour = ${ghcFlavour}
-    ifneq \"\$(BuildFlavour)\" \"\"
-    include mk/flavours/\$(BuildFlavour).mk
-    endif
     DYNAMIC_GHC_PROGRAMS = ${if enableShared then "YES" else "NO"}
   '' + stdenv.lib.optionalString enableIntegerSimple ''
     INTEGER_LIBRARY = integer-simple
   '' + stdenv.lib.optionalString (targetPlatform != hostPlatform) ''
+    BuildFlavour = perf-cross
     Stage1Only = YES
     HADDOCK_DOCS = NO
     BUILD_SPHINX_HTML = NO
@@ -58,14 +55,12 @@ let
   '' + stdenv.lib.optionalString enableRelocatedStaticLibs ''
     GhcLibHcOpts += -fPIC
     GhcRtsHcOpts += -fPIC
-  '' + stdenv.lib.optionalString targetPlatform.useAndroidPrebuilt ''
-    EXTRA_CC_OPTS += -std=gnu99
   '';
 
   # Splicer will pull out correct variations
-  libDeps = platform: stdenv.lib.optional enableTerminfo [ ncurses ]
+  libDeps = platform: [ ncurses ]
     ++ stdenv.lib.optional (!enableIntegerSimple) gmp
-    ++ stdenv.lib.optional (platform.libc != "glibc" && !targetPlatform.isWindows) libiconv;
+    ++ stdenv.lib.optional (platform.libc != "glibc") libiconv;
 
   toolsForTarget =
     if hostPlatform == buildPlatform then
@@ -77,7 +72,7 @@ let
 
 in
 stdenv.mkDerivation rec {
-  version = "8.4.2";
+  inherit version;
   name = "${targetPrefix}ghc-${version}";
 
   src = fetchurl {
@@ -88,14 +83,6 @@ stdenv.mkDerivation rec {
   enableParallelBuilding = true;
 
   outputs = [ "out" "doc" ];
-
-  patches = [(fetchpatch {
-    url = "https://git.haskell.org/hsc2hs.git/patch/738f3666c878ee9e79c3d5e819ef8b3460288edf";
-    sha256 = "0plzsbfaq6vb1023lsarrjglwgr9chld4q3m99rcfzx0yx5mibp3";
-    extraPrefix = "utils/hsc2hs/";
-    stripLen = 1;
-  })]
-    ++ stdenv.lib.optional stdenv.isDarwin ./backport-dylib-command-size-limit.patch;
 
   postPatch = "patchShebangs .";
 
@@ -134,7 +121,7 @@ stdenv.mkDerivation rec {
     "--with-curses-includes=${ncurses.dev}/include" "--with-curses-libraries=${ncurses.out}/lib"
   ] ++ stdenv.lib.optional (targetPlatform == hostPlatform && ! enableIntegerSimple) [
     "--with-gmp-includes=${gmp.dev}/include" "--with-gmp-libraries=${gmp.out}/lib"
-  ] ++ stdenv.lib.optional (targetPlatform == hostPlatform && hostPlatform.libc != "glibc" && !targetPlatform.isWindows) [
+  ] ++ stdenv.lib.optional (targetPlatform == hostPlatform && hostPlatform.libc != "glibc") [
     "--with-iconv-includes=${libiconv}/include" "--with-iconv-libraries=${libiconv}/lib"
   ] ++ stdenv.lib.optionals (targetPlatform != hostPlatform) [
     "--enable-bootstrap-with-devel-snapshot"
@@ -147,13 +134,12 @@ stdenv.mkDerivation rec {
     "--disable-large-address-space"
   ];
 
-  # Make sure we never relax`$PATH` and hooks support for compatability.
-  strictDeps = true;
+  # Hack to make sure we never to the relaxation `$PATH` and hooks support for
+  # compatability. This will be replaced with something clearer in a future
+  # masss-rebuild.
+  crossConfig = true;
 
-  nativeBuildInputs = [
-    perl autoconf automake m4 python3
-    ghc alex happy hscolour
-  ];
+  nativeBuildInputs = [ ghc perl autoconf automake m4 happy alex python3 ];
 
   # For building runtime libs
   depsBuildTarget = toolsForTarget;
@@ -172,13 +158,10 @@ stdenv.mkDerivation rec {
 
   checkTarget = "test";
 
-  hardeningDisable = [ "format" ];
-
+  # zsh and other shells are smart about `{ghc}` but bash isn't, and doesn't
+  # treat that as a unary `{x,y,z,..}` repetition.
   postInstall = ''
-    for bin in "$out"/lib/${name}/bin/*; do
-      isELF "$bin" || continue
-      paxmark m "$bin"
-    done
+    paxmark m $out/lib/${name}/bin/${if targetPlatform != hostPlatform then "ghc" else "{ghc,haddock}"}
 
     # Install the bash completion file.
     install -D -m 444 utils/completion/ghc.bash $out/share/bash-completion/completions/${targetPrefix}ghc

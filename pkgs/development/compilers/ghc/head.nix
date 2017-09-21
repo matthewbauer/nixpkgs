@@ -2,8 +2,9 @@
 , buildPlatform, hostPlatform, targetPlatform
 
 # build-tools
-, bootPkgs, alex, happy, hscolour
-, autoconf, automake, coreutils, fetchgit, perl, python3, m4
+, bootPkgs, alex, happy
+, autoconf, automake, coreutils, fetchgit, fetchpatch, perl, python3
+, runCommand
 
 , libffi, libiconv ? null, ncurses
 
@@ -15,22 +16,25 @@
 
 , # If enabled, GHC will be built with the GPL-free but slower integer-simple
   # library instead of the faster but GPLed integer-gmp library.
-  enableIntegerSimple ? false, gmp ? null
+  enableIntegerSimple ? targetPlatform.useAndroidPrebuilt
+                     || targetPlatform.useiOSPrebuilt
+
+, gmp ? null
+
+, m4
 
 , # If enabled, use -fPIC when compiling static libs.
   enableRelocatedStaticLibs ? targetPlatform != hostPlatform
 
 , # Whether to build dynamic libs for the standard library (on the target
   # platform). Static libs are always built.
-  enableShared ? !targetPlatform.isWindows && !targetPlatform.useAndroidPrebuilt
+  enableShared ? true
 
-, # Whetherto build terminfo.
-  enableTerminfo ? !targetPlatform.isWindows
-
-, version ? "8.5.20180118"
-, # What flavour to build. An empty string indicates no
-  # specific flavour and falls back to ghc default values.
-  ghcFlavour ? stdenv.lib.optionalString (targetPlatform != hostPlatform) "perf-cross"
+, version ? "8.4.1"
+, # Whether to backport https://phabricator.haskell.org/D4388 for
+  # deterministic profiling symbol names, at the cost of a slightly
+  # non-standard GHC API
+  deterministicProfiling ? false
 }:
 
 assert !enableIntegerSimple -> gmp != null;
@@ -44,14 +48,11 @@ let
     "${targetPlatform.config}-";
 
   buildMK = ''
-    BuildFlavour = ${ghcFlavour}
-    ifneq \"\$(BuildFlavour)\" \"\"
-    include mk/flavours/\$(BuildFlavour).mk
-    endif
     DYNAMIC_GHC_PROGRAMS = ${if enableShared then "YES" else "NO"}
   '' + stdenv.lib.optionalString enableIntegerSimple ''
     INTEGER_LIBRARY = integer-simple
   '' + stdenv.lib.optionalString (targetPlatform != hostPlatform) ''
+    BuildFlavour = perf-cross
     Stage1Only = YES
     HADDOCK_DOCS = NO
     BUILD_SPHINX_HTML = NO
@@ -59,14 +60,12 @@ let
   '' + stdenv.lib.optionalString enableRelocatedStaticLibs ''
     GhcLibHcOpts += -fPIC
     GhcRtsHcOpts += -fPIC
-  '' + stdenv.lib.optionalString targetPlatform.useAndroidPrebuilt ''
-    EXTRA_CC_OPTS += -std=gnu99
   '';
 
   # Splicer will pull out correct variations
-  libDeps = platform: stdenv.lib.optional enableTerminfo [ ncurses ]
+  libDeps = platform: [ ncurses ]
     ++ stdenv.lib.optional (!enableIntegerSimple) gmp
-    ++ stdenv.lib.optional (platform.libc != "glibc" && !targetPlatform.isWindows) libiconv;
+    ++ stdenv.lib.optional (platform.libc != "glibc") libiconv;
 
   toolsForTarget =
     if hostPlatform == buildPlatform then
@@ -84,13 +83,21 @@ stdenv.mkDerivation rec {
 
   src = fetchgit {
     url = "git://git.haskell.org/ghc.git";
-    rev = "e1d4140be4d2a1508015093b69e1ef53516e1eb6";
-    sha256 = "1gdcr10dd968d40qgljdwx9vfkva3yrvjm9a4nis7whaaac3ag58";
+    rev = "0a3e2f324dbd525d626ebd3d97e8ffa1cf2f0ffb";
+    sha256 = "1m51khnmf8gw203d8kh6y4ivh0acb2wiqqnb950yfbg2a2k7bcfi";
   };
 
   enableParallelBuilding = true;
 
   outputs = [ "out" "doc" ];
+
+  patches = [
+    (import ./abi-depends-determinism.nix { inherit fetchpatch runCommand; })
+  ] ++ stdenv.lib.optional deterministicProfiling
+    (fetchpatch { # https://phabricator.haskell.org/D4388 for more determinism
+      url = "https://github.com/shlevy/ghc/commit/8b2dbd869d1a64de3e99fa8b1c9bb1140eee7099.patch";
+      sha256 = "0hxpiwhbg64rsyjdr4psh6dwyp58b96mad3adccvfr0x8hc6ba2m";
+    });
 
   postPatch = "patchShebangs .";
 
@@ -132,7 +139,7 @@ stdenv.mkDerivation rec {
     "--with-curses-includes=${ncurses.dev}/include" "--with-curses-libraries=${ncurses.out}/lib"
   ] ++ stdenv.lib.optional (targetPlatform == hostPlatform && ! enableIntegerSimple) [
     "--with-gmp-includes=${gmp.dev}/include" "--with-gmp-libraries=${gmp.out}/lib"
-  ] ++ stdenv.lib.optional (targetPlatform == hostPlatform && hostPlatform.libc != "glibc" && !targetPlatform.isWindows) [
+  ] ++ stdenv.lib.optional (targetPlatform == hostPlatform && hostPlatform.libc != "glibc") [
     "--with-iconv-includes=${libiconv}/include" "--with-iconv-libraries=${libiconv}/lib"
   ] ++ stdenv.lib.optionals (targetPlatform != hostPlatform) [
     "--enable-bootstrap-with-devel-snapshot"
@@ -145,13 +152,12 @@ stdenv.mkDerivation rec {
     "--disable-large-address-space"
   ];
 
-  # Make sure we never relax`$PATH` and hooks support for compatability.
-  strictDeps = true;
+  # Hack to make sure we never to the relaxation `$PATH` and hooks support for
+  # compatability. This will be replaced with something clearer in a future
+  # masss-rebuild.
+  crossConfig = true;
 
-  nativeBuildInputs = [
-    perl autoconf automake m4 python3
-    ghc alex happy hscolour
-  ];
+  nativeBuildInputs = [ ghc perl autoconf automake m4 happy alex python3 ];
 
   # For building runtime libs
   depsBuildTarget = toolsForTarget;
@@ -168,15 +174,12 @@ stdenv.mkDerivation rec {
   # that in turn causes GHCi to abort
   stripDebugFlags = [ "-S" ] ++ stdenv.lib.optional (!targetPlatform.isDarwin) "--keep-file-symbols";
 
-  hardeningDisable = [ "format" ];
-
   checkTarget = "test";
 
+  # zsh and other shells are smart about `{ghc}` but bash isn't, and doesn't
+  # treat that as a unary `{x,y,z,..}` repetition.
   postInstall = ''
-    for bin in "$out"/lib/${name}/bin/*; do
-      isELF "$bin" || continue
-      paxmark m "$bin"
-    done
+    paxmark m $out/lib/${name}/bin/${if targetPlatform != hostPlatform then "ghc" else "{ghc,haddock}"}
 
     # Install the bash completion file.
     install -D -m 444 utils/completion/ghc.bash $out/share/bash-completion/completions/${targetPrefix}ghc
@@ -195,7 +198,7 @@ stdenv.mkDerivation rec {
     inherit llvmPackages;
 
     # Our Cabal compiler name
-    haskellCompilerName = "ghc-8.5";
+    haskellCompilerName = "ghc-8.4.1";
   };
 
   meta = {
