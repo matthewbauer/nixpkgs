@@ -1,6 +1,7 @@
 { stdenv, fetchurl, pkgconfig, autoreconfHook, openssl, db48, boost, zeromq
 , zlib, miniupnpc, qtbase ? null, qttools ? null, utillinux, protobuf, qrencode, libevent
-, withGui }:
+, withGui
+, darwin }:
 
 with stdenv.lib;
 stdenv.mkDerivation rec{
@@ -18,7 +19,8 @@ stdenv.mkDerivation rec{
   buildInputs = [ openssl db48 boost zlib zeromq
                   miniupnpc protobuf libevent]
                   ++ optionals stdenv.isLinux [ utillinux ]
-                  ++ optionals withGui [ qtbase qttools qrencode ];
+                  ++ optionals withGui [ qtbase qttools qrencode ]
+                  ++ optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [ Foundation ApplicationServices AppKit darwin.shell_cmds ]);
 
   configureFlags = [ "--with-boost-libdir=${boost.out}/lib" ]
                      ++ optionals withGui [ "--with-gui=qt5"
