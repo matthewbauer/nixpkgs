@@ -465,7 +465,7 @@ with pkgs;
 
   # A version of OpenBLAS using 32-bit integers on all platforms for compatibility with
   # standard BLAS and LAPACK.
-  openblas = if stdenv.isDarwin
+  openblas = if targetPlatform.isDarwin
                then openblasReal.override { blas64 = false; } else openblasReal;
 
   distccMasquerade = if stdenv.isDarwin
@@ -16710,7 +16710,7 @@ with pkgs;
   };
 
   musescore =
-    if stdenv.isDarwin then
+    if hostPlatform.isDarwin then
       callPackage ../applications/audio/musescore/darwin.nix { }
     else
       libsForQt5.callPackage ../applications/audio/musescore { };
@@ -17349,7 +17349,7 @@ with pkgs;
   rstudio = libsForQt5.callPackage ../applications/editors/rstudio { };
 
   rsync = callPackage ../applications/networking/sync/rsync {
-    enableACLs = !(stdenv.isDarwin || stdenv.isSunOS || stdenv.isFreeBSD);
+    enableACLs = !(targetPlatform.isDarwin || targetPlatform.isSunOS || targetPlatform.isFreeBSD);
     enableCopyDevicesPatch = (config.rsync.enableCopyDevicesPatch or false);
   };
   rrsync = callPackage ../applications/networking/sync/rsync/rrsync.nix {};
@@ -18100,7 +18100,7 @@ with pkgs;
   vym = callPackage ../applications/misc/vym { };
 
   w3m = callPackage ../applications/networking/browsers/w3m {
-    graphicsSupport = !stdenv.isDarwin;
+    graphicsSupport = !targetPlatform.isDarwin;
   };
 
   # Should always be the version with the most features
