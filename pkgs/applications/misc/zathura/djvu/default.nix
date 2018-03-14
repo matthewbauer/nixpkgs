@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, pkgconfig, gtk, zathura_core, girara, djvulibre, gettext }:
+{ stdenv, fetchurl, pkgconfig, gtk, zathura_core, girara, djvulibre, gettext}:
 
 stdenv.mkDerivation rec {
   name = "zathura-djvu-0.2.7";
@@ -34,4 +34,3 @@ stdenv.mkDerivation rec {
     maintainers = with maintainers; [ garbas ];
   };
 }
-

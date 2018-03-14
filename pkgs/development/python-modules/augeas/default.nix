@@ -1,4 +1,6 @@
-{ stdenv, lib, buildPythonPackage, fetchFromGitHub, augeas, cffi }:
+{ stdenv, lib, buildPythonPackage, fetchFromGitHub, augeas, cffi
+, targetPlatform}:
+
 buildPythonPackage rec {
     pname = "augeas";
     version = "1.0.2";
@@ -13,9 +15,8 @@ buildPythonPackage rec {
 
     # TODO: not very nice!
     postPatch =
-      let libname = if stdenv.isDarwin then "libaugeas.dylib" else "libaugeas.so";
-      in
-      ''
+      let libname = "libaugeas${targetPlatform.extensions.sharedLibrary}";
+      in ''
         substituteInPlace augeas/ffi.py \
           --replace 'ffi.dlopen("augeas")' \
                     'ffi.dlopen("${lib.makeLibraryPath [augeas]}/${libname}")'
