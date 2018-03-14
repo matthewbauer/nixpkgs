@@ -207,7 +207,7 @@ with pkgs;
     inherit lib stdenvNoCC;
     # On darwin, libkrb5 needs bootstrap_cmds which would require
     # converting many packages to fetchurl_boot to avoid evaluation cycles.
-    curl = buildPackages.curl.override (lib.optionalAttrs stdenv.isDarwin { gssSupport = false; });
+    curl = buildPackages.curl.override (lib.optionalAttrs hostPlatform.isDarwin { gssSupport = false; });
   };
 
   fetchRepoProject = callPackage ../build-support/fetchrepoproject { };
@@ -395,6 +395,82 @@ with pkgs;
 
   iconConvTools = callPackage ../build-support/icon-conv-tools {};
 
+  ### Custom Stdenvs
+
+  #Use this instead of stdenv to build with clang
+  clangStdenv = if stdenv.cc.isClang then stdenv else lowPrio llvmPackages.stdenv;
+  clang-sierraHack-stdenv = overrideCC stdenv clang-sierraHack;
+  libcxxStdenv = if stdenv.cc.isClang then stdenv else lowPrio llvmPackages.libcxxStdenv;
+
+  gccStdenv = if stdenv.cc.isGNU then stdenv else stdenv.override {
+    allowedRequisites = null;
+    cc = gcc;
+    # Remove libcxx/libcxxabi, and add clang for AS if on darwin (it uses
+    # clang's internal assembler).
+    extraBuildInputs = lib.optional hostPlatform.isDarwin clang.cc;
+  };
+
+  gcc7Stdenv = overrideCC gccStdenv gcc7;
+
+  distccStdenv = lowPrio (overrideCC stdenv distccWrapper);
+
+  ccacheStdenv = lowPrio (overrideCC stdenv ccacheWrapper);
+
+  gccMultiStdenv = overrideCC stdenv gcc_multi;
+  clangMultiStdenv = overrideCC stdenv clang_multi;
+  multiStdenv = if stdenv.cc.isClang then clangMultiStdenv else gccMultiStdenv;
+
+  # Can't just overrideCC, because then the stdenv-cross mkDerivation will be
+  # thrown away. TODO: find a better solution for this.
+  crossLibcStdenv = buildPackages.makeStdenvCross {
+    inherit (buildPackages.buildPackages) stdenv;
+    inherit buildPlatform hostPlatform targetPlatform;
+    cc = buildPackages.gccCrossStageStatic;
+  };
+
+  emscriptenStdenv = stdenv // { mkDerivation = buildEmscriptenPackage; };
+
+  ### META-PACKAGES
+
+  libunwind = if hostPlatform.isDarwin then darwin.libunwind else libunwindReal;
+
+  # On non-GNU systems we need GNU Gettext for libintl.
+  libintlOrEmpty = stdenv.lib.optional (!stdenv.isLinux || hostPlatform.libc != "glibc") gettext;
+
+  # GNU libc provides libiconv so systems with glibc don't need to build
+  # libiconv separately. Additionally, Apple forked/repackaged libiconv so we
+  # use that instead of the vanilla version on that OS.
+  #
+  # We also provide `libiconvReal`, which will always be a standalone libiconv,
+  # just in case you want it regardless of platform.
+  libiconv =
+    if hostPlatform.libc == "glibc"
+      then glibcIconv (if hostPlatform != buildPlatform
+                       then libcCross
+                       else stdenv.cc.libc)
+    else if hostPlatform.isDarwin
+      then darwin.libiconv
+    else libiconvReal;
+
+  kexectools = if hostPlatform.isKexecable
+                 then callPackage ../os-specific/linux/kexectools { }
+                 else null;
+
+  # TODO: vimNox after it gets fixed on Darwin or something lighter
+  hexdump = if hostPlatform.isLinux then utillinux.bin
+            else if hostPlatform.isDarwin then darwin.shell_cmds
+            else vim/*xxd*/;
+
+  pinentry = if hostPlatform.isDarwin then pinentry_mac else pinentry_gtk;
+
+  # A version of OpenBLAS using 32-bit integers on all platforms for compatibility with
+  # standard BLAS and LAPACK.
+  openblas = if stdenv.isDarwin
+               then openblasReal.override { blas64 = false; } else openblasReal;
+
+  distccMasquerade = if stdenv.isDarwin
+                       then null
+                       else distccMasqueradeReal;
 
   ### TOOLS
 
@@ -867,7 +943,7 @@ with pkgs;
   brasero = callPackage ../tools/cd-dvd/brasero/wrapper.nix { };
 
   brltty = callPackage ../tools/misc/brltty {
-    alsaSupport = (!stdenv.isDarwin);
+    alsaSupport = !targetPlatform.isDarwin;
     systemdSupport = stdenv.isLinux;
   };
   bro = callPackage ../applications/networking/ids/bro { };
@@ -2077,8 +2153,6 @@ with pkgs;
 
   emscriptenPackages = recurseIntoAttrs (callPackage ./emscripten-packages.nix { });
 
-  emscriptenStdenv = stdenv // { mkDerivation = buildEmscriptenPackage; };
-
   efibootmgr = callPackage ../tools/system/efibootmgr { };
 
   efivar = callPackage ../tools/system/efivar { };
@@ -2290,7 +2364,7 @@ with pkgs;
   flameGraph = flamegraph;
 
   flvtool2 = callPackage ../tools/video/flvtool2 { };
-  
+
   fmbt = callPackage ../development/tools/fmbt {
     python = python2;
   };
@@ -2525,12 +2599,8 @@ with pkgs;
   gnupg1orig = callPackage ../tools/security/gnupg/1.nix { };
   gnupg1compat = callPackage ../tools/security/gnupg/1compat.nix { };
   gnupg1 = gnupg1compat;    # use config.packageOverrides if you prefer original gnupg1
-  gnupg20 = callPackage ../tools/security/gnupg/20.nix {
-    pinentry = if stdenv.isDarwin then pinentry_mac else pinentry;
-  };
-  gnupg22 = callPackage ../tools/security/gnupg/22.nix {
-    pinentry = if stdenv.isDarwin then pinentry_mac else pinentry;
-  };
+  gnupg20 = callPackage ../tools/security/gnupg/20.nix { };
+  gnupg22 = callPackage ../tools/security/gnupg/22.nix { };
   gnupg = gnupg22;
 
   gnuplot = libsForQt5.callPackage ../tools/graphics/gnuplot { };
@@ -2839,7 +2909,7 @@ with pkgs;
 
   highlight = callPackage ../tools/text/highlight ({
     lua = lua5;
-  } // lib.optionalAttrs stdenv.isDarwin {
+  } // lib.optionalAttrs hostPlatform.isDarwin {
     # doesn't build with clang_37
     inherit (llvmPackages_38) stdenv;
   });
@@ -3104,9 +3174,7 @@ with pkgs;
 
   keepalived = callPackage ../tools/networking/keepalived { };
 
-  kexectools = if hostPlatform.isKexecable
-                 then callPackage ../os-specific/linux/kexectools { }
-               else null;
+  kexectoolsReal = callPackage ../os-specific/linux/kexectools { };
 
   keybase = callPackage ../tools/security/keybase { };
 
@@ -3915,9 +3983,7 @@ with pkgs;
 
   ntopng = callPackage ../tools/networking/ntopng { };
 
-  ntp = callPackage ../tools/networking/ntp {
-    libcap = if stdenv.isLinux then libcap else null;
-  };
+  ntp = callPackage ../tools/networking/ntp { };
 
   numdiff = callPackage ../tools/text/numdiff { };
 
@@ -4220,12 +4286,11 @@ with pkgs;
 
   philter = callPackage ../tools/networking/philter { };
 
-  pinentry = pinentry_ncurses.override {
+  pinentry_gtk = pinentry_ncurses.override {
     inherit gtk2;
   };
 
   pinentry_ncurses = callPackage ../tools/security/pinentry {
-    libcap = if stdenv.isDarwin then null else libcap;
     gtk2 = null;
   };
 
@@ -5827,11 +5892,6 @@ with pkgs;
     nativeLibc = false;
   };
 
-  #Use this instead of stdenv to build with clang
-  clangStdenv = if stdenv.cc.isClang then stdenv else lowPrio llvmPackages.stdenv;
-  clang-sierraHack-stdenv = overrideCC stdenv clang-sierraHack;
-  libcxxStdenv = if stdenv.isDarwin then stdenv else lowPrio llvmPackages.libcxxStdenv;
-
   clasp-common-lisp = callPackage ../development/compilers/clasp {};
 
   clean = callPackage ../development/compilers/clean { };
@@ -5884,16 +5944,6 @@ with pkgs;
   gcc = gcc7;
   gcc-unwrapped = gcc.cc;
 
-  gccStdenv = if stdenv.cc.isGNU then stdenv else stdenv.override {
-    allowedRequisites = null;
-    cc = gcc;
-    # Remove libcxx/libcxxabi, and add clang for AS if on darwin (it uses
-    # clang's internal assembler).
-    extraBuildInputs = lib.optional hostPlatform.isDarwin clang.cc;
-  };
-
-  gcc7Stdenv = overrideCC gccStdenv gcc7;
-
   wrapCCMulti = cc:
     if system == "x86_64-linux" then let
       # Binutils with glibc multi
@@ -5929,10 +5979,6 @@ with pkgs;
   gcc_multi = wrapCCMulti gcc;
   clang_multi = wrapClangMulti clang;
 
-  gccMultiStdenv = overrideCC stdenv gcc_multi;
-  clangMultiStdenv = overrideCC stdenv clang_multi;
-  multiStdenv = if stdenv.cc.isClang then clangMultiStdenv else gccMultiStdenv;
-
   gcc_debug = lowPrio (wrapCC (gcc.cc.override {
     stripped = false;
   }));
@@ -5942,14 +5988,6 @@ with pkgs;
   libstdcxxHook = makeSetupHook
     { substitutions = { gcc = gcc-unwrapped; }; }
     ../development/compilers/gcc/libstdc++-hook.sh;
-
-  # Can't just overrideCC, because then the stdenv-cross mkDerivation will be
-  # thrown away. TODO: find a better solution for this.
-  crossLibcStdenv = buildPackages.makeStdenvCross {
-    inherit (buildPackages.buildPackages) stdenv;
-    inherit buildPlatform hostPlatform targetPlatform;
-    cc = buildPackages.gccCrossStageStatic;
-  };
 
   # The GCC used to build libc for the target platform. Normal gccs will be
   # built with, and use, that cross-compiled libc.
@@ -6440,7 +6478,6 @@ with pkgs;
 
   julia_04 = callPackage ../development/compilers/julia {
     gmp = gmp6;
-    openblas = openblasCompat;
     inherit (darwin.apple_sdk.frameworks) CoreServices ApplicationServices;
     llvm = llvm_37;
   };
@@ -6448,21 +6485,18 @@ with pkgs;
   julia_05 = callPackage ../development/compilers/julia/0.5.nix {
     gmp = gmp6;
     libgit2 = libgit2_0_25;
-    openblas = openblasCompat;
     inherit (darwin.apple_sdk.frameworks) CoreServices ApplicationServices;
     llvm = llvm_38;
   };
 
   julia_06 = callPackage ../development/compilers/julia/0.6.nix {
     gmp = gmp6;
-    openblas = openblasCompat;
     inherit (darwin.apple_sdk.frameworks) CoreServices ApplicationServices;
     llvm = llvm_39;
   };
 
   julia-git = lowPrio (callPackage ../development/compilers/julia/git.nix {
     gmp = gmp6;
-    openblas = openblasCompat;
     inherit (darwin.apple_sdk.frameworks) CoreServices ApplicationServices;
     llvm = llvm_39;
   });
@@ -7033,7 +7067,6 @@ with pkgs;
         glpk = null;
         suitesparse = null;
         jdk = null;
-        openblas = if stdenv.isDarwin then openblasCompat else openblas;
       };
 
       hgOctaveOptions =
@@ -7048,12 +7081,11 @@ with pkgs;
   octaveFull = (lowPrio (callPackage ../development/interpreters/octave {
     qt = qt4;
     overridePlatforms = ["x86_64-linux" "x86_64-darwin"];
-    openblas = if stdenv.isDarwin then openblasCompat else openblas;
   }));
 
   ocropus = callPackage ../applications/misc/ocropus { };
 
-  octopus = callPackage ../applications/science/chemistry/octopus { openblas=openblasCompat; };
+  octopus = callPackage ../applications/science/chemistry/octopus { };
 
   inherit (callPackages ../development/interpreters/perl {}) perl perl522 perl524 perl526;
 
@@ -7543,7 +7575,6 @@ with pkgs;
   # should be owned by user root, group nixbld with permissions 0770.
   ccacheWrapper = makeOverridable ({ extraConfig ? "" }:
      wrapCC (ccache.links extraConfig)) {};
-  ccacheStdenv = lowPrio (overrideCC stdenv ccacheWrapper);
 
   cccc = callPackage ../development/tools/analysis/cccc { };
 
@@ -7590,7 +7621,7 @@ with pkgs;
   ctodo = callPackage ../applications/misc/ctodo { };
 
   cmake_2_8 = callPackage ../development/tools/build-managers/cmake/2.8.nix {
-    wantPS = stdenv.isDarwin;
+    wantPS = hostPlatform.isDarwin;
     inherit (darwin) ps;
   };
 
@@ -7631,9 +7662,6 @@ with pkgs;
 
   csmith = callPackage ../development/tools/misc/csmith {
     inherit (perlPackages) perl SysCPU;
-    # Workaround optional dependency on libbsd that's
-    # currently broken on Darwin.
-    libbsd = if stdenv.isDarwin then null else libbsd;
   };
 
   csslint = callPackage ../development/web/csslint { };
@@ -7685,14 +7713,11 @@ with pkgs;
   #
   distccWrapper = makeOverridable ({ extraConfig ? "" }:
      wrapCC (distcc.links extraConfig)) {};
-  distccStdenv = lowPrio (overrideCC stdenv distccWrapper);
 
-  distccMasquerade = if stdenv.isDarwin
-    then null
-    else callPackage ../development/tools/misc/distcc/masq.nix {
-      gccRaw = gcc.cc;
-      binutils = binutils;
-    };
+  distccMasqueradeReal = callPackage ../development/tools/misc/distcc/masq.nix {
+    gccRaw = gcc.cc;
+    binutils = binutils;
+  };
 
   doclifter = callPackage ../development/tools/misc/doclifter { };
 
@@ -9087,7 +9112,7 @@ with pkgs;
             else null;
 
   gnutls = callPackage
-    (if stdenv.isDarwin
+    (if hostPlatform.isDarwin
       # Avoid > 3.5.10 due to frameworks for now; see discussion on:
       # https://github.com/NixOS/nixpkgs/commit/d6454e6a1
       then ../development/libraries/gnutls/3.5.10.nix
@@ -9180,7 +9205,7 @@ with pkgs;
 
   gtk2 = callPackage ../development/libraries/gtk+/2.x.nix {
     cupsSupport = config.gtk2.cups or stdenv.isLinux;
-    gdktarget = if stdenv.isDarwin then "quartz" else "x11";
+    gdktarget = if targetPlatform.isDarwin then "quartz" else "x11";
     inherit (darwin.apple_sdk.frameworks) AppKit Cocoa;
   };
 
@@ -9944,21 +9969,6 @@ with pkgs;
 
   libgsf = callPackage ../development/libraries/libgsf { };
 
-  # GNU libc provides libiconv so systems with glibc don't need to build
-  # libiconv separately. Additionally, Apple forked/repackaged libiconv so we
-  # use that instead of the vanilla version on that OS.
-  #
-  # We also provide `libiconvReal`, which will always be a standalone libiconv,
-  # just in case you want it regardless of platform.
-  libiconv =
-    if hostPlatform.libc == "glibc"
-      then glibcIconv (if hostPlatform != buildPlatform
-                       then libcCross
-                       else stdenv.cc.libc)
-    else if hostPlatform.isDarwin
-      then darwin.libiconv
-    else libiconvReal;
-
   glibcIconv = libc: let
     inherit (builtins.parseDrvName libc.name) name version;
     libcDev = lib.getDev libc;
@@ -9970,9 +9980,6 @@ with pkgs;
   libiconvReal = callPackage ../development/libraries/libiconv {
     fetchurl = fetchurlBoot;
   };
-
-  # On non-GNU systems we need GNU Gettext for libintl.
-  libintlOrEmpty = stdenv.lib.optional (!stdenv.isLinux || hostPlatform.libc != "glibc") gettext;
 
   libid3tag = callPackage ../development/libraries/libid3tag {
     gperf = gperf_3_0;
@@ -10289,9 +10296,7 @@ with pkgs;
 
   libutempter = callPackage ../development/libraries/libutempter { };
 
-  libunwind = if stdenv.isDarwin
-    then darwin.libunwind
-    else callPackage ../development/libraries/libunwind { };
+  libunwindReal = callPackage ../development/libraries/libunwind { };
 
   libuv = callPackage ../development/libraries/libuv {
     inherit (darwin.apple_sdk.frameworks) ApplicationServices CoreServices;
@@ -11549,9 +11554,7 @@ with pkgs;
 
   tokyotyrant = callPackage ../development/libraries/tokyo-tyrant { };
 
-  torch = callPackage ../development/libraries/torch {
-    openblas = openblasCompat;
-  };
+  torch = callPackage ../development/libraries/torch { };
 
   torch-hdf5 = callPackage ../development/libraries/torch-hdf5 {};
 
@@ -11607,7 +11610,7 @@ with pkgs;
   v8_3_16_14 = callPackage ../development/libraries/v8/3.16.14.nix {
     inherit (python2Packages) python gyp;
     cctools = darwin.cctools;
-    stdenv = if stdenv.isDarwin then stdenv else overrideCC stdenv gcc5;
+    stdenv = if hostPlatform.isDarwin then stdenv else overrideCC stdenv gcc5;
   };
 
   v8_6_x = callPackage ../development/libraries/v8/6_x.nix {
@@ -12060,7 +12063,6 @@ with pkgs;
     texLive = texlive.combine {
       inherit (texlive) scheme-small inconsolata helvetic texinfo fancyvrb cm-super;
     };
-    openblas = openblasCompat;
     withRecommendedPackages = false;
     inherit (darwin.apple_sdk.frameworks) Cocoa Foundation;
     inherit (darwin) cf-private libobjc;
@@ -12298,12 +12300,7 @@ with pkgs;
   jetty = callPackage ../servers/http/jetty { };
 
   knot-dns = callPackage ../servers/dns/knot-dns { };
-  knot-resolver = callPackage ../servers/dns/knot-resolver {
-    # TODO: vimNox after it gets fixed on Darwin or something lighter
-    hexdump = if stdenv.isLinux then utillinux.bin
-              else if stdenv.isDarwin then darwin.shell_cmds
-              else vim/*xxd*/;
-  };
+  knot-resolver = callPackage ../servers/dns/knot-resolver { };
 
   rdkafka = callPackage ../development/libraries/rdkafka { };
 
@@ -12819,13 +12816,12 @@ with pkgs;
       cairo epoxy;
     inherit (buildPackages) pkgconfig xmlto asciidoc flex bison;
     inherit (darwin) apple_sdk cf-private libobjc;
-    bootstrap_cmds = if stdenv.isDarwin then darwin.bootstrap_cmds else null;
     mesa = libGL;
     python = python2; # Incompatible with Python 3x
     udev = if stdenv.isLinux then udev else null;
     libdrm = if stdenv.isLinux then libdrm else null;
     abiCompat = config.xorg.abiCompat # `config` because we have no `xorg.override`
-      or (if stdenv.isDarwin then "1.18" else null); # 1.19 needs fixing on Darwin
+      or (if hostPlatform.isDarwin then "1.18" else null); # 1.19 needs fixing on Darwin
   } // { inherit xlibsWrapper; } );
 
   xwayland = callPackage ../servers/x11/xorg/xwayland.nix { };
@@ -13547,7 +13543,9 @@ with pkgs;
 
   kvm = qemu_kvm;
 
-  libcap = callPackage ../os-specific/linux/libcap { };
+  libcap = callPackage ../os-specific/linux/libcap {
+    pam = if hostPlatform.isDarwin then null else pam;
+  };
 
   libcap_ng = callPackage ../os-specific/linux/libcap-ng {
     swig = null; # Currently not using the python2/3 bindings
@@ -15999,7 +15997,7 @@ with pkgs;
   };
 
   i3 = callPackage ../applications/window-managers/i3 {
-    xcb-util-cursor = if stdenv.isDarwin then xcb-util-cursor-HEAD else xcb-util-cursor;
+    xcb-util-cursor = if hostPlatform.isDarwin then xcb-util-cursor-HEAD else xcb-util-cursor;
   };
 
   i3-gaps = callPackage ../applications/window-managers/i3/gaps.nix { };
@@ -19573,11 +19571,7 @@ with pkgs;
 
   liblbfgs = callPackage ../development/libraries/science/math/liblbfgs { };
 
-  openblas = callPackage ../development/libraries/science/math/openblas { };
-
-  # A version of OpenBLAS using 32-bit integers on all platforms for compatibility with
-  # standard BLAS and LAPACK.
-  openblasCompat = openblas.override { blas64 = false; };
+  openblasReal = callPackage ../development/libraries/science/math/openblas { };
 
   openlibm = callPackage ../development/libraries/science/math/openlibm {};
 
@@ -19614,7 +19608,7 @@ with pkgs;
 
   symmetrica = callPackage ../applications/science/math/symmetrica {};
 
-  ipopt = callPackage ../development/libraries/science/math/ipopt { openblas = openblasCompat; };
+  ipopt = callPackage ../development/libraries/science/math/ipopt { };
 
   gmsh = callPackage ../applications/science/math/gmsh { };
 
