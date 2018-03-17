@@ -13,7 +13,7 @@ let
   sh = busybox-sandbox-shell;
 
   common = { name, suffix ? "", src, fromGit ? false }: stdenv.mkDerivation rec {
-    inherit name src;
+    inherit name src fromGit;
     version = lib.getVersion name;
 
     is20 = lib.versionAtLeast version "2.0pre";
