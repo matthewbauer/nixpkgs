@@ -200,11 +200,6 @@ stdenv.mkDerivation {
       then
         [
           "-Wno-missing-sysroot"
-          "-D__MAC_OS_X_VERSION_MAX_ALLOWED=1090"
-          "-D__AVAILABILITY_INTERNAL__MAC_10_10=__attribute__((availability(macosx,introduced=10.10)))"
-          # Note that nixpkgs's objc4 is from macOS 10.11 while the SDK is
-          # 10.9 which necessitates the above macro definition that mentions
-          # 10.10
         ]
       else
         lib.optional libGLSupported ''-DNIXPKGS_MESA_GL="${libGL.out}/lib/libGL"''
