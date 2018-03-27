@@ -666,19 +666,13 @@ with pkgs;
 
   kwm = callPackage ../os-specific/darwin/kwm { };
 
-  khd = callPackage ../os-specific/darwin/khd {
-    inherit (darwin.apple_sdk.frameworks) Carbon Cocoa;
-  };
+  khd = callPackage ../os-specific/darwin/khd { };
 
   reattach-to-user-namespace = callPackage ../os-specific/darwin/reattach-to-user-namespace {};
 
-  skhd = callPackage ../os-specific/darwin/skhd {
-    inherit (darwin.apple_sdk.frameworks) Carbon;
-  };
+  skhd = callPackage ../os-specific/darwin/skhd { };
 
-  qes = callPackage ../os-specific/darwin/qes {
-    inherit (darwin.apple_sdk.frameworks) Carbon;
-  };
+  qes = callPackage ../os-specific/darwin/qes { };
 
   xcodeenv = callPackage ../development/mobile/xcodeenv { };
 
@@ -715,9 +709,7 @@ with pkgs;
 
   adapta-gtk-theme = callPackage ../misc/themes/adapta { };
 
-  aria2 = callPackage ../tools/networking/aria2 {
-    inherit (darwin.apple_sdk.frameworks) Security;
-  };
+  aria2 = callPackage ../tools/networking/aria2 { };
   aria = aria2;
 
   aspcud = callPackage ../tools/misc/aspcud { };
@@ -754,10 +746,7 @@ with pkgs;
 
   axoloti = callPackage ../applications/audio/axoloti { };
   dfu-util-axoloti = callPackage ../applications/audio/axoloti/dfu-util.nix { };
-  libusb1-axoloti = callPackage ../applications/audio/axoloti/libusb1.nix {
-    inherit (darwin) libobjc;
-    inherit (darwin.apple_sdk.frameworks) IOKit;
-  };
+  libusb1-axoloti = callPackage ../applications/audio/axoloti/libusb1.nix { };
 
   azureus = callPackage ../tools/networking/p2p/azureus { };
 
@@ -906,9 +895,7 @@ with pkgs;
 
   burpsuite = callPackage ../tools/networking/burpsuite {};
 
-  c3d = callPackage ../applications/graphics/c3d {
-    inherit (darwin.apple_sdk.frameworks) Cocoa;
-  };
+  c3d = callPackage ../applications/graphics/c3d { };
 
   cue2pops = callPackage ../tools/cd-dvd/cue2pops { };
 
@@ -1033,9 +1020,7 @@ with pkgs;
 
   codesearch = callPackage ../tools/text/codesearch { };
 
-  contacts = callPackage ../tools/misc/contacts {
-    inherit (darwin.apple_sdk.frameworks) Foundation AddressBook;
-  };
+  contacts = callPackage ../tools/misc/contacts { };
 
   coturn = callPackage ../servers/coturn { };
 
@@ -1230,9 +1215,7 @@ with pkgs;
 
   glock = callPackage ../development/tools/glock { };
 
-  glslviewer = callPackage ../development/tools/glslviewer {
-    inherit (darwin.apple_sdk.frameworks) Cocoa;
-  };
+  glslviewer = callPackage ../development/tools/glslviewer { };
 
   gmic = callPackage ../tools/graphics/gmic { };
 
@@ -1984,8 +1967,6 @@ with pkgs;
 
   dolphinEmu = callPackage ../misc/emulators/dolphin-emu { };
   dolphinEmuMaster = callPackage ../misc/emulators/dolphin-emu/master.nix {
-    inherit (darwin.apple_sdk.frameworks) CoreBluetooth ForceFeedback IOKit OpenGL;
-    inherit (darwin) cf-private;
     wxGTK = wxGTK31;
   };
 
@@ -2313,14 +2294,11 @@ with pkgs;
     python = python2;
   };
 
-  fontforge = lowPrio (callPackage ../tools/misc/fontforge {
-    inherit (darwin.apple_sdk.frameworks) Carbon Cocoa;
-  });
+  fontforge = lowPrio (callPackage ../tools/misc/fontforge { });
   fontforge-gtk = callPackage ../tools/misc/fontforge {
     withSpiro = true;
     withGTK = true;
     gtk2 = gtk2-x11;
-    inherit (darwin.apple_sdk.frameworks) Carbon Cocoa;
   };
 
   fontforge-fonttools = callPackage ../tools/misc/fontforge/fontforge-fonttools.nix {};
@@ -2335,12 +2313,9 @@ with pkgs;
 
   fox = callPackage ../development/libraries/fox/default.nix {
     libpng = libpng12;
-    inherit (darwin.apple_sdk.frameworks) CoreServices;
   };
 
-  fox_1_6 = callPackage ../development/libraries/fox/fox-1.6.nix {
-    inherit (darwin.apple_sdk.frameworks) CoreServices;
-  };
+  fox_1_6 = callPackage ../development/libraries/fox/fox-1.6.nix { };
 
   fpart = callPackage ../tools/misc/fpart { };
 
@@ -2405,9 +2380,7 @@ with pkgs;
 
   gauge = callPackage ../development/tools/gauge { };
 
-  gawk = callPackage ../tools/text/gawk {
-    inherit (darwin) locale;
-  };
+  gawk = callPackage ../tools/text/gawk { };
 
   gawkInteractive = appendToName "interactive"
     (gawk.override { interactive = true; });
@@ -2623,9 +2596,7 @@ with pkgs;
 
   gprof2dot = callPackage ../development/tools/profiling/gprof2dot { };
 
-  graphviz = callPackage ../tools/graphics/graphviz {
-    inherit (darwin.apple_sdk.frameworks) ApplicationServices;
-  };
+  graphviz = callPackage ../tools/graphics/graphviz { };
 
   graphviz-nox = graphviz.override {
     xorg = null;
@@ -2636,9 +2607,8 @@ with pkgs;
    * that do want 2.32 but not 2.0 or 2.36. Please give a day's notice for
    * objections before removal. The feature is libgraph.
    */
-  graphviz_2_32 = lib.overrideDerivation (callPackage ../tools/graphics/graphviz/2.32.nix {
-    inherit (darwin.apple_sdk.frameworks) ApplicationServices;
-  }) (x: { configureFlags = x.configureFlags ++ ["--with-cgraph=no"];});
+  graphviz_2_32 = lib.overrideDerivation (callPackage ../tools/graphics/graphviz/2.32.nix { })
+                  (x: { configureFlags = x.configureFlags ++ ["--with-cgraph=no"];});
 
   grin = callPackage ../tools/text/grin { };
   ripgrep = callPackage ../tools/text/ripgrep { };
@@ -3247,9 +3217,7 @@ with pkgs;
 
   matrix-synapse = callPackage ../servers/matrix-synapse { };
 
-  mdbook = callPackage ../tools/text/mdbook {
-    inherit (darwin.apple_sdk.frameworks) CoreServices;
-  };
+  mdbook = callPackage ../tools/text/mdbook { };
 
   memtester = callPackage ../tools/system/memtester { };
 
@@ -3647,8 +3615,7 @@ with pkgs;
 
   minissdpd = callPackage ../tools/networking/minissdpd { };
 
-  inherit (callPackage ../tools/networking/miniupnpc
-            { inherit (darwin) cctools; })
+  inherit (callPackage ../tools/networking/miniupnpc { })
     miniupnpc_1 miniupnpc_2;
   miniupnpc = miniupnpc_1;
 
@@ -4039,9 +4006,7 @@ with pkgs;
 
   openresolv = callPackage ../tools/networking/openresolv { };
 
-  opensc = callPackage ../tools/security/opensc {
-    inherit (darwin.apple_sdk.frameworks) Carbon;
-  };
+  opensc = callPackage ../tools/security/opensc { };
 
   opensm = callPackage ../tools/networking/opensm { };
 
@@ -4202,9 +4167,7 @@ with pkgs;
 
   pciutils = callPackage ../tools/system/pciutils { };
 
-  pcsclite = callPackage ../tools/security/pcsclite {
-    inherit (darwin.apple_sdk.frameworks) IOKit;
-  };
+  pcsclite = callPackage ../tools/security/pcsclite { };
 
   pcsctools = callPackage ../tools/security/pcsctools {
     inherit (perlPackages) pcscperl Glib Gtk2 Pango Cairo;
@@ -4278,9 +4241,7 @@ with pkgs;
     qt = qt5.qtbase;
   };
 
-  pinentry_mac = callPackage ../tools/security/pinentry-mac {
-    inherit (darwin.apple_sdk.frameworks) Cocoa;
-  };
+  pinentry_mac = callPackage ../tools/security/pinentry-mac { };
 
   pingtcp = callPackage ../tools/networking/pingtcp { };
 
@@ -4687,9 +4648,7 @@ with pkgs;
 
   scanbd = callPackage ../tools/graphics/scanbd { };
 
-  screen = callPackage ../tools/misc/screen {
-    inherit (darwin.apple_sdk.libs) utmp;
-  };
+  screen = callPackage ../tools/misc/screen { };
 
   screen-message = callPackage ../tools/X11/screen-message { };
 
@@ -4805,9 +4764,7 @@ with pkgs;
 
   slsnif = callPackage ../tools/misc/slsnif { };
 
-  smartmontools = callPackage ../tools/system/smartmontools {
-    inherit (darwin.apple_sdk.frameworks) IOKit ApplicationServices;
-  };
+  smartmontools = callPackage ../tools/system/smartmontools { };
 
   smbldaptools = callPackage ../tools/networking/smbldaptools {
     inherit (perlPackages) NetLDAP CryptSmbHash DigestSHA1;
@@ -4829,10 +4786,7 @@ with pkgs;
 
   sshguard = callPackage ../tools/security/sshguard {};
 
-  softhsm = callPackage ../tools/security/softhsm {
-    inherit (darwin) libobjc;
-    inherit (darwin.apple_sdk.frameworks) Security;
-  };
+  softhsm = callPackage ../tools/security/softhsm { };
 
   solr = callPackage ../servers/search/solr { };
 
@@ -5035,7 +4989,6 @@ with pkgs;
 
   texmacs = if stdenv.isDarwin
     then callPackage ../applications/editors/texmacs/darwin.nix {
-      inherit (darwin.apple_sdk.frameworks) CoreFoundation Cocoa;
       tex = texlive.combined.scheme-small;
       extraFonts = true;
     } else callPackage ../applications/editors/texmacs {
@@ -5369,9 +5322,7 @@ with pkgs;
 
   html-xml-utils = callPackage ../tools/text/xml/html-xml-utils { };
 
-  htmldoc = callPackage ../tools/typesetting/htmldoc {
-    inherit (darwin.apple_sdk.frameworks) SystemConfiguration Foundation;
-  };
+  htmldoc = callPackage ../tools/typesetting/htmldoc { };
 
   rcm = callPackage ../tools/misc/rcm {};
 
@@ -5823,7 +5774,6 @@ with pkgs;
   avra = callPackage ../development/compilers/avra { };
 
   avian = callPackage ../development/compilers/avian {
-    inherit (darwin.apple_sdk.frameworks) CoreServices Foundation;
     stdenv = if stdenv.cc.isGNU then overrideCC stdenv gcc49 else stdenv;
   };
 
@@ -5853,9 +5803,7 @@ with pkgs;
     inherit (darwin) bootstrap_cmds;
   };
 
-  chez = callPackage ../development/compilers/chez {
-    inherit (darwin) cctools;
-  };
+  chez = callPackage ../development/compilers/chez { };
 
   clang = llvmPackages.clang;
 
@@ -6293,17 +6241,11 @@ with pkgs;
       };
     }
   else
-    callPackage ../development/compilers/go/1.4.nix {
-      inherit (darwin.apple_sdk.frameworks) Security;
-    };
+    callPackage ../development/compilers/go/1.4.nix { };
 
-  go_1_9 = callPackage ../development/compilers/go/1.9.nix {
-    inherit (darwin.apple_sdk.frameworks) Security Foundation;
-  };
+  go_1_9 = callPackage ../development/compilers/go/1.9.nix { };
 
-  go_1_10 = callPackage ../development/compilers/go/1.10.nix {
-    inherit (darwin.apple_sdk.frameworks) Security Foundation;
-  };
+  go_1_10 = callPackage ../development/compilers/go/1.10.nix { };
 
   go = go_1_10;
 
@@ -6483,7 +6425,6 @@ with pkgs;
   julia_04 = callPackage ../development/compilers/julia {
     gmp = gmp6;
     openblas = openblasCompat;
-    inherit (darwin.apple_sdk.frameworks) CoreServices ApplicationServices;
     llvm = llvm_37;
   };
 
@@ -6491,21 +6432,18 @@ with pkgs;
     gmp = gmp6;
     libgit2 = libgit2_0_25;
     openblas = openblasCompat;
-    inherit (darwin.apple_sdk.frameworks) CoreServices ApplicationServices;
     llvm = llvm_38;
   };
 
   julia_06 = callPackage ../development/compilers/julia/0.6.nix {
     gmp = gmp6;
     openblas = openblasCompat;
-    inherit (darwin.apple_sdk.frameworks) CoreServices ApplicationServices;
     llvm = llvm_39;
   };
 
   julia-git = lowPrio (callPackage ../development/compilers/julia/git.nix {
     gmp = gmp6;
     openblas = openblasCompat;
-    inherit (darwin.apple_sdk.frameworks) CoreServices ApplicationServices;
     llvm = llvm_39;
   });
 
@@ -6596,7 +6534,7 @@ with pkgs;
       majorVersion = "3.9"; # 3.10.2: 'ApplicationServices/ApplicationServices.h' file not found
     };
     libxml2 = libxml2.override { pythonSupport = false; };
-    python2 = callPackage ../development/interpreters/python/cpython/2.7/boot.nix { inherit (darwin) CF configd; };
+    python2 = callPackage ../development/interpreters/python/cpython/2.7/boot.nix { };
   } // stdenv.lib.optionalAttrs (stdenv.cc.isGNU && stdenv.hostPlatform.isi686) {
     stdenv = overrideCC stdenv gcc6; # with gcc-7: undefined reference to `__divmoddi4'
   });
@@ -6635,40 +6573,19 @@ with pkgs;
 
   mono = mono40;
 
-  mono40 = callPackage ../development/compilers/mono/4.0.nix {
-    inherit (darwin) libobjc;
-    inherit (darwin.apple_sdk.frameworks) Foundation;
-  };
+  mono40 = callPackage ../development/compilers/mono/4.0.nix { };
 
-  mono44 = lowPrio (callPackage ../development/compilers/mono/4.4.nix {
-    inherit (darwin) libobjc;
-    inherit (darwin.apple_sdk.frameworks) Foundation;
-  });
+  mono44 = lowPrio (callPackage ../development/compilers/mono/4.4.nix { });
 
-  mono46 = lowPrio (callPackage ../development/compilers/mono/4.6.nix {
-    inherit (darwin) libobjc;
-    inherit (darwin.apple_sdk.frameworks) Foundation;
-  });
+  mono46 = lowPrio (callPackage ../development/compilers/mono/4.6.nix { });
 
-  mono48 = lowPrio (callPackage ../development/compilers/mono/4.8.nix {
-    inherit (darwin) libobjc;
-    inherit (darwin.apple_sdk.frameworks) Foundation;
-  });
+  mono48 = lowPrio (callPackage ../development/compilers/mono/4.8.nix { });
 
-  mono50 = lowPrio (callPackage ../development/compilers/mono/5.0.nix {
-    inherit (darwin) libobjc;
-    inherit (darwin.apple_sdk.frameworks) Foundation;
-  });
+  mono50 = lowPrio (callPackage ../development/compilers/mono/5.0.nix { });
 
-  mono54 = lowPrio (callPackage ../development/compilers/mono/5.4.nix {
-    inherit (darwin) libobjc;
-    inherit (darwin.apple_sdk.frameworks) Foundation;
-  });
+  mono54 = lowPrio (callPackage ../development/compilers/mono/5.4.nix { });
 
-  mono58 = lowPrio (callPackage ../development/compilers/mono/5.8.nix {
-    inherit (darwin) libobjc;
-    inherit (darwin.apple_sdk.frameworks) Foundation;
-  });
+  mono58 = lowPrio (callPackage ../development/compilers/mono/5.8.nix { });
 
   monoDLLFixer = callPackage ../build-support/mono-dll-fixer { };
 
@@ -6763,9 +6680,7 @@ with pkgs;
   rustracer = callPackage ../development/tools/rust/racer { };
   rustracerd = callPackage ../development/tools/rust/racerd { };
   rust-bindgen = callPackage ../development/tools/rust/bindgen { };
-  rustup = callPackage ../development/tools/rust/rustup {
-    inherit (darwin.apple_sdk.frameworks) Security;
-  };
+  rustup = callPackage ../development/tools/rust/rustup { };
 
   sbclBootstrap = callPackage ../development/compilers/sbcl/bootstrap.nix {};
   sbcl = callPackage ../development/compilers/sbcl {};
@@ -7170,18 +7085,14 @@ with pkgs;
 
   python27 = callPackage ../development/interpreters/python/cpython/2.7 {
     self = python27;
-    inherit (darwin) CF configd;
   };
   python34 = callPackage ../development/interpreters/python/cpython/3.4 {
-    inherit (darwin) CF configd;
     self = python34;
   };
   python35 = callPackage ../development/interpreters/python/cpython/3.5 {
-    inherit (darwin) CF configd;
     self = python35;
   };
   python36 = callPackage ../development/interpreters/python/cpython/3.6 {
-    inherit (darwin) CF configd;
     self = python36;
   };
 
@@ -7232,13 +7143,10 @@ with pkgs;
     # https://github.com/racket/racket/pull/1886
     # https://github.com/NixOS/nixpkgs/pull/31017#issuecomment-343574769
     stdenv = if stdenv.isDarwin then stdenv else gcc7Stdenv;
-    inherit (darwin.apple_sdk.frameworks) CoreFoundation;
   };
   racket-minimal = callPackage ../development/interpreters/racket/minimal.nix { };
 
-  rakudo = callPackage ../development/interpreters/rakudo {
-    inherit (darwin.apple_sdk.frameworks) CoreServices ApplicationServices;
-  };
+  rakudo = callPackage ../development/interpreters/rakudo { };
 
   rascal = callPackage ../development/interpreters/rascal { };
 
@@ -7264,7 +7172,7 @@ with pkgs;
   bundlerEnv = callPackage ../development/ruby-modules/bundler-env { };
   bundlerApp = callPackage ../development/ruby-modules/bundler-app { };
 
-  inherit (callPackage ../development/interpreters/ruby { inherit (darwin.apple_sdk.frameworks) Foundation; })
+  inherit (callPackage ../development/interpreters/ruby { })
     ruby_2_3
     ruby_2_4
     ruby_2_5;
@@ -7742,7 +7650,6 @@ with pkgs;
 
   doxygen = callPackage ../development/tools/documentation/doxygen {
     qt4 = null;
-    inherit (darwin.apple_sdk.frameworks) CoreServices;
   };
 
   doxygen_gui = lowPrio (doxygen.override { inherit qt4; });
@@ -7778,8 +7685,6 @@ with pkgs;
   flootty = callPackage ../development/tools/flootty { };
 
   flow = callPackage ../development/tools/analysis/flow {
-    inherit (darwin.apple_sdk.frameworks) CoreServices;
-    inherit (darwin) cf-private;
     inherit (ocamlPackages) ocaml findlib camlp4 sedlex ocamlbuild ocaml_lwt
       wtf8 dtoa;
   };
@@ -8077,9 +7982,7 @@ with pkgs;
 
   premake4 = callPackage ../development/tools/misc/premake { };
 
-  premake5 = callPackage ../development/tools/misc/premake/5.nix {
-    inherit (darwin.apple_sdk.frameworks) Foundation;
-  };
+  premake5 = callPackage ../development/tools/misc/premake/5.nix { };
 
   premake = premake4;
 
@@ -8273,7 +8176,7 @@ with pkgs;
   jhiccup = callPackage ../development/tools/java/jhiccup { };
 
   valgrind = callPackage ../development/tools/analysis/valgrind {
-    inherit (darwin) xnu bootstrap_cmds cctools;
+    inherit (darwin) bootstrap_cmds;
     llvm = llvm_39;
   };
   valgrind-light = self.valgrind.override { gdb = null; };
@@ -8299,8 +8202,7 @@ with pkgs;
   xc3sprog = callPackage ../development/tools/misc/xc3sprog { };
 
   xcbuild  = callPackage ../development/tools/xcbuild/wrapper.nix {
-    inherit (darwin.apple_sdk.frameworks) CoreServices CoreGraphics ImageIO;
-    inherit (darwin) cctools bootstrap_cmds binutils;
+    inherit (darwin) bootstrap_cmds;
     stdenv = clangStdenv;
   };
 
@@ -8318,7 +8220,6 @@ with pkgs;
   yaml2json = callPackage ../development/tools/yaml2json { };
 
   ycmd = callPackage ../development/tools/misc/ycmd {
-    inherit (darwin.apple_sdk.frameworks) Cocoa;
     python = python2;
   };
 
@@ -8412,9 +8313,7 @@ with pkgs;
 
   aubio = callPackage ../development/libraries/aubio { };
 
-  audiofile = callPackage ../development/libraries/audiofile {
-    inherit (darwin.apple_sdk.frameworks) AudioUnit CoreServices;
-  };
+  audiofile = callPackage ../development/libraries/audiofile { };
 
   aws-sdk-cpp = callPackage ../development/libraries/aws-sdk-cpp { };
 
@@ -8517,9 +8416,7 @@ with pkgs;
 
   cgui = callPackage ../development/libraries/cgui {};
 
-  check = callPackage ../development/libraries/check {
-    inherit (darwin.apple_sdk.frameworks) CoreServices;
-  };
+  check = callPackage ../development/libraries/check { };
 
   chipmunk = callPackage ../development/libraries/chipmunk {};
 
@@ -8698,9 +8595,7 @@ with pkgs;
 
   eigen2 = callPackage ../development/libraries/eigen/2.0.nix {};
 
-  vmmlib = callPackage ../development/libraries/vmmlib {
-    inherit (darwin.apple_sdk.frameworks) Accelerate CoreGraphics CoreVideo;
-  };
+  vmmlib = callPackage ../development/libraries/vmmlib { };
 
   elastix = callPackage ../development/libraries/science/biology/elastix { };
 
@@ -8748,18 +8643,10 @@ with pkgs;
   fflas-ffpack = callPackage ../development/libraries/fflas-ffpack {};
   fflas-ffpack_1 = callPackage ../development/libraries/fflas-ffpack/1.nix {};
 
-  ffmpeg_0_10 = callPackage ../development/libraries/ffmpeg/0.10.nix {
-    inherit (darwin.apple_sdk.frameworks) Cocoa;
-  };
-  ffmpeg_1_2 = callPackage ../development/libraries/ffmpeg/1.2.nix {
-    inherit (darwin.apple_sdk.frameworks) Cocoa;
-  };
-  ffmpeg_2_8 = callPackage ../development/libraries/ffmpeg/2.8.nix {
-    inherit (darwin.apple_sdk.frameworks) Cocoa;
-  };
-  ffmpeg_3_4 = callPackage ../development/libraries/ffmpeg/3.4.nix {
-    inherit (darwin.apple_sdk.frameworks) Cocoa CoreMedia;
-  };
+  ffmpeg_0_10 = callPackage ../development/libraries/ffmpeg/0.10.nix { };
+  ffmpeg_1_2 = callPackage ../development/libraries/ffmpeg/1.2.nix { };
+  ffmpeg_2_8 = callPackage ../development/libraries/ffmpeg/2.8.nix { };
+  ffmpeg_3_4 = callPackage ../development/libraries/ffmpeg/3.4.nix { };
   # Aliases
   ffmpeg_0 = ffmpeg_0_10;
   ffmpeg_1 = ffmpeg_1_2;
@@ -8780,10 +8667,6 @@ with pkgs;
     vid-stab = if stdenv.isDarwin then null else vid-stab;
     x265 = if stdenv.isDarwin then null else x265;
     xavs = if stdenv.isDarwin then null else xavs;
-    inherit (darwin) CF;
-    inherit (darwin.apple_sdk.frameworks)
-      Cocoa CoreServices CoreAudio AVFoundation MediaToolbox
-      VideoDecodeAcceleration;
   };
 
   ffmpegthumbnailer = callPackage ../development/libraries/ffmpegthumbnailer {
@@ -8851,9 +8734,7 @@ with pkgs;
 
   freeglut = callPackage ../development/libraries/freeglut { };
 
-  freenect = callPackage ../development/libraries/freenect {
-    inherit (darwin.apple_sdk.frameworks) Cocoa GLUT;
-  };
+  freenect = callPackage ../development/libraries/freenect { };
 
   freetype = callPackage ../development/libraries/freetype { };
 
@@ -8883,9 +8764,7 @@ with pkgs;
 
   gephi = callPackage ../applications/science/misc/gephi { };
 
-  gegl = callPackage ../development/libraries/gegl {
-    inherit (darwin.apple_sdk.frameworks) OpenGL;
-  };
+  gegl = callPackage ../development/libraries/gegl { };
 
   gegl_0_3 = callPackage ../development/libraries/gegl/3.0.nix {
     gtk = self.gtk2;
@@ -8939,22 +8818,14 @@ with pkgs;
 
   icon-lang = callPackage ../development/interpreters/icon-lang { };
 
-  libgit2 = callPackage ../development/libraries/git2 {
-    inherit (darwin) libiconv;
-    inherit (darwin.apple_sdk.frameworks) Security;
-  };
+  libgit2 = callPackage ../development/libraries/git2 { };
 
-  libgit2_0_25 = callPackage ../development/libraries/git2/0.25.nix {
-    inherit (darwin) libiconv;
-    inherit (darwin.apple_sdk.frameworks) Security;
-  };
+  libgit2_0_25 = callPackage ../development/libraries/git2/0.25.nix { };
 
   gle = callPackage ../development/libraries/gle { };
 
   glew = callPackage ../development/libraries/glew { };
-  glew110 = callPackage ../development/libraries/glew/1.10.nix {
-    inherit (darwin.apple_sdk.frameworks) AGL;
-  };
+  glew110 = callPackage ../development/libraries/glew/1.10.nix { };
 
   glfw = glfw3;
   glfw2 = callPackage ../development/libraries/glfw/2.x.nix { };
@@ -9058,7 +8929,6 @@ with pkgs;
 
   gobjectIntrospection = callPackage ../development/libraries/gobject-introspection {
     nixStoreDir = config.nix.storeDir or builtins.storeDir;
-    inherit (darwin) cctools;
     python = python2;
   };
 
@@ -9097,9 +8967,7 @@ with pkgs;
     bison = bison2;
   };
 
-  gst-plugins-base = callPackage ../development/libraries/gstreamer/legacy/gst-plugins-base {
-    inherit (darwin.apple_sdk.frameworks) ApplicationServices;
-  };
+  gst-plugins-base = callPackage ../development/libraries/gstreamer/legacy/gst-plugins-base { };
 
   gst-plugins-good = callPackage ../development/libraries/gstreamer/legacy/gst-plugins-good {};
 
@@ -9210,13 +9078,9 @@ with pkgs;
 
   pango = callPackage ../development/libraries/pango { };
 
-  pangolin = callPackage ../development/libraries/pangolin {
-    inherit (darwin.apple_sdk.frameworks) Carbon Cocoa;
-  };
+  pangolin = callPackage ../development/libraries/pangolin { };
 
-  pangomm = callPackage ../development/libraries/pangomm {
-    inherit (darwin.apple_sdk.frameworks) ApplicationServices;
-  };
+  pangomm = callPackage ../development/libraries/pangomm { };
 
   pangox_compat = callPackage ../development/libraries/pangox-compat { };
 
@@ -9232,7 +9096,6 @@ with pkgs;
   gtk2 = callPackage ../development/libraries/gtk+/2.x.nix {
     cupsSupport = config.gtk2.cups or stdenv.isLinux;
     gdktarget = if stdenv.isDarwin then "quartz" else "x11";
-    inherit (darwin.apple_sdk.frameworks) AppKit Cocoa;
   };
 
   gtk2-x11 = gtk2.override {
@@ -9534,7 +9397,6 @@ with pkgs;
 
   libao = callPackage ../development/libraries/libao {
     usePulseAudio = config.pulseaudio or stdenv.isLinux;
-    inherit (darwin.apple_sdk.frameworks) CoreAudio CoreServices AudioUnit;
   };
 
   libabw = callPackage ../development/libraries/libabw { };
@@ -9614,13 +9476,9 @@ with pkgs;
 
   libcddb = callPackage ../development/libraries/libcddb { };
 
-  libcdio = callPackage ../development/libraries/libcdio {
-    inherit (darwin.apple_sdk.frameworks) Carbon IOKit;
-  };
+  libcdio = callPackage ../development/libraries/libcdio { };
 
-  libcdio-paranoia = callPackage ../development/libraries/libcdio-paranoia {
-    inherit (darwin.apple_sdk.frameworks) DiskArbitration IOKit;
-  };
+  libcdio-paranoia = callPackage ../development/libraries/libcdio-paranoia { };
 
   libcdr = callPackage ../development/libraries/libcdr { lcms = lcms2; };
 
@@ -9691,13 +9549,9 @@ with pkgs;
 
   libdbusmenu_qt = callPackage ../development/libraries/libdbusmenu-qt { };
 
-  libdc1394 = callPackage ../development/libraries/libdc1394 {
-    inherit (darwin.apple_sdk.frameworks) CoreServices;
-  };
+  libdc1394 = callPackage ../development/libraries/libdc1394 { };
 
-  libdevil = callPackage ../development/libraries/libdevil {
-    inherit (darwin.apple_sdk.frameworks) OpenGL;
-  };
+  libdevil = callPackage ../development/libraries/libdevil { };
 
   libdevil-nox = libdevil.override {
     libX11 = null;
@@ -9726,9 +9580,7 @@ with pkgs;
 
   libdwg = callPackage ../development/libraries/libdwg { };
 
-  libdvdcss = callPackage ../development/libraries/libdvdcss {
-    inherit (darwin) IOKit;
-  };
+  libdvdcss = callPackage ../development/libraries/libdvdcss { };
 
   libdvdnav = callPackage ../development/libraries/libdvdnav { };
   libdvdnav_4_2_1 = callPackage ../development/libraries/libdvdnav/4.2.1.nix {
@@ -9799,9 +9651,7 @@ with pkgs;
 
   libserialport = callPackage ../development/libraries/libserialport { };
 
-  libsoundio = callPackage ../development/libraries/libsoundio {
-    inherit (darwin.apple_sdk.frameworks) AudioUnit;
-  };
+  libsoundio = callPackage ../development/libraries/libsoundio { };
 
   libgtop = callPackage ../development/libraries/libgtop {};
 
@@ -9845,9 +9695,7 @@ with pkgs;
 
   libffi = callPackage ../development/libraries/libffi { };
 
-  libfreefare = callPackage ../development/libraries/libfreefare {
-    inherit (darwin) libobjc;
-  };
+  libfreefare = callPackage ../development/libraries/libfreefare { };
 
   libftdi = callPackage ../development/libraries/libftdi { };
 
@@ -9857,9 +9705,7 @@ with pkgs;
 
   libgcrypt_1_5 = callPackage ../development/libraries/libgcrypt/1.5.nix { };
 
-  libgdiplus = callPackage ../development/libraries/libgdiplus {
-      inherit (darwin.apple_sdk.frameworks) Carbon;
-  };
+  libgdiplus = callPackage ../development/libraries/libgdiplus { };
 
   libgksu = callPackage ../development/libraries/libgksu { };
 
@@ -9957,11 +9803,7 @@ with pkgs;
     mysql = mysql57;
   };
 
-  libnatspec = callPackage ../development/libraries/libnatspec (
-    stdenv.lib.optionalAttrs stdenv.isDarwin {
-      inherit (darwin) libiconv;
-    }
-  );
+  libnatspec = callPackage ../development/libraries/libnatspec {};
 
   libndp = callPackage ../development/libraries/libndp { };
 
@@ -9979,9 +9821,7 @@ with pkgs;
 
   libplist = callPackage ../development/libraries/libplist { };
 
-  libqglviewer = callPackage ../development/libraries/libqglviewer {
-    inherit (darwin.apple_sdk.frameworks) AGL;
-  };
+  libqglviewer = callPackage ../development/libraries/libqglviewer { };
 
   libre = callPackage ../development/libraries/libre {};
   librem = callPackage ../development/libraries/librem {};
@@ -9998,9 +9838,7 @@ with pkgs;
 
   librime = callPackage ../development/libraries/librime {};
 
-  libsamplerate = callPackage ../development/libraries/libsamplerate {
-    inherit (darwin.apple_sdk.frameworks) ApplicationServices Carbon CoreServices;
-  };
+  libsamplerate = callPackage ../development/libraries/libsamplerate { };
 
   libsieve = callPackage ../development/libraries/libsieve { };
 
@@ -10103,9 +9941,7 @@ with pkgs;
 
   libmicrohttpd = callPackage ../development/libraries/libmicrohttpd { };
 
-  libmikmod = callPackage ../development/libraries/libmikmod {
-    inherit (darwin.apple_sdk.frameworks) CoreAudio;
-  };
+  libmikmod = callPackage ../development/libraries/libmikmod { };
 
   libmilter = callPackage ../development/libraries/libmilter { };
 
@@ -10219,9 +10055,7 @@ with pkgs;
 
   libpqxx = callPackage ../development/libraries/libpqxx { };
 
-  libproxy = callPackage ../development/libraries/libproxy {
-    inherit (darwin.apple_sdk.frameworks) SystemConfiguration CoreFoundation JavaScriptCore;
-  };
+  libproxy = callPackage ../development/libraries/libproxy { };
 
   libpseudo = callPackage ../development/libraries/libpseudo { };
 
@@ -10251,9 +10085,7 @@ with pkgs;
 
   libsigsegv = callPackage ../development/libraries/libsigsegv { };
 
-  libsndfile = callPackage ../development/libraries/libsndfile {
-    inherit (darwin.apple_sdk.frameworks) Carbon AudioToolbox;
-  };
+  libsndfile = callPackage ../development/libraries/libsndfile { };
 
   libsnark = callPackage ../development/libraries/libsnark { };
 
@@ -10279,9 +10111,7 @@ with pkgs;
 
   libspatialite = callPackage ../development/libraries/libspatialite { };
 
-  libstatgrab = callPackage ../development/libraries/libstatgrab {
-    inherit (darwin.apple_sdk.frameworks) IOKit;
-  };
+  libstatgrab = callPackage ../development/libraries/libstatgrab { };
 
   libsvm = callPackage ../development/libraries/libsvm { };
 
@@ -10348,10 +10178,7 @@ with pkgs;
 
   libusb = callPackage ../development/libraries/libusb {};
 
-  libusb1 = callPackage ../development/libraries/libusb1 {
-    inherit (darwin) libobjc;
-    inherit (darwin.apple_sdk.frameworks) IOKit;
-  };
+  libusb1 = callPackage ../development/libraries/libusb1 { };
 
   libusbmuxd = callPackage ../development/libraries/libusbmuxd { };
 
@@ -10361,9 +10188,7 @@ with pkgs;
     then darwin.libunwind
     else callPackage ../development/libraries/libunwind { };
 
-  libuv = callPackage ../development/libraries/libuv {
-    inherit (darwin.apple_sdk.frameworks) ApplicationServices CoreServices;
-  };
+  libuv = callPackage ../development/libraries/libuv { };
 
   libv4l = lowPrio (v4l_utils.override {
     withUtils = false;
@@ -10560,8 +10385,6 @@ with pkgs;
 
   libGLDarwinOr = alternative: if stdenv.isDarwin
     then callPackage ../development/libraries/mesa-darwin {
-      inherit (darwin.apple_sdk.frameworks) OpenGL;
-      inherit (darwin.apple_sdk.libs) Xplugin;
       inherit (darwin) apple_sdk;
     }
     else alternative;
@@ -10719,9 +10542,7 @@ with pkgs;
 
   ntl = callPackage ../development/libraries/ntl { };
 
-  nspr = callPackage ../development/libraries/nspr {
-    inherit (darwin.apple_sdk.frameworks) CoreServices;
-  };
+  nspr = callPackage ../development/libraries/nspr { };
 
   nss = lowPrio (callPackage ../development/libraries/nss { });
   nssTools = nss.tools;
@@ -10758,9 +10579,7 @@ with pkgs;
 
   openal = self.openalSoft;
 
-  openalSoft = callPackage ../development/libraries/openal-soft {
-    inherit (darwin.apple_sdk.frameworks) CoreServices AudioUnit AudioToolbox;
-  };
+  openalSoft = callPackage ../development/libraries/openal-soft { };
 
   openbabel = callPackage ../development/libraries/openbabel { };
 
@@ -10789,7 +10608,6 @@ with pkgs;
 
   opencv3 = callPackage ../development/libraries/opencv/3.x.nix {
     enableCuda = config.cudaSupport or false;
-    inherit (darwin.apple_sdk.frameworks) AVFoundation Cocoa QTKit VideoDecodeAcceleration;
   };
 
   opencv3WithoutCuda = opencv3.override {
@@ -10889,10 +10707,7 @@ with pkgs;
 
   pcg_c = callPackage ../development/libraries/pcg-c { };
 
-  pcl = libsForQt5.callPackage ../development/libraries/pcl {
-    inherit (darwin) cf-private;
-    inherit (darwin.apple_sdk.frameworks) Cocoa AGL OpenGL;
-  };
+  pcl = libsForQt5.callPackage ../development/libraries/pcl { };
 
   pcre = callPackage ../development/libraries/pcre { };
   pcre16 = self.pcre.override { variant = "pcre16"; };
@@ -10966,9 +10781,7 @@ with pkgs;
 
   popt = callPackage ../development/libraries/popt { };
 
-  portaudio = callPackage ../development/libraries/portaudio {
-    inherit (darwin.apple_sdk.frameworks) AudioToolbox AudioUnit CoreAudio CoreServices Carbon;
-  };
+  portaudio = callPackage ../development/libraries/portaudio { };
 
   portaudio2014 = portaudio.overrideAttrs (oldAttrs: {
     src = fetchurl {
@@ -11037,8 +10850,6 @@ with pkgs;
     mysql = if (!stdenv.isFreeBSD) then mysql else null;
 
     inherit libGL;
-    inherit (pkgs.darwin) cf-private libobjc;
-    inherit (pkgs.darwin.apple_sdk.frameworks) ApplicationServices OpenGL Cocoa AGL;
   };
 
   qmake48Hook = makeSetupHook
@@ -11247,9 +11058,7 @@ with pkgs;
 
   qwt = callPackage ../development/libraries/qwt {};
 
-  qwt6_qt4 = callPackage ../development/libraries/qwt/6_qt4.nix {
-    inherit (darwin.apple_sdk.frameworks) AGL;
-  };
+  qwt6_qt4 = callPackage ../development/libraries/qwt/6_qt4.nix { };
 
   qxt = callPackage ../development/libraries/qxt {};
 
@@ -11345,7 +11154,6 @@ with pkgs;
     alsaSupport = stdenv.isLinux;
     x11Support = !stdenv.isCygwin;
     pulseaudioSupport = config.pulseaudio or stdenv.isLinux;
-    inherit (darwin.apple_sdk.frameworks) OpenGL CoreAudio CoreServices AudioUnit Kernel Cocoa;
   };
 
   SDL_sixel = callPackage ../development/libraries/SDL_sixel { };
@@ -11371,16 +11179,11 @@ with pkgs;
     waylandSupport = stdenv.isLinux;
     udevSupport = stdenv.isLinux;
     pulseaudioSupport = config.pulseaudio or stdenv.isLinux;
-    inherit (darwin.apple_sdk.frameworks) AudioUnit Cocoa CoreAudio CoreServices ForceFeedback OpenGL;
   };
 
-  SDL2_image = callPackage ../development/libraries/SDL2_image {
-    inherit (darwin.apple_sdk.frameworks) Foundation;
-  };
+  SDL2_image = callPackage ../development/libraries/SDL2_image { };
 
-  SDL2_mixer = callPackage ../development/libraries/SDL2_mixer {
-    inherit (darwin.apple_sdk.frameworks) CoreServices AudioUnit AudioToolbox;
-  };
+  SDL2_mixer = callPackage ../development/libraries/SDL2_mixer { };
 
   SDL2_net = callPackage ../development/libraries/SDL2_net { };
 
@@ -11737,13 +11540,7 @@ with pkgs;
 
   vsqlite = callPackage ../development/libraries/vsqlite { };
 
-  vtk = callPackage ../development/libraries/vtk {
-    inherit (darwin) cf-private libobjc;
-    inherit (darwin.apple_sdk.libs) xpc;
-    inherit (darwin.apple_sdk.frameworks) Cocoa CoreServices DiskArbitration
-                                          IOKit CFNetwork Security ApplicationServices
-                                          CoreText IOSurface ImageIO OpenGL GLUT;
-  };
+  vtk = callPackage ../development/libraries/vtk { };
 
   vulkan-loader = callPackage ../development/libraries/vulkan-loader { };
 
@@ -11754,9 +11551,7 @@ with pkgs;
     stdenv = overrideCC stdenv gcc6; # upstream code incompatible with gcc7
   };
 
-  wavpack = callPackage ../development/libraries/wavpack {
-    inherit (darwin) libiconv;
-  };
+  wavpack = callPackage ../development/libraries/wavpack { };
 
   wayland = callPackage ../development/libraries/wayland {
     graphviz = graphviz-nox;
@@ -11777,7 +11572,6 @@ with pkgs;
   webkitgtk24x-gtk3 = callPackage ../development/libraries/webkitgtk/2.4.nix {
     harfbuzz = harfbuzz-icu-58;
     gst-plugins-base = gst_all_1.gst-plugins-base;
-    inherit (darwin) libobjc;
   };
 
   webkitgtk220x = callPackage ../development/libraries/webkitgtk/2.20.nix {
@@ -11813,24 +11607,17 @@ with pkgs;
 
   wxGTK29 = callPackage ../development/libraries/wxwidgets/2.9/default.nix {
     inherit (gnome2) GConf;
-    inherit (darwin.stubs) setfile;
-    inherit (darwin.apple_sdk.frameworks) AGL Carbon Cocoa Kernel QuickTime;
     withMesa = lib.elem system lib.platforms.mesaPlatforms;
   };
 
   wxGTK30 = callPackage ../development/libraries/wxwidgets/3.0/default.nix {
     inherit (gnome2) GConf;
-    inherit (darwin.stubs) setfile;
-    inherit (darwin.apple_sdk.frameworks) AGL Carbon Cocoa Kernel QTKit;
     withMesa = lib.elem system lib.platforms.mesaPlatforms;
   };
 
   wxGTK31 = callPackage ../development/libraries/wxwidgets/3.1 {};
 
-  wxmac = callPackage ../development/libraries/wxwidgets/3.0/mac.nix {
-    inherit (darwin.apple_sdk.frameworks) AGL Cocoa Kernel;
-    inherit (darwin.stubs) setfile rez derez;
-  };
+  wxmac = callPackage ../development/libraries/wxwidgets/3.0/mac.nix { };
 
   wxSVG = callPackage ../development/libraries/wxSVG {
     wxGTK = wxGTK30;
@@ -12143,8 +11930,6 @@ with pkgs;
     };
     openblas = openblasCompat;
     withRecommendedPackages = false;
-    inherit (darwin.apple_sdk.frameworks) Cocoa Foundation;
-    inherit (darwin) cf-private libobjc;
   };
 
   rWrapper = callPackage ../development/r-modules/wrapper.nix {
@@ -12516,9 +12301,7 @@ with pkgs;
 
   # Name is changed to prevent use in packages;
   # please use libpulseaudio instead.
-  pulseaudioLight = callPackage ../servers/pulseaudio {
-    inherit (darwin.apple_sdk.frameworks) CoreServices AudioUnit Cocoa;
-  };
+  pulseaudioLight = callPackage ../servers/pulseaudio { };
 
   pulseaudioFull = callPackage ../servers/pulseaudio {
     gconf = gnome3.gconf;
@@ -12529,14 +12312,12 @@ with pkgs;
     bluetoothSupport = true;
     remoteControlSupport = true;
     zeroconfSupport = true;
-    inherit (darwin.apple_sdk.frameworks) CoreServices AudioUnit Cocoa;
   };
 
   # libpulse implementations
 
   libpulseaudio-vanilla = callPackage ../servers/pulseaudio {
     libOnly = true;
-    inherit (darwin.apple_sdk.frameworks) CoreServices AudioUnit Cocoa;
   };
 
   apulse = callPackage ../misc/apulse { };
@@ -12557,15 +12338,11 @@ with pkgs;
 
   rpcbind = callPackage ../servers/rpcbind { };
 
-  mariadb = callPackage ../servers/sql/mariadb {
-    inherit (darwin) cctools;
-    inherit (pkgs.darwin.apple_sdk.frameworks) CoreServices;
-  };
+  mariadb = callPackage ../servers/sql/mariadb { };
 
   mongodb = callPackage ../servers/nosql/mongodb {
     sasl = cyrus_sasl;
     boost = boost160;
-    inherit (darwin.apple_sdk.frameworks) Security;
   };
 
   percona-server56 = callPackage ../servers/sql/percona/5.6.x.nix { };
@@ -12576,25 +12353,19 @@ with pkgs;
   };
 
   riak-cs = callPackage ../servers/nosql/riak-cs/2.1.1.nix {
-    inherit (darwin.apple_sdk.frameworks) Carbon Cocoa;
     erlang = erlang_basho_R16B02;
   };
 
   stanchion = callPackage ../servers/nosql/riak-cs/stanchion.nix {
-    inherit (darwin.apple_sdk.frameworks) Carbon Cocoa;
     erlang = erlang_basho_R16B02;
   };
 
   influxdb = callPackage ../servers/nosql/influxdb { };
 
-  mysql55 = callPackage ../servers/sql/mysql/5.5.x.nix {
-    inherit (darwin) cctools;
-    inherit (darwin.apple_sdk.frameworks) CoreServices;
-  };
+  mysql55 = callPackage ../servers/sql/mysql/5.5.x.nix { };
 
   mysql57 = callPackage ../servers/sql/mysql/5.7.x.nix {
-    inherit (darwin) cctools developer_cmds;
-    inherit (darwin.apple_sdk.frameworks) CoreServices;
+    inherit (darwin) developer_cmds;
     boost = boost159;
   };
 
@@ -12721,9 +12492,7 @@ with pkgs;
 
   quagga = callPackage ../servers/quagga { };
 
-  rabbitmq_server = callPackage ../servers/amqp/rabbitmq-server {
-    inherit (darwin.apple_sdk.frameworks) AppKit Carbon Cocoa;
-  };
+  rabbitmq_server = callPackage ../servers/amqp/rabbitmq-server { };
 
   radicale1 = callPackage ../servers/radicale/1.x.nix { };
   radicale2 = callPackage ../servers/radicale/default.nix { };
@@ -12896,8 +12665,6 @@ with pkgs;
   xquartz = callPackage ../servers/x11/xquartz { };
   quartz-wm = callPackage ../servers/x11/quartz-wm {
     stdenv = clangStdenv;
-    inherit (darwin.apple_sdk.frameworks) AppKit;
-    inherit (darwin.apple_sdk.libs) Xplugin;
   };
 
   xorg = recurseIntoAttrs (lib.callPackagesWith pkgs ../servers/x11/xorg/default.nix {
@@ -12907,7 +12674,7 @@ with pkgs;
       autoconf automake libtool mtdev pixman
       cairo epoxy;
     inherit (buildPackages) pkgconfig xmlto asciidoc flex bison;
-    inherit (darwin) apple_sdk cf-private libobjc;
+    inherit (darwin) apple_sdk;
     bootstrap_cmds = if stdenv.isDarwin then darwin.bootstrap_cmds else null;
     mesa = libGL;
     python = python2; # Incompatible with Python 3x
@@ -13175,9 +12942,7 @@ with pkgs;
 
   hostapd = callPackage ../os-specific/linux/hostapd { };
 
-  htop = callPackage ../tools/system/htop {
-    inherit (darwin) IOKit;
-  };
+  htop = callPackage ../tools/system/htop { };
 
   # GNU/Hurd core packages.
   gnu = recurseIntoAttrs (callPackage ../os-specific/gnu {
@@ -14962,16 +14727,11 @@ with pkgs;
 
   cbc = callPackage ../applications/science/math/cbc { };
 
-  cddiscid = callPackage ../applications/audio/cd-discid {
-    inherit (darwin) IOKit;
-  };
+  cddiscid = callPackage ../applications/audio/cd-discid { };
 
   cdparanoia = cdparanoiaIII;
 
-  cdparanoiaIII = callPackage ../applications/audio/cdparanoia {
-    inherit (darwin) IOKit;
-    inherit (darwin.apple_sdk.frameworks) Carbon;
-  };
+  cdparanoiaIII = callPackage ../applications/audio/cdparanoia { };
 
   cdrtools = callPackage ../applications/misc/cdrtools { };
 
@@ -15030,7 +14790,6 @@ with pkgs;
   cmatrix = callPackage ../applications/misc/cmatrix { };
 
   cmus = callPackage ../applications/audio/cmus {
-    inherit (darwin.apple_sdk.frameworks) CoreAudio;
     libjack = libjack2;
     ffmpeg = ffmpeg_2;
 
@@ -15181,9 +14940,7 @@ with pkgs;
 
   docker-machine = callPackage ../applications/networking/cluster/docker-machine { };
   docker-machine-kvm = callPackage ../applications/networking/cluster/docker-machine/kvm.nix { };
-  docker-machine-xhyve = callPackage ../applications/networking/cluster/docker-machine/xhyve.nix {
-    inherit (darwin.apple_sdk.frameworks) Hypervisor vmnet;
-  };
+  docker-machine-xhyve = callPackage ../applications/networking/cluster/docker-machine/xhyve.nix { };
 
   docker-distribution = callPackage ../applications/virtualization/docker-distribution { };
 
@@ -15274,7 +15031,6 @@ with pkgs;
     imagemagick = null;
     acl = null;
     gpm = null;
-    inherit (darwin.apple_sdk.frameworks) AppKit CoreWLAN GSS Kerberos ImageIO;
   };
 
   emacs25-nox = lowPrio (appendToName "nox" (emacs25.override {
@@ -15284,11 +15040,7 @@ with pkgs;
   }));
 
   emacsMacport = emacs25Macport;
-  emacs25Macport = callPackage ../applications/editors/emacs/macport.nix {
-    inherit (darwin.apple_sdk.frameworks)
-      AppKit Carbon Cocoa IOKit OSAKit Quartz QuartzCore WebKit
-      ImageCaptureCore GSS ImageIO;
-  };
+  emacs25Macport = callPackage ../applications/editors/emacs/macport.nix { };
 
   # for backwards compatibility
   emacs25Macport_25_1 = emacs25Macport;
@@ -15551,9 +15303,7 @@ with pkgs;
   flink_1_3 = callPackage ../applications/networking/cluster/flink { version = "1.3"; };
   flink_1_4 = callPackage ../applications/networking/cluster/flink { version = "1.4"; };
 
-  fluidsynth = callPackage ../applications/audio/fluidsynth {
-     inherit (darwin.apple_sdk.frameworks) AudioUnit CoreAudio CoreMIDI CoreServices;
-  };
+  fluidsynth = callPackage ../applications/audio/fluidsynth { };
 
   fmit = libsForQt5.callPackage ../applications/audio/fmit { };
 
@@ -15592,7 +15342,6 @@ with pkgs;
 
   gnuradio = callPackage ../applications/misc/gnuradio {
     inherit (python2Packages) cheetah lxml matplotlib numpy python pyopengl pyqt4 scipy wxPython pygtk;
-    inherit (darwin.apple_sdk.frameworks) CoreAudio;
     fftw = fftwFloat;
     qwt = qwt6_qt4;
   };
@@ -15679,7 +15428,6 @@ with pkgs;
   wireshark-cli = callPackage ../applications/networking/sniffers/wireshark {
     withQt = false;
     withGtk = false;
-    inherit (darwin.apple_sdk.frameworks) ApplicationServices SystemConfiguration;
   };
 
   # the cli binary is actually called tshark and often packaged under this name
@@ -15834,7 +15582,6 @@ with pkgs;
   gimp_2_8 = callPackage ../applications/graphics/gimp/2.8.nix {
     webkit = null;
     lcms = lcms2;
-    inherit (darwin.apple_sdk.frameworks) AppKit Cocoa;
   };
 
   gimp = gimp_2_8;
@@ -15941,9 +15688,7 @@ with pkgs;
 
   svox = callPackage ../applications/audio/svox { };
 
-  gkrellm = callPackage ../applications/misc/gkrellm {
-    inherit (darwin) IOKit;
-  };
+  gkrellm = callPackage ../applications/misc/gkrellm { };
 
   gmtk = callPackage ../development/libraries/gmtk { };
 
@@ -16016,9 +15761,7 @@ with pkgs;
 
   gosmore = callPackage ../applications/misc/gosmore { };
 
-  gpsbabel = libsForQt56.callPackage ../applications/misc/gpsbabel {
-    inherit (darwin) IOKit;
-  };
+  gpsbabel = libsForQt56.callPackage ../applications/misc/gpsbabel { };
 
   gpscorrelate = callPackage ../applications/misc/gpscorrelate { };
 
@@ -16043,10 +15786,7 @@ with pkgs;
 
   gv = callPackage ../applications/misc/gv { };
 
-  gutenberg = callPackage ../applications/misc/gutenberg {
-    inherit (darwin.apple_sdk.frameworks) CoreServices;
-    inherit (darwin) cf-private;
-  };
+  gutenberg = callPackage ../applications/misc/gutenberg { };
 
   guvcview = callPackage ../os-specific/linux/guvcview {
     pulseaudioSupport = config.pulseaudio or true;
@@ -16215,9 +15955,7 @@ with pkgs;
     ghostscript = null;
   };
 
-  imagemagickBig = callPackage ../applications/graphics/ImageMagick {
-    inherit (darwin.apple_sdk.frameworks) ApplicationServices;
-  };
+  imagemagickBig = callPackage ../applications/graphics/ImageMagick { };
 
   imagemagick7_light = lowPrio (imagemagick7.override {
     bzip2 = null;
@@ -16243,9 +15981,7 @@ with pkgs;
     ghostscript = null;
   });
 
-  imagemagick7Big = lowPrio (callPackage ../applications/graphics/ImageMagick/7.0.nix {
-    inherit (darwin.apple_sdk.frameworks) ApplicationServices;
-  });
+  imagemagick7Big = lowPrio (callPackage ../applications/graphics/ImageMagick/7.0.nix { });
 
   # Impressive, formerly known as "KeyJNote".
   impressive = callPackage ../applications/office/impressive { };
@@ -16640,8 +16376,6 @@ with pkgs;
   };
 
   mercurial = callPackage ../applications/version-management/mercurial {
-    inherit (darwin.apple_sdk.frameworks) ApplicationServices;
-    inherit (darwin) cf-private;
     guiSupport = false; # use mercurialFull to get hgk GUI
   };
 
@@ -16668,9 +16402,7 @@ with pkgs;
 
   minidjvu = callPackage ../applications/graphics/minidjvu { };
 
-  minikube = callPackage ../applications/networking/cluster/minikube {
-    inherit (darwin.apple_sdk.frameworks) vmnet;
-  };
+  minikube = callPackage ../applications/networking/cluster/minikube { };
 
   minitube = callPackage ../applications/video/minitube { };
 
@@ -16700,9 +16432,7 @@ with pkgs;
 
   mod-distortion = callPackage ../applications/audio/mod-distortion { };
 
-  monero = callPackage ../applications/altcoins/monero {
-    inherit (darwin.apple_sdk.frameworks) IOKit;
-  };
+  monero = callPackage ../applications/altcoins/monero { };
 
   monero-gui = libsForQt5.callPackage ../applications/altcoins/monero-gui { };
 
@@ -16961,13 +16691,9 @@ with pkgs;
 
   sxhkd-unstable = callPackage ../applications/window-managers/sxhkd/unstable.nix { };
 
-  mpop = callPackage ../applications/networking/mpop {
-    inherit (darwin.apple_sdk.frameworks) Security;
-  };
+  mpop = callPackage ../applications/networking/mpop { };
 
-  msmtp = callPackage ../applications/networking/msmtp {
-    inherit (darwin.apple_sdk.frameworks) Security;
-  };
+  msmtp = callPackage ../applications/networking/msmtp { };
 
   imapfilter = callPackage ../applications/networking/mailreaders/imapfilter.nix {
     lua = lua5;
@@ -17319,10 +17045,7 @@ with pkgs;
 
   qdirstat = libsForQt5.callPackage ../applications/misc/qdirstat {};
 
-  qemu = callPackage ../applications/virtualization/qemu {
-    inherit (darwin.apple_sdk.frameworks) CoreServices Cocoa;
-    inherit (darwin.stubs) rez setfile;
-  };
+  qemu = callPackage ../applications/virtualization/qemu { };
 
   qemu-riscv = callPackage ../applications/virtualization/qemu/riscv.nix {};
 
@@ -17351,7 +17074,6 @@ with pkgs;
   qsampler = libsForQt5.callPackage ../applications/audio/qsampler { };
 
   qscreenshot = callPackage ../applications/graphics/qscreenshot {
-    inherit (darwin.apple_sdk.frameworks) Carbon;
     qt = qt4;
   };
 
@@ -18081,9 +17803,7 @@ with pkgs;
     inherit (gnome2) libgnomeui;
   };
 
-  vim = callPackage ../applications/editors/vim {
-    inherit (darwin.apple_sdk.frameworks) Carbon Cocoa;
-  };
+  vim = callPackage ../applications/editors/vim { };
 
   vimiv = callPackage ../applications/graphics/vimiv {
     inherit (gnome3) defaultIconTheme;
@@ -18094,9 +17814,6 @@ with pkgs;
   vimHugeX = vim_configurable;
 
   vim_configurable = vimUtils.makeCustomizable (callPackage ../applications/editors/vim/configurable.nix {
-    inherit (darwin.apple_sdk.frameworks) CoreServices Cocoa Foundation CoreData;
-    inherit (darwin) libobjc cf-private;
-
     features = "huge"; # one of  tiny, small, normal, big or huge
     lua = pkgs.lua5_1;
     gui = config.vim.gui or "auto";
@@ -18284,8 +18001,6 @@ with pkgs;
   webtorrent_desktop = callPackage ../applications/video/webtorrent_desktop {};
 
   weechat = callPackage ../applications/networking/irc/weechat {
-    inherit (darwin) libobjc;
-    inherit (darwin) libresolv;
     guile = guile_2_0;
   };
 
@@ -18707,9 +18422,7 @@ with pkgs;
     useMupdf = config.zathura.useMupdf or true;
   };
 
-  zeroc_ice = callPackage ../development/libraries/zeroc-ice {
-    inherit (darwin.apple_sdk.frameworks) Security;
-  };
+  zeroc_ice = callPackage ../development/libraries/zeroc-ice { };
 
   zexy = callPackage ../applications/audio/pd-plugins/zexy  { };
 
@@ -18810,13 +18523,10 @@ with pkgs;
   bzflag = callPackage ../games/bzflag { };
 
   cataclysm-dda = callPackage ../games/cataclysm-dda {
-    inherit (darwin.apple_sdk.frameworks) Cocoa;
     ncurses = ncurses5;
   };
 
-  cataclysm-dda-git = callPackage ../games/cataclysm-dda/git.nix {
-    inherit (darwin.apple_sdk.frameworks) CoreFoundation Cocoa;
-  };
+  cataclysm-dda-git = callPackage ../games/cataclysm-dda/git.nix { };
 
   chessdb = callPackage ../games/chessdb { };
 
@@ -19374,9 +19084,7 @@ with pkgs;
 
   vapor = callPackage ../games/vapor { love = love_0_8; };
 
-  vapoursynth = callPackage ../development/libraries/vapoursynth {
-    inherit (darwin.apple_sdk.frameworks) ApplicationServices;
-  };
+  vapoursynth = callPackage ../development/libraries/vapoursynth { };
 
   vapoursynth-mvtools = callPackage ../development/libraries/vapoursynth-mvtools { };
 
@@ -20169,9 +19877,7 @@ with pkgs;
 
   megam = callPackage ../applications/science/misc/megam { };
 
-  root = callPackage ../applications/science/misc/root {
-    inherit (darwin.apple_sdk.frameworks) Cocoa OpenGL;
-  };
+  root = callPackage ../applications/science/misc/root { };
 
   simgrid = callPackage ../applications/science/misc/simgrid { };
 
@@ -20453,7 +20159,6 @@ with pkgs;
 
   jack2Full = callPackage ../misc/jackaudio {
     libopus = libopus.override { withCustomModes = true; };
-    inherit (darwin.apple_sdk.frameworks) AudioToolbox CoreAudio CoreFoundation;
   };
   libjack2 = jack2Full.override { prefix = "lib"; };
 
@@ -20630,10 +20335,7 @@ with pkgs;
 
   redprl = callPackage ../applications/science/logic/redprl { };
 
-  retroarchBare = callPackage ../misc/emulators/retroarch {
-    inherit (darwin) libobjc;
-    inherit (darwin.apple_sdk.frameworks) AppKit Foundation;
-  };
+  retroarchBare = callPackage ../misc/emulators/retroarch { };
 
   retroarch = wrapRetroArch { retroarch = retroarchBare; };
 
@@ -20832,7 +20534,6 @@ with pkgs;
   vimUtils = callPackage ../misc/vim-plugins/vim-utils.nix { };
 
   vimPlugins = recurseIntoAttrs (callPackage ../misc/vim-plugins {
-    inherit (darwin.apple_sdk.frameworks) Cocoa;
     llvmPackages = llvmPackages_39;
   });
 
@@ -20947,11 +20648,7 @@ with pkgs;
 
   xcftools = callPackage ../tools/graphics/xcftools { };
 
-  xhyve = callPackage ../applications/virtualization/xhyve {
-    inherit (darwin.apple_sdk.frameworks) Hypervisor vmnet;
-    inherit (darwin.apple_sdk.libs) xpc;
-    inherit (darwin) libobjc;
-  };
+  xhyve = callPackage ../applications/virtualization/xhyve { };
 
   xinput_calibrator = callPackage ../tools/X11/xinput_calibrator { };
 
@@ -21100,7 +20797,7 @@ with pkgs;
 
   check-uptime = callPackage ../servers/monitoring/plugins/uptime.nix { };
 
-  ghc-standalone-archive = callPackage ../os-specific/darwin/ghc-standalone-archive { inherit (darwin) cctools; };
+  ghc-standalone-archive = callPackage ../os-specific/darwin/ghc-standalone-archive { };
 
   chrome-gnome-shell = callPackage  ../desktops/gnome-3/extensions/chrome-gnome-shell {};
   messenger-for-desktop = callPackage ../applications/networking/instant-messengers/messenger-for-desktop {};
@@ -21147,9 +20844,7 @@ with pkgs;
 
   duti = callPackage ../os-specific/darwin/duti {};
 
-  dnstracer = callPackage ../tools/networking/dnstracer {
-    inherit (darwin) libresolv;
-  };
+  dnstracer = callPackage ../tools/networking/dnstracer { };
 
   wal-g = callPackage ../tools/backup/wal-g {};
 
