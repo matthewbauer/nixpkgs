@@ -13047,6 +13047,18 @@ with pkgs;
   # not `callPackages` so the per-package callPackages don't have their
   # `.override` clobbered. C.F. `llvmPackages` which does the same.
   darwin = callPackage ./darwin-packages.nix { };
+  inherit (darwin)
+    IOKit cf-private libobjc libresolv cctools locale Security CF configd xnu;
+  inherit (darwin.apple_sdk.frameworks)
+    CoreServices Carbon Cocoa Foundation CoreData ApplicationServices AppKit
+    vmnet CoreBluetooth ForceFeedback OpenGL DiskArbitration
+    CFNetwork IOSurface ImageIO GLUT CoreAudio CoreWLAN
+    GSS Kerberos Kernel AddressBook
+    OSAKit Quartz QuartzCore WebKit
+    ImageCaptureCore AudioUnit CoreMIDI
+    SystemConfiguration CoreFoundation JavaScriptCore AGL;
+  inherit (darwin.apple_sdk.libs) xpc Hypervisor utmp Xplugin;
+  inherit (darwin.stubs) rez derez setfile;
 
   devicemapper = lvm2;
 
