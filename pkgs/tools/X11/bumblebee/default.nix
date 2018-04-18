@@ -17,7 +17,7 @@
 # To use at startup, see hardware.bumblebee options.
 
 { stdenv, lib, fetchurl, fetchpatch, pkgconfig, help2man, makeWrapper
-, glib, libbsd
+, glib
 , libX11, libXext, xorgserver, xkbcomp, kmod, xf86videonouveau
 , nvidia_x11, virtualgl, libglvnd, primusLib
 , automake111x, autoconf
@@ -107,7 +107,7 @@ in stdenv.mkDerivation rec {
 
   # Build-time dependencies of bumblebeed and optirun.
   # Note that it has several runtime dependencies.
-  buildInputs = [ libX11 glib libbsd kmod ];
+  buildInputs = [ libX11 glib kmod ];
   nativeBuildInputs = [ makeWrapper pkgconfig help2man automake111x autoconf ];
 
   # The order of LDPATH is very specific: First X11 then the host
@@ -121,6 +121,7 @@ in stdenv.mkDerivation rec {
     "--with-udev-rules=$out/lib/udev/rules.d"
     # see #10282
     #"CONF_PRIMUS_LD_PATH=${primusLibs}"
+    "--without-pidfile"
   ] ++ lib.optionals useNvidia [
     "CONF_LDPATH_NVIDIA=${nvidiaLibs}"
     "CONF_MODPATH_NVIDIA=${nvidia_x11.bin}/lib/xorg/modules"
