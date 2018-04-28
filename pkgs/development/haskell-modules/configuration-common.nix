@@ -346,6 +346,7 @@ self: super: {
   influxdb = dontCheck super.influxdb;
   itanium-abi = dontCheck super.itanium-abi;
   katt = dontCheck super.katt;
+  language-nix = dontCheck super.language-nix;          # Tests crash on 32-bit linux; see https://github.com/peti/language-nix/issues/4
   language-slice = dontCheck super.language-slice;
   language-nix = overrideCabal super.language-nix (drv: { broken = pkgs.stdenv.isLinux && pkgs.stdenv.isi686; }); # Tests crash on 32-bit linux; see https://github.com/peti/language-nix/issues/4
   ldap-client = dontCheck super.ldap-client;
