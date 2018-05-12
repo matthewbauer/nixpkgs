@@ -302,5 +302,6 @@ stdenv.mkDerivation {
     mkdir -p $out/Developer/SDKs/
     cd $out/Developer/SDKs/
     cp -r ${sdk} ${sdk.name}
+    ln -s $out/Developer/SDKs/${sdk.name} $out/Developer/SDKs/MacOSX10.6.sdk
   '';
 }

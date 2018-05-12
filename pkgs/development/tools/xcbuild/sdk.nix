@@ -1,4 +1,4 @@
-{ stdenv, writeText, toolchainName, sdkName, xcbuild }:
+{ stdenv, writeText, toolchainName, toolchain, sdkName, xcbuild }:
 
 let
   # TODO: expose MACOSX_DEPLOYMENT_TARGET in nix so we can use it here.
@@ -31,5 +31,8 @@ stdenv.mkDerivation {
 
     mkdir -p $out/System/Library/CoreServices/
     plutil -convert xml1 -o $out/System/Library/CoreServices/SystemVersion.plist ${writeText "SystemVersion.plist" (builtins.toJSON SystemVersion)}
+
+    mkdir -p $out/Toolchains
+    ln -s ${toolchain} $out/Toolchains/XcodeDefault.xctoolchain
   '';
 }

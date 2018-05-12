@@ -1,5 +1,5 @@
 { stdenv, callPackage, makeWrapper, writeText, CoreServices, ImageIO, CoreGraphics
-, cctools, bootstrap_cmds, binutils}:
+, bootstrap_cmds }:
 
 let
 
@@ -12,11 +12,11 @@ let
   };
 
   toolchain = callPackage ./toolchain.nix {
-    inherit cctools bootstrap_cmds toolchainName xcbuild binutils stdenv;
+    inherit bootstrap_cmds toolchainName xcbuild stdenv;
   };
 
   sdk = callPackage ./sdk.nix {
-    inherit toolchainName sdkName xcbuild;
+    inherit toolchainName sdkName xcbuild toolchain;
   };
 
   platform = callPackage ./platform.nix {
@@ -57,6 +57,10 @@ stdenv.mkDerivation {
 
     mkdir -p $out/Toolchains/
     ln -s ${toolchain} $out/Toolchains/nixpkgs.xctoolchain
+    ln -s $out/Toolchains/nixpkgs.xctoolchain \
+          $out/Toolchains/XcodeDefault.xctoolchain
+
+    ln -s $out $out/Developer
 
     wrapProgram $out/bin/xcodebuild \
       --add-flags "-xcconfig ${xcconfig}" \
@@ -75,6 +79,7 @@ stdenv.mkDerivation {
 
   passthru = {
     raw = xcbuild;
+    inherit sdk;
   };
 
   preferLocalBuild = true;
