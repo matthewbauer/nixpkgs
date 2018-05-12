@@ -18350,7 +18350,8 @@ with pkgs;
   virtinst = callPackage ../applications/virtualization/virtinst {};
 
   virtualbox = callPackage ../applications/virtualization/virtualbox {
-    stdenv = stdenv_32bit;
+    stdenv = if stdenv.isLinux then stdenv_32bit
+             else gccStdenv;
     inherit (gnome2) libIDL;
     enableExtensionPack = config.virtualbox.enableExtensionPack or false;
     pulseSupport = config.pulseaudio or true;

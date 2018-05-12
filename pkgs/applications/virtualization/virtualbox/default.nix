@@ -2,7 +2,7 @@
 , libXcursor, libXmu, qt5, libIDL, SDL, libcap, zlib, libpng, glib, lvm2
 , libXrandr, libXinerama
 , pkgconfig, which, docbook_xsl, docbook_xml_dtd_43
-, alsaLib, curl, libvpx, gawk, nettools, dbus
+, curl, libvpx, gawk, nettools, dbus
 , xorriso, makeself, perl
 , javaBindings ? false, jdk ? null
 , pythonBindings ? false, python2 ? null
@@ -12,6 +12,8 @@
 , headless ? false
 , enable32bitGuests ? true
 , patchelfUnstable # needed until 0.10 is released
+, alsaSupport ? stdenv.isLinux, alsaLib
+, xcbuild
 }:
 
 with stdenv.lib;
@@ -56,9 +58,11 @@ in stdenv.mkDerivation {
   nativeBuildInputs = [ pkgconfig which docbook_xsl docbook_xml_dtd_43 ];
 
   buildInputs =
-    [ iasl dev86 libxslt libxml2 xproto libX11 libXext libXcursor libIDL
-      libcap glib lvm2 alsaLib curl libvpx pam xorriso makeself perl
-      libXmu libpng patchelfUnstable python ]
+    [ libxslt libxml2 xproto libX11 libXext libXcursor libIDL
+      glib curl libvpx pam xorriso makeself perl
+      libXmu libpng python ]
+    ++ optional stdenv.isLinux [ iasl dev86 libcap lvm2 patchelfUnstable ]
+    ++ optional alsaSupport alsaLib
     ++ optional javaBindings jdk
     ++ optional pythonBindings python # Python is needed even when not building bindings
     ++ optional pulseSupport libpulseaudio
@@ -69,6 +73,8 @@ in stdenv.mkDerivation {
 
   prePatch = ''
     set -x
+  '' + optionalString stdenv.isLinux ''
+
     sed -e 's@MKISOFS --version@MKISOFS -version@' \
         -e 's@PYTHONDIR=.*@PYTHONDIR=${if pythonBindings then python else ""}@' \
         -e 's@CXX_FLAGS="\(.*\)"@CXX_FLAGS="-std=c++11 \1"@' \
@@ -88,6 +94,7 @@ in stdenv.mkDerivation {
     grep 'libasound\.so\.2'     src include -rI --files-with-match | xargs sed -i -e '
       s@"libasound\.so\.2"@"${alsaLib.out}/lib/libasound.so.2"@g'
 
+  '' + ''
     export USER=nix
     set +x
   '';
@@ -102,9 +109,10 @@ in stdenv.mkDerivation {
   '';
 
   # first line: ugly hack, and it isn't yet clear why it's a problem
-  configurePhase = ''
+  preConfigure = lib.optionalString stdenv.isLinux ''
     NIX_CFLAGS_COMPILE=$(echo "$NIX_CFLAGS_COMPILE" | sed 's,\-isystem ${lib.getDev stdenv.cc.libc}/include,,g')
 
+  '' + ''
     cat >> LocalConfig.kmk <<LOCAL_CONFIG
     VBOX_WITH_TESTCASES            :=
     VBOX_WITH_TESTSUITE            :=
@@ -128,30 +136,48 @@ in stdenv.mkDerivation {
     TOOL_QT5_LRC                   := ${getDev qt5.qttools}/bin/lrelease
     ''}
     LOCAL_CONFIG
+  '';
 
-    ./configure \
-      ${optionalString headless "--build-headless"} \
-      ${optionalString (!javaBindings) "--disable-java"} \
-      ${optionalString (!pythonBindings) "--disable-python"} \
-      ${optionalString (!pulseSupport) "--disable-pulse"} \
-      ${optionalString (!enableHardening) "--disable-hardening"} \
-      ${optionalString (!enable32bitGuests) "--disable-vmmraw"} \
-      --disable-kmods --with-mkisofs=${xorriso}/bin/xorrisofs
+  dontAddPrefix = true;
+  setOutputFlags = false;
+  configureFlags = []
+    ++ optional headless "--build-headless"
+    ++ optional (!javaBindings) "--disable-java"
+    ++ optional (!pythonBindings) "--disable-python"
+    ++ optional (!pulseSupport) "--disable-pulse"
+    ++ optional (!enableHardening) "--disable-hardening"
+    ++ optional (!enable32bitGuests) "--disable-vmmraw"
+    ++ [
+      "--disable-kmods"
+      "--with-mkisofs=${xorriso}/bin/xorrisofs"
+    ] ++ optional stdenv.isDarwin "--with-xcode-dir=${xcbuild}";
+
+  postConfigure = ''
     sed -e 's@PKG_CONFIG_PATH=.*@PKG_CONFIG_PATH=${libIDL}/lib/pkgconfig:${glib.dev}/lib/pkgconfig ${libIDL}/bin/libIDL-config-2@' \
         -i AutoConfig.kmk
     sed -e 's@arch/x86/@@' \
         -i Config.kmk
     substituteInPlace Config.kmk --replace "VBOX_WITH_TESTCASES = 1" "#"
+  '' + lib.optionalString stdenv.isDarwin ''
+    sed -i -e '1iVBOX_XCODE_VERSION := 9.1' \
+           -e '1iPATH_TOOL_VBoxXcode62 := ${xcbuild.sdk}' \
+        AutoConfig.kmk
   '';
 
   enableParallelBuilding = true;
 
   buildPhase = ''
+    runHook preBuild
+
     source env.sh
     kmk -j $NIX_BUILD_CORES BUILD_TYPE="${buildType}"
+
+    runHook postBuild
   '';
 
   installPhase = ''
+    runHook preInstall
+
     libexec="$out/libexec/virtualbox"
     share="${if enableHardening then "$out/share/virtualbox" else "$libexec"}"
 
@@ -193,6 +219,8 @@ in stdenv.mkDerivation {
     ''}
 
     cp -rv out/linux.*/${buildType}/bin/src "$modsrc"
+
+    runHook postInstall
   '';
 
   passthru = {
@@ -205,6 +233,6 @@ in stdenv.mkDerivation {
     license = licenses.gpl2;
     homepage = https://www.virtualbox.org/;
     maintainers = with maintainers; [ flokli sander ];
-    platforms = [ "x86_64-linux" "i686-linux" ];
+    platforms = platforms.all;
   };
 }
