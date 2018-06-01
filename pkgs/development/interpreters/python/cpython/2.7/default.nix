@@ -1,4 +1,4 @@
-{ stdenv, hostPlatform, buildPlatform, buildPackages, fetchurl
+{ stdenv, hostPlatform, buildPlatform, targetPlatform, buildPackages, fetchurl
 , bzip2
 , gdbm
 , fetchpatch
@@ -148,13 +148,12 @@ let
   '' else null;
 
   buildInputs =
-    optional (stdenv ? cc && stdenv.cc.libc != null) stdenv.cc.libc ++
     [ bzip2 openssl zlib ]
     ++ optional (hostPlatform.isCygwin || hostPlatform.isAarch64) libffi
     ++ optional hostPlatform.isCygwin expat
     ++ [ db gdbm ncurses sqlite readline ]
     ++ optionals x11Support [ tcl tk xlibsWrapper libX11 ]
-    ++ optionals stdenv.isDarwin ([ CF ] ++ optional (configd != null) configd);
+    ++ optionals targetPlatform.isDarwin ([ CF ] ++ optional (configd != null) configd);
   nativeBuildInputs =
     optionals (hostPlatform != buildPlatform)
     [ buildPackages.stdenv.cc buildPackages.python ];
