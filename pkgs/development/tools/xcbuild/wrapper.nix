@@ -1,5 +1,7 @@
-{ stdenv, callPackage, makeWrapper, writeText, CoreServices, ImageIO, CoreGraphics
-, cctools, bootstrap_cmds, binutils}:
+{ stdenv, runCommand, callPackage, makeWrapper, writeText
+, CoreServices, ImageIO, CoreGraphics
+, cctools, bootstrap_cmds, binutils
+, buildPackages }:
 
 let
 
@@ -12,7 +14,9 @@ let
   };
 
   toolchain = callPackage ./toolchain.nix {
-    inherit cctools bootstrap_cmds toolchainName xcbuild binutils stdenv;
+    inherit bootstrap_cmds toolchainName xcbuild runCommand;
+    inherit (buildPackages.darwin) cctools;
+    inherit (buildPackages) stdenv binutils;
   };
 
   sdk = callPackage ./sdk.nix {
@@ -29,16 +33,19 @@ let
 
 in
 
-stdenv.mkDerivation {
-  name = "xcbuild-wrapper-${xcbuild.version}";
-
+runCommand "xcbuild-wrapper-${xcbuild.version}" {
   buildInputs = [ xcbuild makeWrapper ];
 
   setupHook = ./setup-hook.sh;
 
-  phases = [ "installPhase" "fixupPhase" ];
+  inherit (xcbuild) meta;
 
-  installPhase = ''
+  passthru = {
+    raw = xcbuild;
+  };
+
+  preferLocalBuild = true;
+} ''
     mkdir -p $out/bin
     cd $out/bin/
 
@@ -69,13 +76,4 @@ stdenv.mkDerivation {
     wrapProgram $out/bin/xcode-select \
       --set DEVELOPER_DIR "$out" \
       --set SDKROOT ${sdkName}
-  '';
-
-  inherit (xcbuild) meta;
-
-  passthru = {
-    raw = xcbuild;
-  };
-
-  preferLocalBuild = true;
-}
+''

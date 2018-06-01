@@ -1,4 +1,4 @@
-{stdenv, writeText, toolchainName, xcbuild, fetchurl
+{ runCommand, stdenv, writeText, toolchainName, xcbuild, fetchurl
 , llvm, cctools, gcc, bootstrap_cmds, binutils
 , yacc, flex, m4, unifdef, gperf, indent, ctags, makeWrapper
 , xib2nib}:
@@ -18,13 +18,11 @@ let
   };
 in
 
-stdenv.mkDerivation {
-  name = "nixpkgs.xctoolchain";
+runCommand "nixpkgs.xctoolchain" {
   buildInputs = [ xcbuild makeWrapper ];
-
+}
   ## cctools should build on Linux but it doesn't currently
-
-  buildCommand = ''
+''
     mkdir -p $out
     plutil -convert xml1 -o $out/ToolchainInfo.plist ${writeText "ToolchainInfo.plist" (builtins.toJSON ToolchainInfo)}
 
@@ -100,8 +98,7 @@ stdenv.mkDerivation {
     '' else ''
       ln -s ${gcc}/bin/gcov
       ln -s ${gcc}/bin/mkdep
-    '');
-}
+    '')
 
 # other commands in /bin/
 #   asa
