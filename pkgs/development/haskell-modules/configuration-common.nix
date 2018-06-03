@@ -1045,12 +1045,6 @@ self: super: {
   # Work around overspecified constraint on github ==0.18.
   github-backup = doJailbreak super.github-backup;
 
-  # Work around large number of repeated arguments
-  # https://github.com/NixOS/nixpkgs/issues/40013
-  taffybar = super.taffybar.overrideDerivation (drv: {
-    strictDeps = true;
-  });
-
   # dhall-json requires a very particular dhall version
   dhall-json_1_2_0 = super.dhall-json_1_2_0.override { dhall = self.dhall_1_14_0; };
 
