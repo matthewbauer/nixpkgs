@@ -89,6 +89,8 @@ stdenv.mkDerivation ({
         less linux-*?/arch/x86/kernel/syscall_table_32.S
        */
       ./allow-kernel-2.6.32.patch
+
+      ./case-insensitive.patch
     ]
     ++ lib.optional stdenv.isx86_64 ./fix-x64-abi.patch
     ++ lib.optional stdenv.hostPlatform.isMusl ./fix-rpc-types-musl-conflicts.patch;

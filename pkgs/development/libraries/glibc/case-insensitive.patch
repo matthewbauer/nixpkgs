@@ -1,0 +1,200 @@
+diff --git a/Makeconfig b/Makeconfig
+index 86a71e5802..4981141831 100644
+--- a/Makeconfig
++++ b/Makeconfig
+@@ -553,7 +553,7 @@ link-libc-tests-rpath-link = $(link-libc-rpath-link)
+ endif  # build-hardcoded-path-in-tests
+ 
+ link-libc-before-gnulib = $(common-objpfx)libc.so$(libc.so-version) \
+-			  $(common-objpfx)$(patsubst %,$(libtype.oS),c) \
++			  $(common-objpfx)$(patsubst %,$(libtype.ons),c) \
+ 			  $(as-needed) $(elf-objpfx)ld.so \
+ 			  $(no-as-needed)
+ link-libc = $(link-libc-rpath-link) $(link-libc-before-gnulib) $(gnulib)
+@@ -987,7 +987,7 @@ endif
+ # to pass different flags for each flavor.
+ libtypes = $(foreach o,$(object-suffixes-for-libc),$(libtype$o))
+ # .op may be added to all-object-suffixes below.
+-all-object-suffixes := .o .os .oS
++all-object-suffixes := .o .os .ons
+ object-suffixes :=
+ CPPFLAGS-.o = $(pic-default)
+ # libc.a must be compiled with -fPIE/-fpie for static PIE.
+@@ -1029,14 +1029,14 @@ object-suffixes-for-libc := $(object-suffixes)
+ 
+ ifeq (yes,$(build-shared))
+ # Build special library that contains the static-only routines for libc.
+-object-suffixes-for-libc += .oS
++object-suffixes-for-libc += .ons
+ 
+ # Must build the routines as PIC, though, because they can end up in (users')
+ # shared objects.  We don't want to use CFLAGS-os because users may, for
+ # example, make that processor-specific.
+-CFLAGS-.oS = $(CFLAGS-.o) $(PIC-ccflag)
+-CPPFLAGS-.oS = $(CPPFLAGS-.o) -DPIC -DLIBC_NONSHARED=1
+-libtype.oS = lib%_nonshared.a
++CFLAGS-.ons = $(CFLAGS-.o) $(PIC-ccflag)
++CPPFLAGS-.ons = $(CPPFLAGS-.o) -DPIC -DLIBC_NONSHARED=1
++libtype.ons = lib%_nonshared.a
+ endif
+ 
+ # The assembler can generate debug information too.
+diff --git a/Makerules b/Makerules
+index ef6abeac6d..10fb8e30ff 100644
+--- a/Makerules
++++ b/Makerules
+@@ -548,7 +548,7 @@ static-only-routines =
+ endif
+ endif
+ 
+-elide-routines.oS += $(filter-out $(static-only-routines),\
++elide-routines.ons += $(filter-out $(static-only-routines),\
+ 				  $(routines) $(aux) $(sysdep_routines))
+ elide-routines.os += $(static-only-routines)
+ 
+@@ -837,7 +837,7 @@ endif
+ 
+ +depfiles := $(sources:.c=.d) \
+ 	     $(patsubst %.o,%.d,$(filter %.o,$(extra-objs:.os=.o))) \
+-	     $(patsubst %.oS,%.d,$(filter %.oS,$(extra-objs))) \
++	     $(patsubst %.ons,%.d,$(filter %.ons,$(extra-objs))) \
+ 	     $(patsubst %.o,%.d,$(filter %.o,$(extra-test-objs:.os=.o))) \
+ 	     $(addsuffix .d,$(tests) $(tests-internal) $(xtests) $(test-srcs))
+ ifeq ($(build-programs),yes)
+@@ -1159,7 +1159,7 @@ ifndef subdir
+ install: $(inst_libdir)/libc.so
+ $(inst_libdir)/libc.so: $(common-objpfx)format.lds \
+ 			$(common-objpfx)libc.so$(libc.so-version) \
+-			$(inst_libdir)/$(patsubst %,$(libtype.oS),\
++			$(inst_libdir)/$(patsubst %,$(libtype.ons),\
+ 						  $(libprefix)$(libc-name)) \
+ 			$(+force)
+ 	(echo '/* GNU ld script';\
+@@ -1167,7 +1167,7 @@ $(inst_libdir)/libc.so: $(common-objpfx)format.lds \
+ 	 echo '   the static library, so try that secondarily.  */';\
+ 	 cat $<; \
+ 	 echo 'GROUP ( $(slibdir)/libc.so$(libc.so-version)' \
+-	      '$(libdir)/$(patsubst %,$(libtype.oS),$(libprefix)$(libc-name))'\
++	      '$(libdir)/$(patsubst %,$(libtype.ons),$(libprefix)$(libc-name))'\
+ 	      ' AS_NEEDED (' $(rtlddir)/$(rtld-installed-name) ') )' \
+ 	) > $@.new
+ 	mv -f $@.new $@
+diff --git a/extra-lib.mk b/extra-lib.mk
+index 72f8d2e1df..132444bd74 100644
+--- a/extra-lib.mk
++++ b/extra-lib.mk
+@@ -16,7 +16,7 @@ object-suffixes-$(lib) := $(filter-out $($(lib)-inhibit-o),$(object-suffixes))
+ 
+ ifneq (,$($(lib)-static-only-routines))
+ ifneq (,$(filter yes%,$(build-shared)$($(lib).so-version)))
+-object-suffixes-$(lib) += $(filter-out $($(lib)-inhibit-o),.oS)
++object-suffixes-$(lib) += $(filter-out $($(lib)-inhibit-o),.ons)
+ endif
+ endif
+ 
+@@ -34,7 +34,7 @@ all-$(lib)-routines := $($(lib)-routines) $($(lib)-sysdep_routines)
+ ifeq (,$(filter $(lib), $(extra-libs-noinstall)))
+ install-lib += $(foreach o,$(object-suffixes-$(lib)),$(lib:lib%=$(libtype$o)))
+ endif
+-extra-objs += $(foreach o,$(filter-out .os .oS,$(object-suffixes-$(lib))),\
++extra-objs += $(foreach o,$(filter-out .os .ons,$(object-suffixes-$(lib))),\
+ 			$(patsubst %,%$o,$(filter-out \
+ 					   $($(lib)-shared-only-routines),\
+ 					   $(all-$(lib)-routines))))
+@@ -42,8 +42,8 @@ ifneq (,$(filter .os,$(object-suffixes-$(lib))))
+ extra-objs += $(patsubst %,%.os,$(filter-out $($(lib)-static-only-routines),\
+ 					     $(all-$(lib)-routines)))
+ endif
+-ifneq (,$(filter .oS,$(object-suffixes-$(lib))))
+-extra-objs += $(patsubst %,%.oS,$(filter $($(lib)-static-only-routines),\
++ifneq (,$(filter .ons,$(object-suffixes-$(lib))))
++extra-objs += $(patsubst %,%.ons,$(filter $($(lib)-static-only-routines),\
+ 					 $(all-$(lib)-routines)))
+ endif
+ alltypes-$(lib) := $(foreach o,$(object-suffixes-$(lib)),\
+@@ -67,7 +67,7 @@ endif
+ 
+ 
+ # Use o-iterator.mk to generate a rule for each flavor of library.
+-ifneq (,$(filter-out .os .oS,$(object-suffixes-$(lib))))
++ifneq (,$(filter-out .os .ons,$(object-suffixes-$(lib))))
+ define o-iterator-doit
+ $(objpfx)$(patsubst %,$(libtype$o),$(lib:lib%=%)): \
+   $(patsubst %,$(objpfx)%$o,\
+@@ -75,7 +75,7 @@ $(objpfx)$(patsubst %,$(libtype$o),$(lib:lib%=%)): \
+ 			  $(all-$(lib)-routines))); \
+ 	$$(build-extra-lib)
+ endef
+-object-suffixes-left = $(filter-out .os .oS,$(object-suffixes-$(lib)))
++object-suffixes-left = $(filter-out .os .ons,$(object-suffixes-$(lib)))
+ include $(patsubst %,$(..)o-iterator.mk,$(object-suffixes-left))
+ endif
+ 
+@@ -87,9 +87,9 @@ $(objpfx)$(patsubst %,$(libtype.os),$(lib:lib%=%)): \
+ 	$(build-extra-lib)
+ endif
+ 
+-ifneq (,$(filter .oS,$(object-suffixes-$(lib))))
+-$(objpfx)$(patsubst %,$(libtype.oS),$(lib:lib%=%)): \
+-  $(patsubst %,$(objpfx)%.oS,\
++ifneq (,$(filter .ons,$(object-suffixes-$(lib))))
++$(objpfx)$(patsubst %,$(libtype.ons),$(lib:lib%=%)): \
++  $(patsubst %,$(objpfx)%.ons,\
+ 	     $(filter $($(lib)-static-only-routines),\
+ 		      $(all-$(lib)-routines)))
+ 	$(build-extra-lib)
+diff --git a/sysdeps/i386/i686/Makefile b/sysdeps/i386/i686/Makefile
+index 311042787b..9c815ca3cb 100644
+--- a/sysdeps/i386/i686/Makefile
++++ b/sysdeps/i386/i686/Makefile
+@@ -4,9 +4,9 @@ stack-align-test-flags += -msse
+ CFLAGS-.o += -Wa,-mtune=i686
+ CFLAGS-.os += -Wa,-mtune=i686
+ CFLAGS-.op += -Wa,-mtune=i686
+-CFLAGS-.oS += -Wa,-mtune=i686
++CFLAGS-.ons += -Wa,-mtune=i686
+ 
+ ASFLAGS-.o += -Wa,-mtune=i686
+ ASFLAGS-.os += -Wa,-mtune=i686
+ ASFLAGS-.op += -Wa,-mtune=i686
+-ASFLAGS-.oS += -Wa,-mtune=i686
++ASFLAGS-.ons += -Wa,-mtune=i686
+diff --git a/sysdeps/ieee754/ldbl-opt/Makefile b/sysdeps/ieee754/ldbl-opt/Makefile
+index ffc55d1d9a..6fdd632abb 100644
+--- a/sysdeps/ieee754/ldbl-opt/Makefile
++++ b/sysdeps/ieee754/ldbl-opt/Makefile
+@@ -48,7 +48,7 @@ libnldbl-calls = asprintf dprintf fprintf fscanf fwprintf fwscanf iovfscanf \
+ libnldbl-routines = $(libnldbl-calls:%=nldbl-%)
+ libnldbl-inhibit-o = $(object-suffixes)
+ libnldbl-static-only-routines = $(libnldbl-routines)
+-extra-objs += $(addsuffix .oS, $(libnldbl-routines))
++extra-objs += $(addsuffix .ons, $(libnldbl-routines))
+ 
+ CFLAGS-nldbl-acos.c = -fno-builtin-acosl
+ CFLAGS-nldbl-acosh.c = -fno-builtin-acoshl
+diff --git a/sysdeps/sparc/sparc32/sparcv9/Makefile b/sysdeps/sparc/sparc32/sparcv9/Makefile
+index 45507eabdb..0cbc6c38c0 100644
+--- a/sysdeps/sparc/sparc32/sparcv9/Makefile
++++ b/sysdeps/sparc/sparc32/sparcv9/Makefile
+@@ -3,7 +3,7 @@ sysdep-CFLAGS += -mcpu=ultrasparc -Wa,-Av9a -mvis
+ ASFLAGS-.o += -Wa,-Av9d
+ ASFLAGS-.os += -Wa,-Av9d
+ ASFLAGS-.op += -Wa,-Av9d
+-ASFLAGS-.oS += -Wa,-Av9d
++ASFLAGS-.ons += -Wa,-Av9d
+ 
+ # nscd uses atomic_spin_nop which in turn requires cpu_relax
+ ifeq ($(subdir),nscd)
+diff --git a/sysdeps/sparc/sparc64/Makefile b/sysdeps/sparc/sparc64/Makefile
+index 0963a559a7..08f19c14a9 100644
+--- a/sysdeps/sparc/sparc64/Makefile
++++ b/sysdeps/sparc/sparc64/Makefile
+@@ -7,7 +7,7 @@ endif
+ ASFLAGS-.o += -Wa,-Av9d
+ ASFLAGS-.os += -Wa,-Av9d
+ ASFLAGS-.op += -Wa,-Av9d
+-ASFLAGS-.oS += -Wa,-Av9d
++ASFLAGS-.ons += -Wa,-Av9d
+ 
+ # nscd uses atomic_spin_nop which in turn requires cpu_relax
+ ifeq ($(subdir),nscd)
