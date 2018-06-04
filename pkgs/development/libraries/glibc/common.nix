@@ -50,7 +50,7 @@ stdenv.mkDerivation ({
 
   inherit (stdenv) is64bit;
 
-  enableParallelBuilding = true;
+  enableParallelBuilding = stdenv.isLinux;
 
   patches =
     [
