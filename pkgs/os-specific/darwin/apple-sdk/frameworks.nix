@@ -34,7 +34,7 @@ with frameworks; with libs; {
   CoreMIDIServer          = [];
   CoreMedia               = [ ApplicationServices AudioToolbox CoreAudio CF CoreGraphics CoreVideo ];
   CoreMediaIO             = [ CF CoreMedia ];
-  CoreText                = [ cf-private CoreGraphics ];
+  CoreText                = [ CF CoreGraphics cf-private ];
   CoreVideo               = [ ApplicationServices CF CoreGraphics IOSurface OpenGL ];
   CoreWLAN                = [ SecurityFoundation ];
   DVComponentGlue         = [ CoreServices QuickTime ];
@@ -73,7 +73,7 @@ with frameworks; with libs; {
   LDAP                    = [];
   LatentSemanticMapping   = [ Carbon CF ];
   MapKit                  = [];
-  MediaAccessibility      = [ CoreGraphics CoreText QuartzCore CF ];
+  MediaAccessibility      = [ CF CoreGraphics CoreText QuartzCore ];
   MediaToolbox            = [ AudioToolbox CF CoreMedia ];
   NetFS                   = [ CF ];
   OSAKit                  = [ Carbon ];
@@ -108,7 +108,7 @@ with frameworks; with libs; {
 
   # Umbrellas
   Accelerate          = [ CoreWLAN IOBluetooth ];
-  ApplicationServices = [ CoreText CF CoreServices ImageIO ];
+  ApplicationServices = [ CF CoreServices CoreText ImageIO ];
   Carbon              = [ ApplicationServices CF CoreServices Foundation IOKit Security QuartzCore ];
   CoreBluetooth       = [];
   CoreServices        = [ CFNetwork CoreAudio CoreData CF DiskArbitration Security NetFS OpenDirectory ServiceManagement ];
