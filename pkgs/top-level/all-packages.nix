@@ -11403,7 +11403,9 @@ with pkgs;
 
     telepathy = callPackage ../development/libraries/telepathy/qt { };
 
-    vlc = callPackage ../applications/video/vlc {};
+    vlc = callPackage ../applications/video/vlc {
+      inherit (darwin.apple_sdk.frameworks) VideoToolbox;
+    };
 
     qtwebkit-plugins = callPackage ../development/libraries/qtwebkit-plugins { };
 

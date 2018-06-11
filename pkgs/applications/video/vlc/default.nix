@@ -12,6 +12,7 @@
 , withQt5 ? true, qtbase ? null, qtsvg ? null, qtx11extras ? null
 , jackSupport ? false
 , fetchpatch
+, VideoToolbox
 }:
 
 with stdenv.lib;
@@ -31,16 +32,19 @@ stdenv.mkDerivation rec {
   # which are not included here for no other reason that nobody has mentioned
   # needing them
   buildInputs = [
-    zlib a52dec libmad faad2 ffmpeg alsaLib libdvdnav libdvdnav.libdvdread
+    zlib a52dec libmad faad2 ffmpeg libdvdnav libdvdnav.libdvdread
     libbluray dbus fribidi libvorbis libtheora speex lua5 libgcrypt libgpgerror
     libupnp libcaca libpulseaudio flac schroedinger libxml2 librsvg mpeg2dec
-    systemd gnutls avahi libcddb SDL SDL_image libmtp unzip taglib libarchive
-    libkate libtiger libv4l samba liboggz libass libdvbpsi libva-full
+    gnutls avahi libcddb SDL SDL_image libmtp unzip taglib libarchive
+    libkate libtiger samba liboggz libass libdvbpsi
     xorg.xlibsWrapper xorg.libXv xorg.libXvMC xorg.libXpm xorg.xcbutilkeysyms
-    libdc1394 libraw1394 libopus libebml libmatroska libvdpau libsamplerate live555
-    fluidsynth wayland wayland-protocols
+    libdc1394 libopus libebml libmatroska libvdpau libsamplerate live555
+    fluidsynth
   ] ++ optionals withQt5    [ qtbase qtsvg qtx11extras ]
-    ++ optional jackSupport libjack2;
+    ++ optional jackSupport libjack2
+    ++ optionals stdenv.isLinux [ alsaLib systemd wayland wayland-protocols
+                                  libv4l libva-full libraw1394 ]
+    ++ optionals stdenv.isDarwin [ VideoToolbox ];
 
   nativeBuildInputs = [ autoreconfHook perl pkgconfig ];
 
@@ -50,7 +54,7 @@ stdenv.mkDerivation rec {
 
   # vlc depends on a c11-gcc wrapper script which we don't have so we need to
   # set the path to the compiler
-  BUILDCC = "${stdenv.cc}/bin/gcc";
+  BUILDCC = "${stdenv.cc}/bin/cc";
 
   patches = [
     (fetchpatch {
@@ -66,6 +70,14 @@ stdenv.mkDerivation rec {
 
     substituteInPlace modules/text_renderer/freetype/platform_fonts.h --replace \
       /usr/share/fonts/truetype/freefont ${freefont_ttf}/share/fonts/truetype
+
+    # remove new apple SDK stuff
+    substituteInPlace modules/audio_output/auhal.c \
+      --replace "case kAudioFormatAC3:" "" \
+      --replace "case kAudioFormatEnhancedAC3:" ""
+    substituteInPlace modules/codec/vt_utils.c \
+      --replace "CVPixelBufferLockFlags lock = readonly ? kCVPixelBufferLock_ReadOnly : 0;" "enum CVPixelBufferLockFlags lock = readonly ? kCVPixelBufferLock_ReadOnly : 0;"
+    echo "libvideotoolbox_plugin_la_LIBTOOLFLAGS = --tag=CC" >> modules/codec/Modules.am
   '';
 
   # https://github.com/NixOS/nixpkgs/pull/35124#issuecomment-370552830
@@ -78,12 +90,14 @@ stdenv.mkDerivation rec {
   # "--enable-foo" flags here
   configureFlags = [
     "--with-kde-solid=$out/share/apps/solid/actions"
+    "--disable-sparkle"
+    "--disable-macosx"
   ] ++ optional onlyLibVLC "--disable-vlc";
 
   meta = with stdenv.lib; {
     description = "Cross-platform media player and streaming server";
     homepage = http://www.videolan.org/vlc/;
     license = licenses.lgpl21Plus;
-    platforms = platforms.linux;
+    platforms = platforms.unix;
   };
 }
