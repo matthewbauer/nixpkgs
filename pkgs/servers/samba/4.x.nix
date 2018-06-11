@@ -13,6 +13,8 @@
 , enableRegedit ? true
 , enableCephFS ? false
 , enableGlusterFS ? false
+, enableAcl ? (!stdenv.isDarwin)
+, enablePam ? (!stdenv.isDarwin)
 }:
 
 with lib;
@@ -37,9 +39,9 @@ stdenv.mkDerivation rec {
   buildInputs =
     [ python pkgconfig perl libxslt docbook_xsl docbook_xml_dtd_42 /*
       docbook_xml_dtd_45 */ readline talloc popt iniparser
-      libbsd libarchive zlib acl fam libiconv gettext libunwind krb5Full
+      libbsd libarchive zlib fam libiconv gettext libunwind krb5Full
     ]
-    ++ optionals stdenv.isLinux [ libaio pam systemd ]
+    ++ optionals stdenv.isLinux [ libaio systemd ]
     ++ optionals (enableInfiniband && stdenv.isLinux) [ libibverbs librdmacm ]
     ++ optional enableLDAP openldap
     ++ optional (enablePrinting && stdenv.isLinux) cups
@@ -47,7 +49,9 @@ stdenv.mkDerivation rec {
     ++ optional enableDomainController gnutls
     ++ optional enableRegedit ncurses
     ++ optional (enableCephFS && stdenv.isLinux) libceph
-    ++ optional (enableGlusterFS && stdenv.isLinux) glusterfs;
+    ++ optional (enableGlusterFS && stdenv.isLinux) glusterfs
+    ++ optional enableAcl acl
+    ++ optional enablePam pam;
 
   postPatch = ''
     # Removes absolute paths in scripts
@@ -67,7 +71,9 @@ stdenv.mkDerivation rec {
       "--localstatedir=/var"
     ]
     ++ optional (!enableDomainController) "--without-ad-dc"
-    ++ optionals (!enableLDAP) [ "--without-ldap" "--without-ads" ];
+    ++ optionals (!enableLDAP) [ "--without-ldap" "--without-ads" ]
+    ++ optional (!enableAcl) "--without-acl-support"
+    ++ optional (!enablePam) "--without-pam";
 
   # To build in parallel.
   buildPhase = "python buildtools/bin/waf build -j $NIX_BUILD_CORES";
