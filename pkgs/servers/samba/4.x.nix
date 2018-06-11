@@ -1,4 +1,5 @@
 { lib, stdenv, fetchurl, python, pkgconfig, perl, libxslt, docbook_xsl
+, fetchpatch
 , docbook_xml_dtd_42, docbook_xml_dtd_45, readline, talloc
 , popt, iniparser, libbsd, libarchive, libiconv, gettext
 , krb5Full, zlib, openldap, cups, pam, avahi, acl, libaio, fam, libceph, glusterfs
@@ -34,6 +35,10 @@ stdenv.mkDerivation rec {
     [ ./4.x-no-persistent-install.patch
       ./patch-source3__libads__kerberos_keytab.c.patch
       ./4.x-no-persistent-install-dynconfig.patch
+      (fetchpatch {
+        url = "https://patch-diff.githubusercontent.com/raw/samba-team/samba/pull/107.patch";
+        sha256 = "0r6q34vjj0bdzmcbnrkad9rww58k4krbwicv4gs1g3dj49skpvd6";
+      })
     ];
 
   buildInputs =
