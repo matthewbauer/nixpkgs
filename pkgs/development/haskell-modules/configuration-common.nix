@@ -250,7 +250,7 @@ self: super: {
   digit = doJailbreak super.digit;
 
   # https://github.com/jwiegley/hnix/issues/98 - tied to an older deriving-compat
-  hnix = doJailbreak (overrideCabal super.hnix (old: {
+  hnix = (overrideCabal super.hnix (old: {
     patches = old.patches or [] ++ [
       # should land in hnix-5.2
       (pkgs.fetchpatch {
@@ -342,6 +342,7 @@ self: super: {
   HTF = dontCheck super.HTF;
   htsn = dontCheck super.htsn;
   htsn-import = dontCheck super.htsn-import;
+  http-link-header = dontCheck super.http-link-header; # non deterministic failure https://hydra.nixos.org/build/75041105
   ihaskell = dontCheck super.ihaskell;
   influxdb = dontCheck super.influxdb;
   itanium-abi = dontCheck super.itanium-abi;
