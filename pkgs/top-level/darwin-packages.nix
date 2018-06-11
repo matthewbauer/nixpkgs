@@ -52,7 +52,7 @@ in
   };
 
   libobjc = apple-source-releases.objc4;
-  
+
   lsusb = callPackage ../os-specific/darwin/lsusb { };
 
   opencflite = callPackage ../os-specific/darwin/opencflite { };
@@ -70,6 +70,8 @@ in
   usr-include = callPackage ../os-specific/darwin/usr-include { };
 
   inherit (callPackages ../os-specific/darwin/xcode { } ) xcode_8_1 xcode_8_2 xcode_9_1 xcode_9_2;
+
+  ibtool = callPackage ../os-specific/darwin/xcode/ibtool.nix { xcode = darwin.xcode_8_2; };
 
   CoreSymbolication = callPackage ../os-specific/darwin/CoreSymbolication { };
 
