@@ -15,7 +15,7 @@
 
 ## optional libraries
 
-, alsaSupport ? true, alsaLib
+, alsaSupport ? stdenv.isLinux, alsaLib
 , pulseaudioSupport ? true, libpulseaudio
 , ffmpegSupport ? true, gstreamer, gst-plugins-base
 , gtk3Support ? !isTorBrowserLike, gtk2, gtk3, wrapGAppsHook
@@ -59,13 +59,18 @@
 # > the experience of Firefox users, you won't have any issues using the
 # > official branding.
 , enableOfficialBranding ? true
+, gcc
+
+, CoreMedia
 }:
 
 assert stdenv.cc.libc or null != null;
 
 let
   flag = tf: x: [(if tf then "--enable-${x}" else "--disable-${x}")];
-  gcc = if stdenv.cc.isGNU then stdenv.cc.cc else stdenv.cc.cc.gcc;
+
+  default-toolkit = if stdenv.isDarwin then "cairo-cocoa"
+                    else "cairo-gtk${if gtk3Support then "3" else "2"}";
 in
 
 stdenv.mkDerivation (rec {
@@ -89,7 +94,8 @@ stdenv.mkDerivation (rec {
   ++ lib.optional  pulseaudioSupport libpulseaudio # only headers are needed
   ++ lib.optionals ffmpegSupport [ gstreamer gst-plugins-base ]
   ++ lib.optional  gtk3Support gtk3
-  ++ lib.optional  gssSupport kerberos;
+  ++ lib.optional  gssSupport kerberos
+  ++ lib.optionals stdenv.isDarwin [ CoreMedia ];
 
   NIX_CFLAGS_COMPILE = "-I${nspr.dev}/include/nspr -I${nss.dev}/include/nss";
 
@@ -109,7 +115,7 @@ stdenv.mkDerivation (rec {
   '' else ''
     make -f client.mk configure-files
     configureScript="$(realpath ./configure)"
-  '') + ''
+  '') + lib.optionalString stdenv.isLinux ''
     cxxLib=$( echo -n ${gcc}/include/c++/* )
     archLib=$cxxLib/$( ${gcc}/bin/gcc -dumpmachine )
 
@@ -146,7 +152,8 @@ stdenv.mkDerivation (rec {
     "--enable-jemalloc"
     "--disable-maintenance-service"
     "--disable-gconf"
-    "--enable-default-toolkit=cairo-gtk${if gtk3Support then "3" else "2"}"
+    "--enable-default-toolkit=${default-toolkit}"
+    "--disable-xcode-checks"
   ]
   ++ lib.optionals (lib.versionAtLeast version "56" && !stdenv.hostPlatform.isi686) [
     # on i686-linux: --with-libclang-path is not available in this configuration
@@ -202,6 +209,14 @@ stdenv.mkDerivation (rec {
   # `make install` anyway. This is ugly, but simple.)
   postConfigure = lib.optionalString (lib.versionAtLeast version "58") ''
     cd obj-*
+  '';
+
+  postPatch = lib.optionalString stdenv.isDarwin ''
+    cat <<EOF > media/webrtc/trunk/build/mac/find_sdk.py
+#!/usr/bin/env python
+print("10.10.0")
+print("")
+EOF
   '';
 
   preBuild = lib.optionalString (enableOfficialBranding && isTorBrowserLike) ''

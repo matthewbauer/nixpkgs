@@ -15926,6 +15926,7 @@ with pkgs;
       python = python2;
       gnused = gnused_422;
       icu = icu59;
+      inherit (darwin.apple_sdk.frameworks) CoreMedia;
     };
   });
 
