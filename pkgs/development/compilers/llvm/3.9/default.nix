@@ -1,6 +1,7 @@
 { newScope, stdenv, libstdcxxHook, isl, fetchurl, overrideCC, wrapCCWith, darwin
 , buildLlvmTools # tools, but from the previous stage, for cross
 , targetLlvmLibraries # libraries, but from the next stage, for cross
+, buildPackages
 }:
 
 let
@@ -54,7 +55,7 @@ let
 
     libcxx = callPackage ./libc++ {};
 
-    libcxxabi = callPackage ./libc++abi.nix {};
+    libcxxabi = callPackage ./libc++abi.nix { cmake = buildPackages.cmake; };
   };
 
 in { inherit tools libraries; } // libraries // tools
