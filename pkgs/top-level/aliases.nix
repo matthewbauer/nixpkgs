@@ -320,6 +320,13 @@ mapAliases (rec {
   libva-full = libva;
   libva1-full = libva1;
 
+  # cross aliases
+
+  arm-frc-linux-gnueabi-eglibc = pkgsCross.arm-frc-linux-gnueabi.eglibc;
+  arm-frc-linux-gnueabi-linux-api-headers = pkgsCross.arm-frc-linux-gnueabi.buildPackages.linuxHeaders;
+  arm-frc-linux-gnueabi-binutils = pkgsCross.arm-frc-linux-gnueabi.buildPackages.binutils;
+  arm-frc-linux-gnueabi-gcc = pkgsCross.arm-frc-linux-gnueabi.buildPackages.gcc;
+
   inherit (ocaml-ng) # added 2016-09-14
     ocamlPackages_3_10_0 ocamlPackages_3_11_2 ocamlPackages_3_12_1
     ocamlPackages_4_00_1 ocamlPackages_4_01_0 ocamlPackages_4_02
