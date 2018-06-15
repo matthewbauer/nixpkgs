@@ -95,6 +95,8 @@ rec {
 
     wasm32   = { bits = 32; significantByte = littleEndian; family = "wasm"; };
     wasm64   = { bits = 64; significantByte = littleEndian; family = "wasm"; };
+
+    avr      = { bits = 32; significantByte = littleEndian; family = "avr"; };
   };
 
   ################################################################################
@@ -111,6 +113,7 @@ rec {
     apple = {};
     pc = {};
     frc = {};
+    atmel = {};
 
     unknown = {};
   };
@@ -230,6 +233,8 @@ rec {
     uclibceabihf = { float = "soft"; };
     uclibceabi   = { float = "hard"; };
     uclibc       = {};
+
+    avrabi       = {};
 
     unknown = {};
   };

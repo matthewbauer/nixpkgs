@@ -95,6 +95,12 @@ rec {
     };
   };
 
+  avr-atmel = {
+    config = "avr-atmel-linux-avrabi";
+    platform = {
+      kernelArch = "avr";
+    };
+  };
 
   #
   # Darwin

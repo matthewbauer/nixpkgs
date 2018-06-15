@@ -333,6 +333,10 @@ mapAliases (rec {
   gcc-arm-embedded-6 = pkgsCross.armv7l-hf-multiplatform.buildPackages.gcc6;
   gcc-arm-embedded = pkgsCross.armv7l-hf-multiplatform.buildPackages.gcc;
 
+  avrgcclibc = throw "avrgcclibs are now separate packages, install avrbinutils, avrgcc and avrlibc";
+  avrbinutils = pkgsCross.avr-atmel.buildPackages.binutils;
+  avrgcc = pkgsCross.avr-atmel.buildPackages.gcc;
+
   inherit (ocaml-ng) # added 2016-09-14
     ocamlPackages_3_10_0 ocamlPackages_3_11_2 ocamlPackages_3_12_1
     ocamlPackages_4_00_1 ocamlPackages_4_01_0 ocamlPackages_4_02
