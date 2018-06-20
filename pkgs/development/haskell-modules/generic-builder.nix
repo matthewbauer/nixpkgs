@@ -185,8 +185,8 @@ let
   allPkgconfigDepends = pkgconfigDepends ++ libraryPkgconfigDepends ++ executablePkgconfigDepends ++
                         optionals doCheck testPkgconfigDepends ++ optionals doBenchmark benchmarkPkgconfigDepends;
 
-  depsBuildBuild = [ nativeGhc ];
-  nativeBuildInputs = [ ghc removeReferencesTo ] ++ optional (allPkgconfigDepends != []) pkgconfig ++
+  depsBuildBuild = optional isCross nativeGhc;
+  nativeBuildInputs = [ ghc (if isCross then null else nativeGhc) removeReferencesTo ] ++ optional (allPkgconfigDepends != []) pkgconfig ++
                       setupHaskellDepends ++
                       buildTools ++ libraryToolDepends ++ executableToolDepends;
   propagatedBuildInputs = buildDepends ++ libraryHaskellDepends ++ executableHaskellDepends ++ libraryFrameworkDepends;
@@ -216,6 +216,18 @@ let
     if [ -d "$p/lib/${ghcName}/package.conf.d" ]; then
       cp -f "$p/lib/${ghcName}/package.conf.d/"*.conf ${packageConfDir}/
       continue
+    fi
+    if [ -d "$p/include" ]; then
+      configureFlags+=" --extra-include-dirs=$p/include"
+    fi
+    if [ -d "$p/lib" ]; then
+      configureFlags+=" --extra-lib-dirs=$p/lib"
+    fi
+  ''
+  # It is not clear why --extra-framework-dirs does work fine on Linux
+  + optionalString (!buildPlatform.isDarwin || versionAtLeast nativeGhc.version "8.0") ''
+    if [[ -d "$p/Library/Frameworks" ]]; then
+      configureFlags+=" --extra-framework-dirs=$p/Library/Frameworks"
     fi
   '';
 
@@ -275,7 +287,11 @@ stdenv.mkDerivation ({
   # pkgs* arrays defined in stdenv/setup.hs
   + (optionalString useSeparateSetupDb ''
     for p in "''${pkgsBuildBuild[@]}" "''${pkgsBuildHost[@]}" "''${pkgsBuildTarget[@]}"; do
-      ${buildPkgDb nativeGhc.name "$setupPackageConfDir"}
+      ${if isCross then ''
+    if [ -d "$p/lib/${nativeGhc.name}/package.conf.d" ]; then
+      cp -f "$p/lib/${nativeGhc.name}/package.conf.d/"*.conf $setupPackageConfDir/
+    fi
+        '' else buildPkgDb nativeGhc.name "$setupPackageConfDir"}
     done
     ${nativeGhcCommand}-pkg --${nativePackageDbFlag}="$setupPackageConfDir" recache
   '')
@@ -284,19 +300,6 @@ stdenv.mkDerivation ({
   + ''
     for p in "''${pkgsHostHost[@]}" "''${pkgsHostTarget[@]}"; do
       ${buildPkgDb ghc.name "$packageConfDir"}
-      if [ -d "$p/include" ]; then
-        configureFlags+=" --extra-include-dirs=$p/include"
-      fi
-      if [ -d "$p/lib" ]; then
-        configureFlags+=" --extra-lib-dirs=$p/lib"
-      fi
-    ''
-    # It is not clear why --extra-framework-dirs does work fine on Linux
-    + optionalString (!buildPlatform.isDarwin || versionAtLeast nativeGhc.version "8.0") ''
-      if [[ -d "$p/Library/Frameworks" ]]; then
-        configureFlags+=" --extra-framework-dirs=$p/Library/Frameworks"
-      fi
-  '' + ''
     done
   ''
   # only use the links hack if we're actually building dylibs. otherwise, the
