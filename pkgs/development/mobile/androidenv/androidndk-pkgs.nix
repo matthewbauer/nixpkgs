@@ -59,7 +59,7 @@ rec {
     bintools = binaries;
     libc = targetAndroidndkPkgs.libraries;
     extraBuildCommands = ''
-      echo "--build-id" >> $out/nix-support/libc-ldflags
+      echo "--build-id -rpath ${targetAndroidndkPkgs.libraries}/lib" >> $out/nix-support/libc-ldflags
     '';
   };
 
