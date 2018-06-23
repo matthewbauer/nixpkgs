@@ -113,7 +113,6 @@ rec {
     apple = {};
     pc = {};
     frc = {};
-    atmel = {};
 
     unknown = {};
   };
@@ -233,8 +232,6 @@ rec {
     uclibceabihf = { float = "soft"; };
     uclibceabi   = { float = "hard"; };
     uclibc       = {};
-
-    avrabi       = {};
 
     unknown = {};
   };
