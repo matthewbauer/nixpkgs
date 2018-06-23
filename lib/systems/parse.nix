@@ -96,7 +96,7 @@ rec {
     wasm32   = { bits = 32; significantByte = littleEndian; family = "wasm"; };
     wasm64   = { bits = 64; significantByte = littleEndian; family = "wasm"; };
 
-    avr      = { bits = 32; significantByte = littleEndian; family = "avr"; };
+    avr      = { bits = 8; };
   };
 
   ################################################################################
@@ -272,6 +272,8 @@ rec {
         then { cpu = elemAt l 0;                      kernel = elemAt l 1; abi = elemAt l 2; }
       else if (elemAt l 2 == "mingw32") # autotools breaks on -gnu for window
         then { cpu = elemAt l 0; vendor = elemAt l 1; kernel = "windows";  abi = "gnu"; }
+      else if (elemAt l 0 == "avr")
+        then { cpu = elemAt l 0; kernel = "none"; }
       else throw "Target specification with 3 components is ambiguous";
     "4" =    { cpu = elemAt l 0; vendor = elemAt l 1; kernel = elemAt l 2; abi = elemAt l 3; };
   }.${toString (length l)}

@@ -11,7 +11,7 @@ stdenv.mkDerivation {
     sha256 = "15svr2fx8j6prql2il2fc0ppwlv50rpmyckaxx38d3gxxv97zpdj";
   };
 
-  buildInputs = [ automake autoconf ];
+  nativeBuildInputs = [ automake autoconf ];
 
   # Make sure we don't strip the libraries in lib/gcc/avr.
   stripDebugList= "bin";
@@ -21,7 +21,6 @@ stdenv.mkDerivation {
     description = "a C runtime library for AVR microcontrollers";
     homepage = http://savannah.nongnu.org/projects/avr-libc/;
     license = licenses.bsd3;
-    platforms = platforms.unix;
     maintainers = with maintainers; [ mguentner ];
   };
 }

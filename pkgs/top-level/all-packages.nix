@@ -7539,7 +7539,9 @@ with pkgs;
     samples = true;
   };
 
-  avrlibc     = callPackage ../development/misc/avr/libc {};
+  avrlibc     = callPackage ../development/misc/avr/libc {
+    stdenv = crossLibcStdenv;
+  };
 
   avr8burnomat = callPackage ../development/misc/avr8-burn-omat { };
 
@@ -9201,6 +9203,7 @@ with pkgs;
     else if name == "msvcrt" then targetPackages.windows.mingw_w64 or windows.mingw_w64
     else if targetPlatform.useiOSPrebuilt then targetPackages.iosSdkPkgs.libraries
     else if name == "libSystem" then darwin.xcode
+    else if name == "avrlibc" then targetPackages.avrlibc
     else throw "Unknown libc";
 
   libcCross = assert targetPlatform != buildPlatform; libcCrossChooser targetPlatform.libc;

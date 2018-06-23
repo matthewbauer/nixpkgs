@@ -96,9 +96,10 @@ rec {
   };
 
   avr-atmel = {
-    config = "avr-atmel-linux-avrabi";
+    config = "avr-unknown-none";
+    libc = "avrlibc";
     platform = {
-      kernelArch = "avr";
+      bfdEmulation = "avrtiny";
     };
   };
 
