@@ -284,6 +284,10 @@ stdenv.mkDerivation {
       hardening_unsupported_flags+=" stackprotector"
     ''
 
+    + optionalString targetPlatform.useAndroidPrebuilt ''
+      hardening_unsupported_flags+=" pie"
+    ''
+
     + ''
       substituteAll ${./add-flags.sh} $out/nix-support/add-flags.sh
       substituteAll ${./add-hardening.sh} $out/nix-support/add-hardening.sh

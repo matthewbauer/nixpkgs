@@ -59,7 +59,7 @@ rec {
     bintools = binaries;
     libc = targetAndroidndkPkgs.libraries;
     extraBuildCommands = ''
-      echo "--build-id -rpath ${targetAndroidndkPkgs.libraries}/lib" >> $out/nix-support/libc-ldflags
+      echo "--build-id" >> $out/nix-support/libc-ldflags
     '';
   };
 
@@ -68,7 +68,7 @@ rec {
     bintools = binutils;
     libc = targetAndroidndkPkgs.libraries;
     extraBuildCommands = ''
-      echo "-D__ANDROID_API__=${targetPlatform.sdkVer}" >> $out/nix-support/cc-cflags
+      echo "-D__ANDROID_API__=${targetPlatform.sdkVer} -no-pie" >> $out/nix-support/cc-cflags
     ''
     + lib.optionalString targetPlatform.isAarch32 (let
         p =  targetPlatform.platform.gcc or {}

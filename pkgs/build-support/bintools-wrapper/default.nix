@@ -287,6 +287,10 @@ stdenv.mkDerivation {
       fi
     ''
 
+    + optionalString targetPlatform.useAndroidPrebuilt ''
+      hardening_unsupported_flags+=" pie"
+    ''
+
     + optionalString hostPlatform.isCygwin ''
       hardening_unsupported_flags+=" pic"
     ''
