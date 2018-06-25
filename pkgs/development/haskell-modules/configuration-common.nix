@@ -1085,6 +1085,7 @@ self: super: {
 
   # The build-tool-depends this hacks around has been added on master.
   base-compat = addTestToolDepend super.base-compat self.hspec-discover;
+  with-location = addTestToolDepend super.with-location self.hspec-discover;
 }
 
 //
