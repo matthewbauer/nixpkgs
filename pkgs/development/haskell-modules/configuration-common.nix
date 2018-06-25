@@ -9,7 +9,7 @@
 #
 # See comment at the top of configuration-nix.nix for more information about this
 # distinction.
-{ pkgs, haskellLib }:
+{ buildPackages, pkgs, haskellLib }:
 
 with haskellLib;
 
@@ -1025,7 +1025,7 @@ self: super: {
 
   # The test suite does not know how to find the 'alex' binary.
   alex = overrideCabal super.alex (drv: {
-    testSystemDepends = (drv.testSystemDepends or []) ++ [pkgs.which];
+    testToolDepends = (drv.testSystemDepends or []) ++ [ buildPackages.which ];
     preCheck = ''export PATH="$PWD/dist/build/alex:$PATH"'';
   });
 
