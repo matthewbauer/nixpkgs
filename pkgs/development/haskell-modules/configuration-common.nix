@@ -1025,7 +1025,7 @@ self: super: {
 
   # The test suite does not know how to find the 'alex' binary.
   alex = overrideCabal super.alex (drv: {
-    testToolDepends = (drv.testSystemDepends or []) ++ [ buildPackages.which ];
+    testToolDepends = (drv.testToolDepends or []) ++ [ buildPackages.which ];
     preCheck = ''export PATH="$PWD/dist/build/alex:$PATH"'';
   });
 
