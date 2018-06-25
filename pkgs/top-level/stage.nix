@@ -139,6 +139,7 @@ let
      # Used by wine, firefox with debugging version of Flash, ...
      pkgsi686Linux = forceSystem "i686-linux" "i386";
      callPackage_i686 = self.pkgsi686Linux.callPackage;
+     inherit forceSystem;
   };
 
   # The complete chain of package set builders, applied from top to bottom.
