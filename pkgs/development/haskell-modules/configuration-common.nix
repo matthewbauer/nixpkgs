@@ -364,6 +364,7 @@ self: super: {
   notcpp = dontCheck super.notcpp;
   ntp-control = dontCheck super.ntp-control;
   numerals = dontCheck super.numerals;
+  odpic-raw = dontCheck super.odpic-raw; # needs a running oracle database server
   opaleye = dontCheck super.opaleye;
   openpgp = dontCheck super.openpgp;
   optional = dontCheck super.optional;
@@ -1043,6 +1044,18 @@ self: super: {
 
   # Work around overspecified constraint on github ==0.18.
   github-backup = doJailbreak super.github-backup;
+
+  # Work around large number of repeated arguments
+  # https://github.com/NixOS/nixpkgs/issues/40013
+  taffybar = super.taffybar.overrideDerivation (drv: {
+    strictDeps = true;
+  });
+
+  # dhall-json requires a very particular dhall version
+  dhall-json_1_2_0 = super.dhall-json_1_2_0.override { dhall = self.dhall_1_14_0; };
+
+  # https://github.com/fpco/streaming-commons/issues/49
+  streaming-commons = dontCheck super.streaming-commons;
 
 }
 

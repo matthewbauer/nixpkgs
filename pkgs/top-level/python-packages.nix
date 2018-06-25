@@ -26,6 +26,7 @@ let
   isPy34 = python.pythonVersion == "3.4";
   isPy35 = python.pythonVersion == "3.5";
   isPy36 = python.pythonVersion == "3.6";
+  isPy37 = python.pythonVersion == "3.7";
   isPyPy = python.executable == "pypy";
   isPy3k = strings.substring 0 1 python.pythonVersion == "3";
 
@@ -132,7 +133,7 @@ let
 
 in {
 
-  inherit python bootstrapped-pip pythonAtLeast pythonOlder isPy26 isPy27 isPy33 isPy34 isPy35 isPy36 isPyPy isPy3k buildPythonPackage buildPythonApplication;
+  inherit python bootstrapped-pip pythonAtLeast pythonOlder isPy26 isPy27 isPy33 isPy34 isPy35 isPy36 isPy37 isPyPy isPy3k buildPythonPackage buildPythonApplication;
   inherit fetchPypi callPackage;
   inherit hasPythonModule requiredPythonModules makePythonPath disabledIf;
   inherit toPythonModule toPythonApplication;
@@ -233,6 +234,8 @@ in {
 
   cdecimal = callPackage ../development/python-modules/cdecimal { };
 
+  clustershell = callPackage ../development/python-modules/clustershell { };
+
   dendropy = callPackage ../development/python-modules/dendropy { };
 
   dbf = callPackage ../development/python-modules/dbf { };
@@ -291,7 +294,9 @@ in {
 
   logster = callPackage ../development/python-modules/logster { };
 
-  mail-parser = callPackage ../development/python-modules/mail-parser {  };
+  mail-parser = callPackage ../development/python-modules/mail-parser { };
+
+  monty = callPackage ../development/python-modules/monty { };
 
   mpi4py = callPackage ../development/python-modules/mpi4py {
     mpi = pkgs.openmpi;
@@ -434,6 +439,8 @@ in {
     then ../development/python-modules/python3-openid
     else ../development/python-modules/python-openid) { };
 
+  python-periphery = callPackage ../development/python-modules/python-periphery { };
+
   python-sql = callPackage ../development/python-modules/python-sql { };
 
   python-stdnum = callPackage ../development/python-modules/python-stdnum { };
@@ -457,6 +464,8 @@ in {
   rx = callPackage ../development/python-modules/rx { };
 
   salmon-mail = callPackage ../development/python-modules/salmon-mail { };
+
+  seekpath = callPackage ../development/python-modules/seekpath { };
 
   serversyncstorage = callPackage ../development/python-modules/serversyncstorage {};
 
@@ -1239,9 +1248,9 @@ in {
   cypari2 = callPackage ../development/python-modules/cypari2 { };
 
   dlib = buildPythonPackage rec {
-    inherit (pkgs.dlib) name src nativeBuildInputs meta;
+    inherit (pkgs.dlib) name src nativeBuildInputs meta buildInputs;
 
-    buildInputs = pkgs.dlib.buildInputs ++ [ self.boost ];
+    patches = [ ../development/python-modules/dlib/build-cores.patch ];
 
     checkInputs = with self; [ pytest ];
   };
@@ -1565,6 +1574,8 @@ in {
   cheetah = callPackage ../development/python-modules/cheetah { };
 
   cherrypy = callPackage ../development/python-modules/cherrypy {};
+
+  cftime = callPackage ../development/python-modules/cftime {};
 
   cjson = callPackage ../development/python-modules/cjson { };
 
@@ -1925,9 +1936,9 @@ in {
     };
   };
 
-  pytest = self.pytest_35;
+  pytest = self.pytest_36;
 
-  pytest_35 = callPackage ../development/python-modules/pytest {
+  pytest_36 = callPackage ../development/python-modules/pytest {
     hypothesis = self.hypothesis.override {
       # hypothesis requires pytest that causes dependency cycle
       doCheck = false;
@@ -1936,7 +1947,7 @@ in {
   };
 
   # Needed for celery
-  pytest_32 = self.pytest_35.overrideAttrs( oldAttrs: rec {
+  pytest_32 = self.pytest_36.overrideAttrs( oldAttrs: rec {
     version = "3.2.5";
     src = oldAttrs.src.override {
       inherit version;
@@ -2118,9 +2129,6 @@ in {
   # Alias that we should deprecate
   dateutil = self.python-dateutil;
 
-  # Buildbot 0.8.7p1 needs dateutil==1.5
-  dateutil_1_5 = callPackage ../development/python-modules/dateutil/1_5.nix { };
-
   decorator = callPackage ../development/python-modules/decorator { };
 
   deform = callPackage ../development/python-modules/deform { };
@@ -2286,7 +2294,7 @@ in {
     '';
 
     meta = {
-      homepage = "http://editorconfig.org";
+      homepage = https://editorconfig.org;
       description = "EditorConfig File Locator and Interpreter for Python";
       license = stdenv.lib.licenses.psfl;
     };
@@ -3859,6 +3867,8 @@ in {
   };
 
   phpserialize = callPackage ../development/python-modules/phpserialize { };
+
+  plaid-python = callPackage ../development/python-modules/plaid-python { };
 
   plaster = callPackage ../development/python-modules/plaster {};
 
@@ -6194,6 +6204,8 @@ in {
 
   googleapis_common_protos = callPackage ../development/python-modules/googleapis_common_protos { };
 
+  google-auth-httplib2 = callPackage ../development/python-modules/google-auth-httplib2 { };
+
   google_api_core = callPackage ../development/python-modules/google_api_core { };
 
   google_api_python_client = callPackage ../development/python-modules/google-api-python-client { };
@@ -6236,30 +6248,7 @@ in {
 
   grammalecte = callPackage ../development/python-modules/grammalecte { };
 
-  greenlet = buildPythonPackage rec {
-    name = "greenlet-${version}";
-    version = "0.4.10";
-    disabled = isPyPy;  # builtin for pypy
-
-    src = pkgs.fetchurl {
-      url = "mirror://pypi/g/greenlet/${name}.tar.gz";
-      sha256 = "c4417624aa88380cdf0fe110a8a6e0dbcc26f80887197fe5df0427dfa348ae62";
-    };
-
-    propagatedBuildInputs = with self; [ six ];
-
-    # see https://github.com/python-greenlet/greenlet/issues/85
-    preCheck = ''
-      rm tests/test_leaks.py
-    '';
-
-    meta = {
-      homepage = https://pypi.python.org/pypi/greenlet;
-      description = "Module for lightweight in-process concurrent programming";
-      license     = licenses.lgpl2;
-      platforms   = platforms.all;
-    };
-  };
+  greenlet = callPackage ../development/python-modules/greenlet { };
 
   grib-api = disabledIf (!isPy27) (toPythonModule
     (pkgs.grib-api.override {
@@ -7794,7 +7783,7 @@ in {
 
     meta = {
       description = "EditorConfig File Locator and Interpreter for Python";
-      homepage = "http://editorconfig.org/";
+      homepage = https://editorconfig.org/;
       license = licenses.psfl;
     };
   };
@@ -9169,7 +9158,7 @@ in {
    ];
 
    meta = with stdenv.lib; {
-     homepage = "http://github.com/bcwaldon/warlock";
+     homepage = https://github.com/bcwaldon/warlock;
    };
  };
 
@@ -9992,35 +9981,8 @@ in {
     inherit (pkgs.xorg) libX11;
   };
 
-  pkgconfig = buildPythonPackage rec {
-    name = "pkgconfig-${version}";
-    version = "1.1.0";
-
-    # pypy: SyntaxError: __future__ statements must appear at beginning of file
-    disabled = isPyPy;
-
-    src = pkgs.fetchurl {
-      url = "mirror://pypi/p/pkgconfig/${name}.tar.gz";
-      sha256 = "709daaf077aa2b33bedac12706373412c3683576a43013bbaa529fc2769d80df";
-    };
-
-    buildInputs = with self; [ nose ];
-
-    propagatedBuildInputs = with self; [pkgs.pkgconfig];
-
-    meta = {
-      description = "Interface Python with pkg-config";
-      homepage = https://github.com/matze/pkgconfig;
-      license = licenses.mit;
-    };
-
-    # nosetests needs to be run explicitly.
-    # Note that the distributed archive does not actually contain any tests.
-    # https://github.com/matze/pkgconfig/issues/9
-    checkPhase = ''
-      nosetests
-    '';
-
+  pkgconfig = callPackage ../development/python-modules/pkgconfig {
+    inherit (pkgs) pkgconfig;
   };
 
   plumbum = callPackage ../development/python-modules/plumbum { };
@@ -10141,15 +10103,6 @@ in {
   psd-tools = callPackage ../development/python-modules/psd-tools { };
 
   psutil = callPackage ../development/python-modules/psutil { };
-
-  psutil_1 = self.psutil.overrideAttrs (oldAttrs: rec {
-    name = "${oldAttrs.pname}-${version}";
-    version = "1.2.1";
-    src = oldAttrs.src.override {
-      inherit version;
-      sha256 = "0ibclqy6a4qmkjhlk3g8jhpvnk0v9aywknc61xm3hfi5r124m3jh";
-    };
-  });
 
   psycopg2 = buildPythonPackage rec {
     name = "psycopg2-2.7.1";
@@ -11640,7 +11593,7 @@ in {
     doCheck = false;
 
     meta = {
-      homepage = "http://github.com/mongodb/mongo-python-driver";
+      homepage = https://github.com/mongodb/mongo-python-driver;
       license = licenses.asl20;
       description = "Python driver for MongoDB ";
     };
@@ -12142,53 +12095,9 @@ in {
 
   rjsmin = callPackage ../development/python-modules/rjsmin { };
 
-  pysolr = buildPythonPackage rec {
-    name = "pysolr-${version}";
-    version = "3.3.3";
+  pysolr = callPackage ../development/python-modules/pysolr { };
 
-    src = pkgs.fetchurl {
-      url = "mirror://pypi/p/pysolr/pysolr-${version}.tar.gz";
-      sha256 = "1wapg9n7myn7c82r3nzs2gisfzx52nip8w2mrfy0yih1zn02mnd6";
-    };
-
-    propagatedBuildInputs = with self; [
-      requests
-    ];
-    buildInputs = with self; [
-
-    ];
-
-    meta = with stdenv.lib; {
-      homepage = "http://github.com/toastdriven/pysolr/";
-    };
-  };
-
-
-  django-haystack = buildPythonPackage rec {
-    name = "django-haystack-${version}";
-    version = "2.4.1";
-
-    src = pkgs.fetchurl {
-      url = "mirror://pypi/d/django-haystack/django-haystack-${version}.tar.gz";
-      sha256 = "04cva8qg79xig4zqhb4dwkpm7734dvhzqclzvrdz70fh59ki5b4f";
-    };
-
-    doCheck = false;  # no tests in source
-
-    buildInputs = with self; [ coverage mock nose geopy ];
-    propagatedBuildInputs = with self; [
-      django dateutil_1_5 whoosh pysolr elasticsearch
-    ];
-
-    patchPhase = ''
-      sed -i 's/geopy==/geopy>=/' setup.py
-      sed -i 's/whoosh==/Whoosh>=/' setup.py
-    '';
-
-    meta = with stdenv.lib; {
-      homepage = "http://haystacksearch.org/";
-    };
-  };
+  django-haystack = callPackage ../development/python-modules/django-haystack { };
 
   geoalchemy2 = buildPythonPackage rec {
     name = "GeoAlchemy2-${version}";
@@ -12890,7 +12799,7 @@ in {
 
     meta = {
       description = "sqlite-backed dictionary";
-      homepage = "http://github.com/Yelp/sqlite3dbm";
+      homepage = https://github.com/Yelp/sqlite3dbm;
       license = licenses.asl20;
     };
   };
@@ -15050,6 +14959,8 @@ EOF
       license = licenses.gpl2Plus;
     };
   });
+
+  xml2rfc = callPackage ../development/python-modules/xml2rfc { };
 
   xmltodict = callPackage ../development/python-modules/xmltodict { };
 

@@ -24,7 +24,7 @@ in stdenv.mkDerivation rec {
 
   patches = [
     (fetchpatch {
-      # CVE-2018-10289
+      name = "CVE-2018-10289.patch";
       url = "https://bugs.ghostscript.com/attachment.cgi?id=15230";
       sha256 = "0jmpacxd9930g6k57kda9jrcrbk75whdlv8xwmqg5jwn848qvy4q";
     })
@@ -86,7 +86,7 @@ in stdenv.mkDerivation rec {
   enableParallelBuilding = true;
 
   meta = with stdenv.lib; {
-    homepage = http://mupdf.com;
+    homepage = https://mupdf.com;
     repositories.git = git://git.ghostscript.com/mupdf.git;
     description = "Lightweight PDF, XPS, and E-book viewer and toolkit written in portable C";
     license = licenses.agpl3Plus;
