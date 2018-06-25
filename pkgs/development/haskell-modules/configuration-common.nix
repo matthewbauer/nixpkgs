@@ -1090,6 +1090,8 @@ self: super: {
   slim = addTestToolDepend super.slim self.hspec-discover;
   string-conversions = addTestToolDepend super.string-conversions self.hspec-discover;
   skeletal-test = addTestToolDepend super.skeletal-test self.hspec-discover;
+  catamorphism = addTestToolDepend super.catamorphism self.hspec-discover;
+  unliftio = addTestToolDepend super.unliftio self.hspec-discover;
 }
 
 //
