@@ -555,9 +555,6 @@ self: super: {
   # https://ghc.haskell.org/trac/ghc/ticket/9825
   vimus = overrideCabal super.vimus (drv: { broken = pkgs.stdenv.isLinux && pkgs.stdenv.isi686; });
 
-  # https://github.com/hspec/mockery/issues/6
-  mockery = overrideCabal super.mockery (drv: { preCheck = "export TRAVIS=true"; });
-
   # https://github.com/alphaHeavy/lzma-conduit/issues/5
   lzma-conduit = dontCheck super.lzma-conduit;
 
@@ -1089,6 +1086,12 @@ self: super: {
   with-location = addTestToolDepend super.with-location self.hspec-discover;
   # https://github.com/cjdev/text-conversions/pull/6
   text-conversions = addTestToolDepend super.text-conversions self.hspec-discover;
+  logging-facade = addTestToolDepend super.logging-facade self.hspec-discover;
+  distributive = addTestToolDepend super.distributive self.hspec-discover;
+  doctest = addTestToolDepend super.doctest self.hspec-discover;
+  http-types = addTestToolDepend super.http-types self.hspec-discover;
+  interpolate = addTestToolDepend super.interpolate self.hspec-discover;
+  mockery = addTestToolDepend super.mockery self.hspec-discover;
   slim = addTestToolDepend super.slim self.hspec-discover;
   string-conversions = addTestToolDepend super.string-conversions self.hspec-discover;
   catamorphism = addTestToolDepend super.catamorphism self.hspec-discover;
