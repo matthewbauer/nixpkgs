@@ -1087,6 +1087,7 @@ self: super: {
   base-compat = addTestToolDepend super.base-compat self.hspec-discover;
   # https://github.com/sol/with-location/pull/1
   with-location = addTestToolDepend super.with-location self.hspec-discover;
+  # https://github.com/cjdev/text-conversions/pull/6
   text-conversions = addTestToolDepend super.text-conversions self.hspec-discover;
   slim = addTestToolDepend super.slim self.hspec-discover;
   string-conversions = addTestToolDepend super.string-conversions self.hspec-discover;
