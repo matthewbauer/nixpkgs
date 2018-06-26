@@ -1075,10 +1075,6 @@ self: super: {
     sha256 = "1c343flwxaq7cpnwyjf4y1c5smqs5q90i48sda9kyhl88mslq63b";
     stripLen = 1;
   });
-  hspec = self.hspec_2_5_1;
-  hspec-core = self.hspec-core_2_5_1;
-  hspec-discover = self.hspec-discover_2_5_1;
-  hspec-smallcheck = self.hspec-smallcheck_0_5_2;
 
   # The build-tool-depends this hacks around has been added on master.
   base-compat = addTestToolDepend super.base-compat self.hspec-discover;
