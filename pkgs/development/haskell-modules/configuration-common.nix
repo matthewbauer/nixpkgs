@@ -806,7 +806,7 @@ self: super: {
   http-api-data = dontCheck super.http-api-data;
 
   # https://github.com/snoyberg/yaml/issues/106
-  yaml = disableCabalFlag super.yaml "system-libyaml";
+  yaml = addTestToolDepend (disableCabalFlag super.yaml "system-libyaml") self.hspec-discover;
 
   # https://github.com/diagrams/diagrams-lib/issues/288
   diagrams-lib = overrideCabal super.diagrams-lib (drv: { doCheck = !pkgs.stdenv.isi686; });
@@ -1092,7 +1092,6 @@ self: super: {
   string-conversions = addTestToolDepend super.string-conversions self.hspec-discover;
   catamorphism = addTestToolDepend super.catamorphism self.hspec-discover;
   unliftio = addTestToolDepend super.unliftio self.hspec-discover;
-  yaml = addTestToolDepend super.yaml self.hspec-discover;
   graphviz = addTestToolDepend super.graphviz self.hspec-discover;
   word8 = addTestToolDepend super.word8 self.hspec-discover;
   iproute = addTestToolDepend super.iproute self.hspec-discover;
