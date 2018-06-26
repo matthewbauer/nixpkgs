@@ -1096,6 +1096,7 @@ self: super: {
   graphviz = addTestToolDepend super.graphviz self.hspec-discover;
   word8 = addTestToolDepend super.word8 self.hspec-discover;
   iproute = addTestToolDepend super.iproute self.hspec-discover;
+  mime-mail = addTestToolDepend super.mime-mail self.hspec-discover;
 }
 
 //
