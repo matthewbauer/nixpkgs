@@ -24,6 +24,22 @@ self: super: {
   ghci = null;
   haskeline = null;
   hpc = null;
+
+  # A few things for hspec*:
+  #
+  #   1. Break cycles for test
+  #
+  #   2. https://github.com/hspec/hspec/pull/355 The buildTool will be properly
+  #      cabal2nixed when run on the patched cabal file.
+  hspec = let
+    breakCycles = super.hspec_2_5_1.override { stringbuilder = dontCheck self.stringbuilder; };
+  in addTestToolDepend breakCycles self.hspec-meta;
+  hspec-core = let
+    breakCycles = super.hspec-core_2_5_1.override { silently = dontCheck self.silently; temporary = dontCheck self.temporary; };
+  in addTestToolDepend breakCycles self.hspec-meta;
+  hspec-discover = addTestToolDepend super.hspec-discover_2_5_1 self.hspec-meta;
+  hspec-smallcheck = self.hspec-smallcheck_0_5_2;
+
   integer-gmp = null;
   mtl = null;
   parsec = null;

@@ -1052,29 +1052,13 @@ self: super: {
   #
   #   2. https://github.com/hspec/hspec/pull/355 The buildTool will be properly
   #      cabal2nixed when run on the patched cabal file.
-  #
-  #   3. Force 2.5.1 as only it has patch for proper build-tool-depends deps.
-  hspec_2_5_1 = let
-    breakCycles = super.hspec_2_5_1.override { stringbuilder = dontCheck self.stringbuilder; };
-  in appendPatch (addTestToolDepend breakCycles self.hspec-meta) (pkgs.fetchpatch {
-    url = "https://github.com/hspec/hspec/commit/8007227da5c8f2e294c1455a9f2c9855917dc461.diff";
-    includes = [ "hspec.cabal" ];
-    sha256 = "0qk7lsg7s1j42mf9zbh4ga1ca5qbh1qsnsidvlp4rjjifw6jq3vz";
-  });
-  hspec-core_2_5_1 = let
-    breakCycles = super.hspec-core_2_5_1.override { silently = dontCheck self.silently; temporary = dontCheck self.temporary; };
-  in appendPatch (addTestToolDepend breakCycles self.hspec-meta) (pkgs.fetchpatch {
-    url = "https://github.com/hspec/hspec/commit/8007227da5c8f2e294c1455a9f2c9855917dc461.diff";
-    includes = [ "hspec-core.cabal" ];
-    sha256 = "0rwlz24mqh67gpkcrnhm8js594783v4gikzmdwi148w0h6hw2435";
-    stripLen = 1;
-  });
-  hspec-discover_2_5_1 = appendPatch (addTestToolDepend super.hspec-discover_2_5_1 self.hspec-meta) (pkgs.fetchpatch {
-    url = "https://github.com/hspec/hspec/commit/8007227da5c8f2e294c1455a9f2c9855917dc461.diff";
-    includes = [ "hspec-discover.cabal" ];
-    sha256 = "1c343flwxaq7cpnwyjf4y1c5smqs5q90i48sda9kyhl88mslq63b";
-    stripLen = 1;
-  });
+  hspec = let
+    breakCycles = super.hspec.override { stringbuilder = dontCheck self.stringbuilder; };
+  in addTestToolDepend breakCycles self.hspec-meta;
+  hspec-core = let
+    breakCycles = super.hspec-core.override { silently = dontCheck self.silently; temporary = dontCheck self.temporary; };
+  in addTestToolDepend breakCycles self.hspec-meta;
+  hspec-discover = addTestToolDepend super.hspec-discover self.hspec-meta;
 
   # The build-tool-depends this hacks around has been added on master.
   base-compat = addTestToolDepend super.base-compat self.hspec-discover;
