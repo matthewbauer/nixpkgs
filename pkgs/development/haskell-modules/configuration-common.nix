@@ -1086,6 +1086,9 @@ self: super: {
   safe-exceptions = addTestToolDepend super.safe-exceptions self.hspec-discover;
   markdown-unlit = addTestToolDepend super.markdown-unlit self.hspec-discover;
   rio = addTestToolDepend super.rio self.hspec-discover;
+  conduit-extra = addTestToolDepend super.conduit-extra self.hspec-discover;
+  http-date = addTestToolDepend super.http-date self.hspec-discover;
+  ip = addTestToolDepend super.ip self.hspec-discover;
 }
 
 //
