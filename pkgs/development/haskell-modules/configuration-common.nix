@@ -1092,6 +1092,10 @@ self: super: {
   string-conversions = addTestToolDepend super.string-conversions self.hspec-discover;
   catamorphism = addTestToolDepend super.catamorphism self.hspec-discover;
   unliftio = addTestToolDepend super.unliftio self.hspec-discover;
+  yaml = addTestToolDepend super.yaml self.hspec-discover;
+  graphviz = addTestToolDepend super.graphviz self.hspec-discover;
+  word8 = addTestToolDepend super.word8 self.hspec-discover;
+  iproute = addTestToolDepend super.iproute self.hspec-discover;
 }
 
 //
