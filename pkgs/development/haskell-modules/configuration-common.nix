@@ -650,7 +650,7 @@ self: super: {
   # Need newer versions of their dependencies than the ones we have in LTS-11.x.
   cabal2nix = super.cabal2nix.overrideScope (self: super: { hpack = self.hpack_0_28_2; hackage-db = self.hackage-db_2_0_1; });
   dbus-hslogger = super.dbus-hslogger.overrideScope (self: super: { dbus = self.dbus_1_0_1; });
-  graphviz = (addBuildTool super.graphviz pkgs.graphviz).overrideScope (self: super: { wl-pprint-text = self.wl-pprint-text_1_2_0_0; base-compat = self.base-compat_0_10_1; });
+  graphviz = (addBuildTool (addTestToolDepend super.graphviz self.hspec-discover) pkgs.graphviz).overrideScope (self: super: { wl-pprint-text = self.wl-pprint-text_1_2_0_0; base-compat = self.base-compat_0_10_1; });
   status-notifier-item = super.status-notifier-item.overrideScope (self: super: { dbus = self.dbus_1_0_1; });
 
   # https://github.com/bos/configurator/issues/22
@@ -1092,7 +1092,6 @@ self: super: {
   string-conversions = addTestToolDepend super.string-conversions self.hspec-discover;
   catamorphism = addTestToolDepend super.catamorphism self.hspec-discover;
   unliftio = addTestToolDepend super.unliftio self.hspec-discover;
-  graphviz = addTestToolDepend super.graphviz self.hspec-discover;
   word8 = addTestToolDepend super.word8 self.hspec-discover;
   iproute = addTestToolDepend super.iproute self.hspec-discover;
   mime-mail = addTestToolDepend super.mime-mail self.hspec-discover;
