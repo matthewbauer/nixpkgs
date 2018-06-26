@@ -1059,6 +1059,7 @@ self: super: {
     breakCycles = super.hspec-core.override { silently = dontCheck self.silently; temporary = dontCheck self.temporary; };
   in addTestToolDepend breakCycles self.hspec-meta;
   hspec-discover = addTestToolDepend super.hspec-discover self.hspec-meta;
+  hspec-smallcheck = addTestToolDepend super.hspec-smallcheck self.hspec-meta;
 
   # The build-tool-depends this hacks around has been added on master.
   base-compat = addTestToolDepend super.base-compat self.hspec-discover;
@@ -1079,6 +1080,12 @@ self: super: {
   word8 = addTestToolDepend super.word8 self.hspec-discover;
   iproute = addTestToolDepend super.iproute self.hspec-discover;
   mime-mail = addTestToolDepend super.mime-mail self.hspec-discover;
+  unix-time = addTestToolDepend super.unix-time self.hspec-discover;
+  ClustalParser = addTestToolDepend super.ClustalParser self.hspec-discover;
+  ascii-progress = addTestToolDepend super.ascii-progress self.hspec-discover;
+  safe-exceptions = addTestToolDepend super.safe-exceptions self.hspec-discover;
+  markdown-unlit = addTestToolDepend super.markdown-unlit self.hspec-discover;
+  rio = addTestToolDepend super.rio self.hspec-discover;
 }
 
 //

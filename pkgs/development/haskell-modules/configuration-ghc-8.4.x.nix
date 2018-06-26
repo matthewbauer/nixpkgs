@@ -38,7 +38,7 @@ self: super: {
     breakCycles = super.hspec-core_2_5_1.override { silently = dontCheck self.silently; temporary = dontCheck self.temporary; };
   in addTestToolDepend breakCycles self.hspec-meta;
   hspec-discover = addTestToolDepend super.hspec-discover_2_5_1 self.hspec-meta;
-  hspec-smallcheck = self.hspec-smallcheck_0_5_2;
+  hspec-smallcheck = addTestToolDepend self.hspec-smallcheck_0_5_2 self.hspec-meta;
 
   integer-gmp = null;
   mtl = null;
