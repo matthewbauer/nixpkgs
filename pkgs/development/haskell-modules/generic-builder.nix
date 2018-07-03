@@ -166,8 +166,14 @@ let
     "--configure-option=--host=${hostPlatform.config}"
   ] ++ crossCabalFlags);
 
+  useSeparateSetupDb = !hostPlatform.isDarwin;
+
   setupCompileFlags = [
-    (optionalString (!coreSetup) "-${nativePackageDbFlag}=$setupPackageConfDir")
+    (optionalString (!coreSetup) "-${nativePackageDbFlag}=${
+      if useSeparateSetupDb
+      then "$setupPackageConfDir"
+      else "$packageConfDir"
+    }")
     (optionalString (isGhcjs || isHaLVM || versionOlder "7.8" ghc.version) "-j$NIX_BUILD_CORES")
     # https://github.com/haskell/cabal/issues/2398
     (optionalString (versionOlder "7.10" ghc.version && !isHaLVM) "-threaded")
@@ -265,13 +271,14 @@ stdenv.mkDerivation ({
   # dependencies for the build machine.
   #
   # pkgs* arrays defined in stdenv/setup.hs
-  + ''
+  + (optionalString useSeparateSetupDb ''
     for p in "''${pkgsBuildBuild[@]}" "''${pkgsBuildHost[@]}" "''${pkgsBuildTarget[@]}"; do
       ${buildPkgDb nativeGhc.name "$setupPackageConfDir"}
     done
     ${nativeGhcCommand}-pkg --${nativePackageDbFlag}="$setupPackageConfDir" recache
-  ''
-  # For normal components
+  '')
+
+    # For normal components
   + ''
     for p in "''${pkgsHostHost[@]}" "''${pkgsHostTarget[@]}"; do
       ${buildPkgDb ghc.name "$packageConfDir"}
