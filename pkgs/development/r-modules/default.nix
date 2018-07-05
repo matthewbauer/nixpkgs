@@ -440,6 +440,7 @@ let
     Matrix = [ pkgs.libiconv ];
     mgcv = [ pkgs.libiconv ];
     igraph = [ pkgs.libiconv ];
+    xts = [ pkgs.libiconv ];
   };
 
   packagesRequireingX = [
