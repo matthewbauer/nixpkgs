@@ -21,9 +21,11 @@ let
   };
 in
 
-runCommand "MacOSX${version}.sdk" {
+runCommand "SDKs" {
   inherit version;
 } ''
-  install -D ${writeText "SDKSettings.plist" (toPlist {} SDKSettings)} $out/SDKSettings.plist
-  install -D ${writeText "SystemVersion.plist" (toPlist {} SystemVersion)} $out/System/Library/CoreServices/SystemVersion.plist
+  sdk=$out/MacOSX.sdk
+  install -D ${writeText "SDKSettings.plist" (toPlist {} SDKSettings)} $sdk/SDKSettings.plist
+  install -D ${writeText "SystemVersion.plist" (toPlist {} SystemVersion)} $sdk/System/Library/CoreServices/SystemVersion.plist
+  ln -s $sdk $out/MacOSX${version}.sdk
 ''

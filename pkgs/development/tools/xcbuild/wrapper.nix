@@ -11,20 +11,57 @@ let
     inherit CoreServices ImageIO CoreGraphics;
   };
 
-  toolchain = buildPackages.callPackage ./toolchain.nix {
+  toolchains = buildPackages.callPackage ./toolchains.nix {
     inherit toolchainName;
   };
 
-  sdk = buildPackages.callPackage ./sdk.nix {
+  sdks = buildPackages.callPackage ./sdks.nix {
     inherit toolchainName sdkName;
   };
 
-  platform = buildPackages.callPackage ./platform.nix {
-    inherit sdk platformName;
+  platforms = buildPackages.callPackage ./platforms.nix {
+    inherit sdks platformName;
   };
 
   xcconfig = writeText "nix.xcconfig" ''
     SDKROOT=${sdkName}
+  '';
+
+  xcode-select = writeText "xcode-select" ''
+#!/usr/bin/env sh
+for arg in "$@"; do
+    case "$1" in
+         -h | --help) ;; # noop
+         -s | --switch) shift;; # noop
+         -r | --reset) ;; # noop
+         -v | --version) echo xcode-select version 2349. ;;
+         -p | --print-path) echo @DEVELOPER_DIR@;;
+         --install) ;; # noop
+    esac
+    shift
+done
+  '';
+
+  xcrun = writeText "xcrun" ''
+#!/usr/bin/env sh
+for arg in "$@"; do
+    case "$1" in
+         -sdk | --sdk) shift ;; # noop
+         -find | --find) shift; command -v $1; break;;
+         -log | --log) ;; # noop
+         -verbose | --verbose) ;; # noop
+         -no-cache | --no-cache) ;; # noop
+         -kill-cache | --kill-cache) ;; # noop
+         -show-sdk-path | --show-sdk-path) echo @SDK_PATH@; return ;;
+         -show-sdk-platform-path | --show-sdk-platform-path) echo @SDK_PLATFORM_PATH@; return ;;
+         *) break ;;
+    esac
+    shift
+done
+if ! [[ -z "$@" ]]; then
+   echo running "$@"
+   exec "$@"
+fi
   '';
 
 in
@@ -34,16 +71,10 @@ stdenv.mkDerivation {
 
   nativeBuildInputs = [ makeWrapper ];
 
-  setupHook = ./setup-hook.sh;
-
   phases = [ "installPhase" "fixupPhase" ];
 
   installPhase = ''
     mkdir -p $out/bin
-
-    for file in ${xcbuild}/bin/*; do
-      ln -s $file $out/bin
-    done
 
     mkdir -p $out/usr
     ln -s $out/bin $out/usr/bin
@@ -51,23 +82,32 @@ stdenv.mkDerivation {
     mkdir -p $out/Library/Xcode
     ln -s ${xcbuild}/Library/Xcode/Specifications $out/Library/Xcode/Specifications
 
-    mkdir -p $out/Platforms
-    ln -s ${platform} $out/Platforms/nixpkgs.platform
+    ln -s ${platforms} $out/Platforms
+    ln -s ${toolchains} $out/Toolchains
 
-    mkdir -p $out/Toolchains
-    ln -s ${toolchain} $out/Toolchains/nixpkgs.xctoolchain
-
-    wrapProgram $out/bin/xcodebuild \
+    makeWrapper ${xcbuild}/bin/xcodebuild $out/bin/xcodebuild \
       --add-flags "-xcconfig ${xcconfig}" \
       --add-flags "DERIVED_DATA_DIR=." \
       --set DEVELOPER_DIR "$out" \
       --set SDKROOT ${sdkName}
-    wrapProgram $out/bin/xcrun \
-      --set DEVELOPER_DIR "$out" \
-      --set SDKROOT ${sdkName}
-    wrapProgram $out/bin/xcode-select \
-      --set DEVELOPER_DIR "$out" \
-      --set SDKROOT ${sdkName}
+
+    substitute ${xcode-select} $out/bin/xcode-select \
+      --subst-var-by DEVELOPER_DIR $out
+    chmod +x $out/bin/xcode-select
+
+    substitute ${xcrun} $out/bin/xcrun \
+      --subst-var-by SDK_PATH $out \
+      --subst-var-by SDK_PLATFORM_PATH $out/Platforms/nixpkgs.platform
+    chmod +x $out/bin/xcrun
+
+    for bin in PlistBuddy actool builtin-copy builtin-copyPlist \
+               builtin-copyStrings builtin-copyTiff \
+               builtin-embeddedBinaryValidationUtility \
+               builtin-infoPlistUtility builtin-lsRegisterURL \
+               builtin-productPackagingUtility builtin-validationUtility \
+               lsbom plutil; do
+      ln -s ${xcbuild}/bin/$bin $out/bin/$bin
+    done
   '';
 
   inherit (xcbuild) meta;

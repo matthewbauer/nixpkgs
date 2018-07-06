@@ -1,4 +1,4 @@
-{ runCommand, lib, sdk, platformName, writeText }:
+{ runCommand, lib, sdks, platformName, writeText }:
 
 let
 
@@ -285,14 +285,15 @@ let
 
 in
 
-runCommand "MacOSX.platform" {} ''
-  install -D ${writeText "Info.plist" (toPlist {} Info)} $out/Info.plist
-  install -D ${writeText "version.plist" (toPlist {} Version)} $out/version.plist
-  install -D ${writeText "Architectures.xcspec" (toPlist {} Architectures)} $out/Developer/Library/Xcode/Specifications/Architectures.xcspec
-  install -D ${writeText "PackageTypes.xcspec" (toPlist {} PackageTypes)} $out/Developer/Library/Xcode/Specifications/PackageTypes.xcspec
-  install -D ${writeText "ProductTypes.xcspec" (toPlist {} ProductTypes)} $out/Developer/Library/Xcode/Specifications/ProductTypes.xcspec
+runCommand "Platforms" {} ''
+  platform=$out/MacOSX.platform
 
-  mkdir -p $out/Developer/SDKs/
-  cd $out/Developer/SDKs/
-  cp -r ${sdk} ${sdk.name}
+  install -D ${writeText "Info.plist" (toPlist {} Info)} $platform/Info.plist
+  install -D ${writeText "version.plist" (toPlist {} Version)} $platform/version.plist
+  install -D ${writeText "Architectures.xcspec" (toPlist {} Architectures)} $platform/Developer/Library/Xcode/Specifications/Architectures.xcspec
+  install -D ${writeText "PackageTypes.xcspec" (toPlist {} PackageTypes)} $platform/Developer/Library/Xcode/Specifications/PackageTypes.xcspec
+  install -D ${writeText "ProductTypes.xcspec" (toPlist {} ProductTypes)} $platform/Developer/Library/Xcode/Specifications/ProductTypes.xcspec
+
+  mkdir -p $platform/Developer
+  ln -s ${sdks} $platform/Developer/SDKs
 ''
