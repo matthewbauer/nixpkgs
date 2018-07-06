@@ -1,10 +1,7 @@
-{ runCommand, lib, toolchainName, sdkName, writeText }:
+{ runCommand, lib, toolchainName, sdkName, writeText, version, xcodePlatform }:
 
 let
   inherit (lib.generators) toPlist;
-
-  # TODO: expose MACOSX_DEPLOYMENT_TARGET in nix so we can use it here.
-  version = "10.10";
 
   SDKSettings = {
     CanonicalName = sdkName;
@@ -24,8 +21,8 @@ in
 runCommand "SDKs" {
   inherit version;
 } ''
-  sdk=$out/MacOSX.sdk
+  sdk=$out/${sdkName}.sdk
   install -D ${writeText "SDKSettings.plist" (toPlist {} SDKSettings)} $sdk/SDKSettings.plist
   install -D ${writeText "SystemVersion.plist" (toPlist {} SystemVersion)} $sdk/System/Library/CoreServices/SystemVersion.plist
-  ln -s $sdk $out/MacOSX${version}.sdk
+  ln -s $sdk $out/${xcodePlatform}.sdk
 ''
