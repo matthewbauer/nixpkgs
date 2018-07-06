@@ -21875,4 +21875,6 @@ with pkgs;
 
   powershell = callPackage ../shells/powershell { };
 
+  libobjc = if stdenv.isDarwin then darwin.libobjc else gnustep.libobjc;
+
 }
