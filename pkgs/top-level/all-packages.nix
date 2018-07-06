@@ -18606,8 +18606,6 @@ with pkgs;
     inherit (gnome3) defaultIconTheme;
   };
 
-  macvim = callPackage ../applications/editors/vim/macvim.nix { stdenv = clangStdenv; };
-
   vimHugeX = vim_configurable;
 
   vim_configurable = vimUtils.makeCustomizable (callPackage ../applications/editors/vim/configurable.nix {
