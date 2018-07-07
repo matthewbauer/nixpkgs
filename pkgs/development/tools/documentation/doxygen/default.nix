@@ -12,10 +12,9 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ cmake ];
 
   buildInputs =
-    [ perl python flex bison ]
+    [ perl python flex bison libiconv ]
     ++ stdenv.lib.optional (qt4 != null) qt4
-    ++ stdenv.lib.optional stdenv.isSunOS libiconv
-    ++ stdenv.lib.optionals stdenv.isDarwin [ CoreServices libiconv ];
+    ++ stdenv.lib.optional stdenv.isDarwin CoreServices;
 
   cmakeFlags =
     [ "-DICONV_INCLUDE_DIR=${libiconv}/include" ] ++
