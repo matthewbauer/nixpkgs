@@ -10,6 +10,8 @@ buildPythonPackage rec {
     sha256 = "6324581e215157f0fbe335dff2e21a65b4406db98ac7cca05f1e23b4f510b426";
   };
 
+  patches = [ ./remove-bogus-darwin-condition.patch ];
+
   propagatedBuildInputs = [ six protobuf ]
                         ++ lib.optionals (isPy26 || isPy27 || isPy34) [ enum34 ]
                         ++ lib.optionals (isPy26 || isPy27) [ futures ];
