@@ -23,7 +23,9 @@
   buildExamples ? false,
   buildTests ? false,
   developerBuild ? false,
-  decryptSslTraffic ? false
+  decryptSslTraffic ? false,
+
+  xcbuild
 }:
 
 assert withGtk3 -> dconf != null;
@@ -84,7 +86,8 @@ stdenv.mkDerivation {
 
   nativeBuildInputs =
     [ bison flex gperf lndir perl pkgconfig python2 which ]
-    ++ lib.optional (!stdenv.isDarwin) patchelf;
+    ++ lib.optional (!stdenv.isDarwin) patchelf
+    ++ lib.optional stdenv.isDarwin xcbuild;
 
   propagatedNativeBuildInputs = [ lndir ];
 
@@ -119,35 +122,26 @@ stdenv.mkDerivation {
       sed -i '/PATHS.*NO_DEFAULT_PATH/ d' mkspecs/features/data/cmake/Qt5BasicConfig.cmake.in
     ''
 
-    + (
-      if stdenv.isDarwin
-      then
-        ''
-          sed -i \
-              -e 's|! /usr/bin/xcode-select --print-path >/dev/null 2>&1;|false;|' \
-              -e 's|! /usr/bin/xcrun -find xcodebuild >/dev/null 2>&1;|false;|' \
-              -e 's|sysroot=$(/usr/bin/xcodebuild -sdk $sdk -version Path 2>/dev/null)|sysroot=/nonsense|' \
-              -e 's|sysroot=$(/usr/bin/xcrun --sdk $sdk --show-sdk-path 2>/dev/null)|sysroot=/nonsense|' \
-              -e 's|QMAKE_CONF_COMPILER=`getXQMakeConf QMAKE_CXX`|QMAKE_CXX="clang++"\nQMAKE_CONF_COMPILER="clang++"|' \
-              -e 's|XCRUN=`/usr/bin/xcrun -sdk macosx clang -v 2>&1`|XCRUN="clang -v 2>&1"|' \
-              -e 's#sdk_val=$(/usr/bin/xcrun -sdk $sdk -find $(echo $val | cut -d \x27 \x27 -f 1))##' \
-              -e 's#val=$(echo $sdk_val $(echo $val | cut -s -d \x27 \x27 -f 2-))##' \
-              ./configure
-              substituteInPlace ./mkspecs/common/mac.conf \
-                  --replace "/System/Library/Frameworks/OpenGL.framework/" "${darwin.apple_sdk.frameworks.OpenGL}/Library/Frameworks/OpenGL.framework/"
-              substituteInPlace ./mkspecs/common/mac.conf \
-                  --replace "/System/Library/Frameworks/AGL.framework/" "${darwin.apple_sdk.frameworks.AGL}/Library/Frameworks/AGL.framework/"
-        ''
+    + lib.optionalString stdenv.isDarwin ''
+      for f in mkspecs/features/mac/*.prf configure; do
+        substituteInPlace $f \
+          --replace /usr/bin/xcrun xcrun \
+          --replace /usr/bin/xcode-select xcode-select \
+          --replace /usr/bin/xcodebuild xcodebuild
+      done
+
+      substituteInPlace ./mkspecs/common/mac.conf \
+        --replace "/System/Library/Frameworks/OpenGL.framework/" "${darwin.apple_sdk.frameworks.OpenGL}/Library/Frameworks/OpenGL.framework/"
+      substituteInPlace ./mkspecs/common/mac.conf \
+        --replace "/System/Library/Frameworks/AGL.framework/" "${darwin.apple_sdk.frameworks.AGL}/Library/Frameworks/AGL.framework/"
+    ''
         # Note on the above: \x27 is a way if including a single-quote
         # character in the sed string arguments.
-      else
-        lib.optionalString libGLSupported
-          ''
-            sed -i mkspecs/common/linux.conf \
-                -e "/^QMAKE_INCDIR_OPENGL/ s|$|${libGL.dev or libGL}/include|" \
-                -e "/^QMAKE_LIBDIR_OPENGL/ s|$|${libGL.out}/lib|"
-          ''
-    );
+    + lib.optionalString libGLSupported ''
+         sed -i mkspecs/common/linux.conf \
+             -e "/^QMAKE_INCDIR_OPENGL/ s|$|${libGL.dev or libGL}/include|" \
+             -e "/^QMAKE_LIBDIR_OPENGL/ s|$|${libGL.out}/lib|"
+      '';
 
   qtPluginPrefix = "lib/qt-${qtCompatVersion}/plugins";
   qtQmlPrefix = "lib/qt-${qtCompatVersion}/qml";
