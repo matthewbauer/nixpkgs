@@ -80,8 +80,8 @@ stdenv.mkDerivation rec {
   buildPhase = ''
     export TMPDIR=/tmp
     ./compile.sh
-    ./output/bazel build //scripts:bash_completion \
-      --output_user_root=$(pwd) \
+    ./output/bazel --output_user_root=/tmp/.bazel build \
+      //scripts:bash_completion \
       --spawn_strategy=standalone \
       --genrule_strategy=standalone
     cp bazel-bin/scripts/bazel-complete.bash output/

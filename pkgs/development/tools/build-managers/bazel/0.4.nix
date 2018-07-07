@@ -77,7 +77,8 @@ stdenv.mkDerivation rec {
 
   buildPhase = ''
     ./compile.sh
-    ./output/bazel --output_user_root=/tmp/.bazel build //scripts:bash_completion \
+    ./output/bazel --output_user_root=/tmp/.bazel build \
+      //scripts:bash_completion \
       --spawn_strategy=standalone \
       --genrule_strategy=standalone
     cp bazel-bin/scripts/bazel-complete.bash output/
