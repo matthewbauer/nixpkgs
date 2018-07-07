@@ -2269,7 +2269,9 @@ with pkgs;
 
   exa = callPackage ../tools/misc/exa { };
 
-  exempi = callPackage ../development/libraries/exempi { };
+  exempi = callPackage ../development/libraries/exempi {
+    inherit (darwin.apple_sdk.frameworks) CoreServices;
+  };
 
   execline = callPackage ../tools/misc/execline { };
 

@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, expat, zlib, boost, libiconv, darwin }:
+{ stdenv, fetchurl, expat, zlib, boost, libiconv, CoreServices }:
 
 stdenv.mkDerivation rec {
   name = "exempi-2.4.5";
@@ -12,8 +12,8 @@ stdenv.mkDerivation rec {
     "--with-boost=${boost.dev}"
   ];
 
-  buildInputs = [ expat zlib boost ]
-    ++ stdenv.lib.optionals stdenv.isDarwin [ libiconv darwin.apple_sdk.frameworks.CoreServices ];
+  buildInputs = [ expat zlib boost libiconv ]
+    ++ stdenv.lib.optional stdenv.isDarwin CoreServices;
 
   meta = with stdenv.lib; {
     homepage = https://libopenraw.freedesktop.org/wiki/Exempi/;
