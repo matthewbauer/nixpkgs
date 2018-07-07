@@ -7768,11 +7768,11 @@ with pkgs;
 
   bam = callPackage ../development/tools/build-managers/bam {};
 
-  bazel_0_4 = callPackage ../development/tools/build-managers/bazel/0.4.nix { };
+  bazel_0_4 = callPackage ../development/tools/build-managers/bazel/0.4.nix {
+    inherit (darwin.apple_sdk.frameworks) CoreServices Foundation;
+  };
   bazel = callPackage ../development/tools/build-managers/bazel {
-    inherit (darwin) cctools;
-    inherit (darwin.apple_sdk.frameworks) CoreFoundation CoreServices Foundation;
-    binutils = binutils-unwrapped;
+    inherit (darwin.apple_sdk.frameworks) CoreServices Foundation;
   };
 
   bazel-buildtools = callPackage ../development/tools/build-managers/bazel/buildtools { };

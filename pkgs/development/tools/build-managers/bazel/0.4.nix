@@ -1,8 +1,16 @@
-{ stdenv, lib, fetchurl, jdk, zip, unzip, bash, makeWrapper, which, coreutils
+{ stdenv, lib, fetchurl, jdk, zip, unzip
+, bash, makeWrapper, which, coreutils
+
 # Always assume all markers valid (don't redownload dependencies).
-# Also, don't clean up environment variables.
-, enableNixHacks ? false
+# Also, don't clean up environment variables. Unfortunately this is
+# necessary on macOS- but still optional on Linux.
+, enableNixHacks ? stdenv.isDarwin
+
+# Apple dependencies
+, libcxx, xcbuild, CoreServices, Foundation
 }:
+
+assert stdenv.isDarwin -> enableNixHacks;
 
 stdenv.mkDerivation rec {
 
@@ -13,7 +21,7 @@ stdenv.mkDerivation rec {
     description = "Build tool that builds code quickly and reliably";
     license = licenses.asl20;
     maintainers = with maintainers; [ cstrahan philandstuff ];
-    platforms = platforms.linux;
+    platforms = platforms.unix;
   };
 
   name = "bazel-${version}";
@@ -39,30 +47,33 @@ stdenv.mkDerivation rec {
       substituteInPlace "$f" --replace '/usr/bin/env' '${coreutils}/bin/env'
     done
   '' + lib.optionalString stdenv.isDarwin ''
-    sed -i 's,/usr/bin/xcrun clang,clang,g' \
-      scripts/bootstrap/compile.sh \
-      src/tools/xcode/realpath/BUILD \
-      src/tools/xcode/stdredirect/BUILD \
-      src/tools/xcode/xcrunwrapper/xcrunwrapper.sh
-    sed -i 's,/usr/bin/xcrun "''${TOOLNAME}","''${TOOLNAME}",g' \
-      src/tools/xcode/xcrunwrapper/xcrunwrapper.sh
-    sed -i 's/"xcrun", "clang"/"clang"/g' tools/osx/xcode_configure.bzl
+    for f in scripts/bootstrap/compile.sh \
+             src/tools/xcode/realpath/BUILD \
+             src/tools/xcode/stdredirect/BUILD \
+             src/tools/xcode/xcrunwrapper/xcrunwrapper.sh \
+             tools/osx/BUILD; do
+      substituteInPlace $f \
+        --replace /usr/bin/xcrun xcrun \
+        --replace /usr/bin/xcode-select xcode-select \
+        --replace /usr/bin/xcodebuild xcodebuild
+    done
   '';
 
-  buildInputs = [
+  nativeBuildInputs = [
     jdk
     zip
     unzip
     makeWrapper
     which
+  ] ++ lib.optional stdenv.isDarwin xcbuild;
+
+  buildInputs = lib.optionals stdenv.isDarwin [
+    CoreServices
+    Foundation
   ];
 
-  # These must be propagated since the dependency is hidden in a compressed
-  # archive.
-
-  propagatedBuildInputs = [
-    bash
-  ];
+  NIX_CFLAGS_COMPILE = stdenv.lib.optionalString stdenv.isDarwin
+                       "-I${libcxx}/include/c++/v1";
 
   buildPhase = ''
     ./compile.sh
@@ -73,7 +84,6 @@ stdenv.mkDerivation rec {
   '';
 
   # Build the CPP and Java examples to verify that Bazel works.
-
   doCheck = true;
   checkPhase = ''
     export TEST_TMPDIR=$(pwd)
@@ -88,11 +98,9 @@ stdenv.mkDerivation rec {
     mkdir -p $out/bin
     mv output/bazel $out/bin
     wrapProgram "$out/bin/bazel" --prefix PATH : "${stdenv.cc}/bin:${jdk}/bin"
-    mkdir -p $out/share/bash-completion/completions $out/share/zsh/site-functions
+    mkdir -p $out/share/bash-completion/completions
+    mkdir -p $out/share/zsh/site-functions
     mv output/bazel-complete.bash $out/share/bash-completion/completions/
     cp scripts/zsh_completion/_bazel $out/share/zsh/site-functions/
   '';
-
-  dontStrip = true;
-  dontPatchELF = true;
 }
