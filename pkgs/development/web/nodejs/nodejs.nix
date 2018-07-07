@@ -3,19 +3,14 @@
 # Updater dependencies
 , writeScript, coreutils, gnugrep, jq, curl, common-updater-scripts, nix
 , gnupg
-, darwin ? null
+, CoreServices, ApplicationServices, xcbuild
 }:
 
 with stdenv.lib;
 
-{ enableNpm ? true, version, sha256, patches } @args:
+{ enableNpm ? true, version, sha256, patches ? [] } @args:
 
 let
-
-  inherit (darwin.apple_sdk.frameworks) CoreServices ApplicationServices;
-
-
-
   baseName = if enableNpm then "nodejs" else "nodejs-slim";
 
   sharedLibDeps = { inherit openssl zlib libuv; } // (optionalAttrs (!stdenv.isDarwin) { inherit http-parser; });
@@ -48,11 +43,14 @@ in
     };
 
     buildInputs = optionals stdenv.isDarwin [ CoreServices ApplicationServices ]
-    ++ [ python2 which zlib libuv openssl ]
-    ++ optionals stdenv.isLinux [ utillinux http-parser ]
-    ++ optionals stdenv.isDarwin [ pkgconfig darwin.cctools ];
+      ++ [ python2 zlib libuv openssl ]
+      ++ optionals stdenv.isLinux [ http-parser ];
 
-    configureFlags = sharedConfigureFlags ++ [ "--without-dtrace" ] ++ extraConfigFlags;
+    nativeBuildInputs = [ utillinux pkgconfig which ]
+      ++ optional stdenv.isDarwin xcbuild;
+
+    configureFlags = sharedConfigureFlags ++
+      [ "--without-dtrace" ] ++ extraConfigFlags;
 
     dontDisableStatic = true;
 
@@ -61,8 +59,6 @@ in
     passthru.interpreterName = "nodejs";
 
     setupHook = ./setup-hook.sh;
-
-    pos = builtins.unsafeGetAttrPos "version" args;
 
     inherit patches;
 
@@ -73,7 +69,6 @@ in
 
     prePatch = ''
       patchShebangs .
-      sed -i 's/raise.*No Xcode or CLT version detected.*/version = "7.0.0"/' tools/gyp/pylib/gyp/xcode_emulation.py
     '';
 
     postInstall = ''

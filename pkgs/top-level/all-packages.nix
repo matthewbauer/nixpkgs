@@ -3510,22 +3510,9 @@ with pkgs;
 
   nodejs-slim = nodejs-slim-6_x;
 
-  nodejs-6_x = callPackage ../development/web/nodejs/v6.nix {};
-  nodejs-slim-6_x = callPackage ../development/web/nodejs/v6.nix { enableNpm = false; };
-
-  nodejs-8_x = callPackage ../development/web/nodejs/v8.nix {};
-  nodejs-slim-8_x = callPackage ../development/web/nodejs/v8.nix { enableNpm = false; };
-
-  nodejs-9_x = callPackage ../development/web/nodejs/v9.nix {};
-  nodejs-slim-9_x = callPackage ../development/web/nodejs/v9.nix { enableNpm = false; };
-
-  nodejs-10_x = callPackage ../development/web/nodejs/v10.nix {
-    openssl = openssl_1_1_0;
-  };
-  nodejs-slim-10_x = callPackage ../development/web/nodejs/v10.nix {
-    enableNpm = false;
-    openssl = openssl_1_1_0;
-  };
+  inherit (callPackage ../development/web/nodejs { })
+     nodejs-6_x nodejs-slim-6_x nodejs-8_x nodejs-slim-8_x
+     nodejs-9_x nodejs-slim-9_x nodejs-10_x nodejs-slim-10_x;
 
   nodePackages_10_x = callPackage ../development/node-packages/default-v10.nix {
     nodejs = pkgs.nodejs-10_x;
