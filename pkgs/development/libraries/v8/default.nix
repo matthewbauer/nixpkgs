@@ -1,5 +1,5 @@
 { stdenv, lib, fetchgit, fetchFromGitHub, gyp, readline, python, which, icu
-, patchelf, coreutils, cctools
+, patchelf, coreutils, xcbuild
 , doCheck ? false
 , static ? false
 }:
@@ -149,10 +149,10 @@ stdenv.mkDerivation rec {
         -Dv8_use_external_startup_data=0
   '';
 
-  nativeBuildInputs = [ which ];
-  buildInputs = [ readline python icu ]
-    ++ stdenv.lib.optional stdenv.isDarwin cctools
+  nativeBuildInputs = [ which ]
+    ++ stdenv.lib.optional stdenv.isDarwin xcbuild
     ++ stdenv.lib.optional stdenv.isLinux patchelf;
+  buildInputs = [ readline python icu ];
 
   NIX_CFLAGS_COMPILE = "-Wno-error=strict-overflow -Wno-error=unused-function -Wno-error=attributes"
     + stdenv.lib.optionalString stdenv.cc.isClang " -Wno-error=unused-lambda-capture";
