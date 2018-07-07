@@ -1,4 +1,5 @@
 { stdenv, fetchurl, alsaLib, bison, flex, libsndfile, which
+, xcbuild
 , AppKit, Carbon, CoreAudio, CoreMIDI, CoreServices, Kernel
 }:
 
@@ -11,8 +12,11 @@ stdenv.mkDerivation rec {
     sha256 = "02z7sglax3j09grj5s1skmw8z6wz7b21hjrm95nrrdpwbxabh079";
   };
 
-  buildInputs = [ bison flex libsndfile which ]
-    ++ stdenv.lib.optional (!stdenv.isDarwin) alsaLib
+  nativeBuildInputs = [ which flex bison]
+    ++ stdenv.lib.optional stdenv.isDarwin xcbuild;
+
+  buildInputs = [ libsndfile ]
+    ++ stdenv.lib.optional stdenv.isLinux alsaLib
     ++ stdenv.lib.optional stdenv.isDarwin [ AppKit Carbon CoreAudio CoreMIDI CoreServices Kernel ];
 
   patches = [ ./clang.patch ./darwin-limits.patch ];
@@ -22,7 +26,6 @@ stdenv.mkDerivation rec {
 
   postPatch = ''
     substituteInPlace src/makefile --replace "/usr/bin" "$out/bin"
-    substituteInPlace src/makefile.osx --replace "xcodebuild" "/usr/bin/xcodebuild"
     substituteInPlace src/makefile.osx --replace "weak_framework" "framework"
     substituteInPlace src/makefile.osx --replace "MACOSX_DEPLOYMENT_TARGET=10.5" "MACOSX_DEPLOYMENT_TARGET=$MACOSX_DEPLOYMENT_TARGET"
   '';
