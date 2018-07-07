@@ -111,7 +111,7 @@ with frameworks; with libs; {
   ApplicationServices = [ CF CoreServices CoreText ImageIO ];
   Carbon              = [ ApplicationServices CF CoreServices Foundation IOKit Security QuartzCore ];
   CoreBluetooth       = [];
-  CoreServices        = [ CFNetwork CoreAudio CoreData CF DiskArbitration Security NetFS OpenDirectory ServiceManagement ];
+  CoreServices        = [ CFNetwork CoreAudio CoreData CF DiskArbitration Security NetFS OpenDirectory ServiceManagement libobjc ];
   IOBluetooth         = [ IOKit ];
   JavaVM              = [];
   OpenDirectory       = [];
