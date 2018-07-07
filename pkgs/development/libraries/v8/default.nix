@@ -124,13 +124,7 @@ stdenv.mkDerivation rec {
 
   # Patch based off of:
   # https://github.com/cowboyd/libv8/tree/v5.1.281.67.0/patches
-  patches = lib.optional (!doCheck) ./libv8-5.4.232.patch
-  ++ stdenv.lib.optionals stdenv.isDarwin [ ./no-xcode.patch ];
-
-  prePatch = ''
-    chmod +w tools/gyp/pylib/gyp
-    chmod +w tools/gyp/pylib/gyp/xcode_emulation.py
-  '';
+  patches = lib.optional (!doCheck) ./libv8-5.4.232.patch;
 
   postPatch = ''
     sed -i 's,#!/usr/bin/env python,#!${python}/bin/python,' gypfiles/gyp_v8
