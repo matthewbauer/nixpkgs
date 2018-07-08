@@ -4,9 +4,11 @@
 
 let
   apple-source-releases = callPackage ../os-specific/darwin/apple-source-releases { };
+
+  swift-corelibs = callPackages ../os-specific/darwin/swift-corelibs { };
 in
 
-(apple-source-releases // {
+(apple-source-releases // swift-corelibs // {
 
   callPackage = newScope (darwin.apple_sdk.frameworks // darwin);
 
@@ -77,8 +79,6 @@ in
           xcode_8_1 xcode_8_2 xcode_9_1 xcode_9_2 xcode_9_4 xcode;
 
   CoreSymbolication = callPackage ../os-specific/darwin/CoreSymbolication { };
-
-  swift-corelibs = callPackages ../os-specific/darwin/swift-corelibs { };
 
   darling = callPackage ../os-specific/darwin/darling/default.nix { };
 

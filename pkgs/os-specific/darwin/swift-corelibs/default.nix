@@ -1,8 +1,13 @@
-{callPackage, stdenv, darwin, xcbuild}:
+{ newScope, darwin }:
 
-rec {
-  corefoundation = callPackage ./corefoundation.nix {};
-  libdispatch = callPackage ./libdispatch.nix {
-   inherit (darwin) apple_sdk_sierra xnu;
+let
+  callPackage = newScope (packages // darwin);
+
+  packages = rec {
+    corefoundation = callPackage ./corefoundation.nix {};
+    libdispatch = callPackage ./libdispatch.nix {
+      xnu = darwin.xnu-full.override { headersOnly = true; };
+    };
   };
-}
+
+in packages
