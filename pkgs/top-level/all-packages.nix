@@ -6127,7 +6127,7 @@ with pkgs;
   };
 
   ccl = callPackage ../development/compilers/ccl {
-    inherit (darwin) bootstrap_cmds;
+    inherit (darwin) bootstrap_cmds dtrace;
   };
 
   chez = callPackage ../development/compilers/chez {

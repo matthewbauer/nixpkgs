@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, bootstrap_cmds, coreutils, glibc, m4 }:
+{ stdenv, fetchurl, bootstrap_cmds, coreutils, glibc, m4, dtrace }:
 
 let
   options = rec {
@@ -46,16 +46,11 @@ stdenv.mkDerivation rec {
   CCL_RUNTIME = cfg.runtime;
   CCL_KERNEL = cfg.kernel;
 
-  postPatch = if stdenv.isDarwin then ''
+  postPatch = stdenv.lib.optionalString stdenv.isDarwin ''
     substituteInPlace lisp-kernel/${CCL_KERNEL}/Makefile \
       --replace "M4 = gm4"   "M4 = m4" \
-      --replace "dtrace"     "/usr/sbin/dtrace" \
-      --replace "/bin/rm"    "${coreutils}/bin/rm" \
-      --replace "/bin/echo"  "${coreutils}/bin/echo"
-
-    substituteInPlace lisp-kernel/m4macros.m4 \
-      --replace "/bin/pwd" "${coreutils}/bin/pwd"
-  '' else ''
+      --replace "dtrace"     "${dtrace}/dtrace"
+  '' + ''
     substituteInPlace lisp-kernel/${CCL_KERNEL}/Makefile \
       --replace "/bin/rm"    "${coreutils}/bin/rm" \
       --replace "/bin/echo"  "${coreutils}/bin/echo"
