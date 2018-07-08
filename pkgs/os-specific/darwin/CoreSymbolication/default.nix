@@ -8,12 +8,9 @@ stdenv.mkDerivation rec {
   src = fetchFromGitHub {
     repo = name;
     owner = "matthewbauer";
-    rev = "671fcb66c82eac1827f3f53dc4cc4e9b1b94da0a";
-    sha256 = "0qpw46gwgjxiwqqjxksb8yghp2q8dwad6hzaf4zl82xpvk9n5ahj";
+    rev = "24c87c23664b3ee05dc7a5a87d647ae476a680e4";
+    sha256 = "08dm3d55gpizi4xx5b15lc7nwg1kkk11iw5jzbs16dhyvsmwnfrz";
   };
 
-  installPhase = ''
-    mkdir -p $out/include
-    cp -r CoreSymbolication $out/include
-  '';
+  makeFlags = [ "PREFIX=$(out)" "CFLAGS=-fblocks" ];
 }
