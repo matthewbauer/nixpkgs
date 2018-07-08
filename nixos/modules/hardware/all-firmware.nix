@@ -38,6 +38,7 @@ in {
         firmwareLinuxNonfree
         intel2200BGFirmware
         rtl8192su-firmware
+        broadcom_sta
       ] ++ optionals (versionOlder config.boot.kernelPackages.kernel.version "4.13") [
         rtl8723bs-firmware
       ];
