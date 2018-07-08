@@ -6,6 +6,12 @@ let
   # a stdenv out of something like this. With some care we can probably get rid of this, but for
   # now it's staying here.
   versions = {
+    "osx-10.13.3" = {
+      xnu = "4570.41.2";
+      libdispatch = "913.30.4";
+      CoreOSMakefiles = "77";
+      AvailabilityVersions = "32.30.1";
+    };
     "osx-10.11.6" = {
       PowerManagement = "572.50.1";
       SmartCardServices = "55111";
