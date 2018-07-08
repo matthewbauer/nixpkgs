@@ -6,6 +6,12 @@ let
   # a stdenv out of something like this. With some care we can probably get rid of this, but for
   # now it's staying here.
   versions = {
+    "osx-10.13.3" = {
+      xnu = "4570.41.2";
+      libdispatch = "913.30.4";
+      CoreOSMakefiles = "77";
+      AvailabilityVersions = "32.30.1";
+    };
     "osx-10.11.6" = {
       PowerManagement = "572.50.1";
       SmartCardServices = "55111";
@@ -202,6 +208,9 @@ let
 
   packages = {
     inherit libdispatch-boot;
+
+    AvailabilityVersions       = applePackage "AvailabilityVersions" "osx-10.13.3" "0yb6y4nbizmig4wasbnwfdc0rlc40d0isjvkv3p3w1kxklb2f5am" {};
+    CoreOSMakefiles       = applePackage "CoreOSMakefiles" "osx-10.13.3" "1rmsczd1xjr9bq3ji3ssn27lkhmlbr8i4vv9h60qd8k5pchrb2kb" {};
     SmartCardServices = applePackage "SmartCardServices" "osx-10.11.6" "1qqjlbi6j37mw9p3qpfnwf14xh9ff8h5786bmvzwc4kblfglabkm" {};
 
     inherit (adv_cmds-boot) ps locale;
