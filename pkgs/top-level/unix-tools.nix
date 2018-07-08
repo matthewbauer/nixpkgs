@@ -143,6 +143,13 @@ let
     wall = {
       linux = pkgs.utillinux;
     };
+    watch = {
+      linux = pkgs.procps;
+
+      # watch is the only command from procps that builds currently on
+      # Darwin. Unfortunately no other implementations exist currently!
+      darwin = pkgs.callPackage ../os-specific/linux/procps-ng {};
+    };
     write = {
       linux = pkgs.utillinux;
       darwin = pkgs.darwin.basic_cmds;
@@ -157,7 +164,7 @@ let
   # Compatibility derivations
   # Provided for old usage of these commands.
   compat = with bins; lib.mapAttrs makeCompat {
-    procps = [ ps sysctl top ];
+    procps = [ ps sysctl top watch ];
     utillinux = [ fsck fdisk getopt hexdump mount
                   script umount whereis write col ];
     nettools = [ arp hostname ifconfig netstat route ];

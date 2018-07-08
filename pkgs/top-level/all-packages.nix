@@ -14216,8 +14216,8 @@ with pkgs;
 
   prayer = callPackage ../servers/prayer { };
 
-  procps-ng = if stdenv.isLinux then callPackage ../os-specific/linux/procps-ng { }
-              else unixtools.procps;
+  procps = if stdenv.isLinux then callPackage ../os-specific/linux/procps-ng { }
+           else unixtools.procps;
 
   qemu_kvm = lowPrio (qemu.override { hostCpuOnly = true; });
 
@@ -21850,7 +21850,7 @@ with pkgs;
   unixtools = recurseIntoAttrs (callPackages ./unix-tools.nix { });
   inherit (unixtools) hexdump ps logger eject umount
                       mount wall hostname more sysctl getconf
-                      getent locale killall;
+                      getent locale killall watch;
 
   fts = if hostPlatform.isMusl then netbsd.fts else null;
 
