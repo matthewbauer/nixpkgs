@@ -1,5 +1,4 @@
-{ pkgs, buildEnv, runCommand, hostPlatform, lib
-, stdenv }:
+{ pkgs, buildEnv, runCommand, hostPlatform, lib, stdenv }:
 
 # These are some unix tools that are commonly included in the /usr/bin
 # and /usr/sbin directory under more normal distributions. Along with
@@ -11,30 +10,39 @@
 # instance, if your program needs to use "ps", just list it as a build
 # input, not "procps" which requires Linux.
 
+with lib;
+
 let
   version = "1003.1-2008";
 
   singleBinary = cmd: providers: let
-      provider = "${lib.getBin providers.${hostPlatform.parsed.kernel.name}}/bin/${cmd}";
+      provider = providers.${hostPlatform.parsed.kernel.name};
+      bin = "${getBin provider}/bin/${cmd}";
+      manpage = "${getOutput "man" provider}/share/man/man1/${cmd}.1.gz";
     in runCommand "${cmd}-${version}" {
-      meta.platforms = map (n: { kernel.name = n; }) (pkgs.lib.attrNames providers);
+      meta.platforms = map (n: { kernel.name = n; }) (attrNames providers);
+      passthru = { inherit provider; };
     } ''
-      if ! [ -x "${provider}" ]; then
+      if ! [ -x "${bin}" ]; then
         echo "Cannot find command ${cmd}"
         exit 1
       fi
 
-      install -D "${provider}" "$out/bin/${cmd}"
+      install -D "${bin}" "$out/bin/${cmd}"
+
+      if [ -f "${manpage}" ]; then
+        install -D "${manpage}" $out/share/man/man1/${cmd}.1.gz
+      fi
     '';
 
   # more is unavailable in darwin
-  # just use less
+  # so we just use less
   more_compat = runCommand "more-${version}" {} ''
     mkdir -p $out/bin
     ln -s ${pkgs.less}/bin/less $out/bin/more
   '';
 
-  bins = lib.mapAttrs singleBinary {
+  bins = mapAttrs singleBinary {
     # singular binaries
     arp = {
       linux = pkgs.nettools;
@@ -48,12 +56,12 @@ let
       linux = pkgs.utillinux;
     };
     getconf = {
-      linux = if hostPlatform.libc == "glibc" then lib.getBin pkgs.glibc
+      linux = if hostPlatform.libc == "glibc" then pkgs.glibc
               else pkgs.netbsd.getconf;
       darwin = pkgs.darwin.system_cmds;
     };
     getent = {
-      linux = if hostPlatform.libc == "glibc" then lib.getBin pkgs.glibc
+      linux = if hostPlatform.libc == "glibc" then pkgs.glibc
               else pkgs.netbsd.getent;
       darwin = pkgs.netbsd.getent;
     };
@@ -156,10 +164,11 @@ let
     };
   };
 
-  makeCompat = name': value: buildEnv {
-    name = name' + "-compat-${version}";
-    paths = value;
-  };
+  makeCompat = pname: paths:
+    buildEnv {
+      name = "${pname}-${version}";
+      inherit paths;
+    };
 
   # Compatibility derivations
   # Provided for old usage of these commands.
