@@ -1,12 +1,26 @@
-{ stdenv, fetchFromGitHub, cmake, apple_sdk_sierra, xnu-new }:
+{ stdenv, xcbuild, fetchFromGitHub, libplatform, xnu }:
 
-stdenv.mkDerivation rec {
-  name = "swift-corelibs-libdispatch";
+stdenv.mkDerivation {
+  name = "libdispatch";
+  nativeBuildInputs = [ xcbuild ];
+  buildInputs = [ libplatform xnu ];
+  NIX_CFLAGS_COMPILE = [
+    "-isystem ${xnu}/Library/Frameworks/Kernel.framework/PrivateHeaders"
+    "-I${libplatform}/include/os"
+    "-I${xnu}/libkern/firehose"
+  ];
   src = fetchFromGitHub {
     owner = "apple";
-    repo = name;
-    rev = "f83b5a498bad8e9ff8916183cf6e8ccf677c346b";
-    sha256 = "1czkyyc9llq2mnqfp19mzcfsxzas0y8zrk0gr5hg60acna6jkz2l";
+    repo = "swift-corelibs-libdispatch";
+    rev = "44f67b23de92c8d37c4447c1fe38aaab1dea122c";
+    sha256 = "1ygy786k071d6ia1b67msf98k2jmaf4plmd9njk400yddf703zzh";
   };
-  buildInputs = [ cmake apple_sdk_sierra.sdk xnu-new ];
+  xcbuildFlags = "-target libfirehose_kernel";
+  postPatch = ''
+    for f in os/object.h dispatch/dispatch.h os/voucher_activity_private.h \
+             os/firehose_buffer_private.h os/voucher_private.h \
+             private/private.h src/internal.h
+      do substituteInPlace $f --replace os/availability.h availability.h
+    done
+  '';
 }
