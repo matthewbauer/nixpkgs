@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, frameworks, perl } :
+{ stdenv, fetchFromGitHub, Cocoa, AppKit, ScriptingBridge, perl } :
 stdenv.mkDerivation rec {
   version = "0.9.0";
   name = "trash-${version}";
@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
     sha256 = "0ylkf7jxfy1pj7i1s48w28kzqjdfd57m2pw0jycsgcj5bkzwll41";
   };
 
-  buildInputs = with frameworks; [
+  buildInputs = [
     Cocoa
     AppKit
     ScriptingBridge

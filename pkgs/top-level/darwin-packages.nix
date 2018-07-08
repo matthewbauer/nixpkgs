@@ -67,7 +67,9 @@ in
 
   stubs = callPackages ../os-specific/darwin/stubs { };
 
-  trash = callPackage ../os-specific/darwin/trash { inherit (darwin.apple_sdk) frameworks; };
+  trash = callPackage ../os-specific/darwin/trash {
+    inherit (darwin.apple_sdk.frameworks) Cocoa AppKit ScriptingBridge;
+  };
 
   usr-include = callPackage ../os-specific/darwin/usr-include { };
 
