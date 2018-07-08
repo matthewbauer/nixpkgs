@@ -225,8 +225,8 @@ let
         url    = "http://www.opensource.apple.com/tarballs/Libc/Libc-997.90.3.tar.gz";
         sha256 = "1xchgxkxg5288r2b9yfrqji2gsgdap92k4wx2dbjwslixws12pq7";
       };
+      Libc_old        = applePackage "Libc/825_40_1.nix" "osx-10.8.5"      "0xsx1im52gwlmcrv4lnhhhn9dyk5ci6g27k6yvibn9vj8fzjxwcf" {};
     };
-    Libc_old        = applePackage "Libc/825_40_1.nix" "osx-10.8.5"      "0xsx1im52gwlmcrv4lnhhhn9dyk5ci6g27k6yvibn9vj8fzjxwcf" {};
     libclosure      = applePackage "libclosure"        "osx-10.11.6"     "1zqy1zvra46cmqv6vsf1mcsz3a76r9bky145phfwh4ab6y15vjpq" {};
     libdispatch     = applePackage "libdispatch"       "osx-10.10.5"     "0jsfbzp87lwk9snlby0hd4zvj7j894p5q3cw0wdx9ny1mcp3kdcj" {};
     libiconv        = applePackage "libiconv"          "osx-10.11.6"     "11h6lfajydri4widis62q8scyz7z8l6msqyx40ly4ahsdlbl0981" {};
