@@ -246,6 +246,7 @@ let
     removefile      = applePackage "removefile"        "osx-10.11.6"     "1b6r74ry3k01kypvlaclf33fha15pcm0kzx9zrymlg66wg0s0i3r" {};
     Security        = applePackage "Security"          "osx-10.9.5"      "1nv0dczf67dhk17hscx52izgdcyacgyy12ag0jh6nl5hmfzsn8yy" {};
     xnu             = applePackage "xnu"               "osx-10.11.6"     "0yhziq4dqqcbjpf6vyqn8xhwva2zb525gndkx8cp8alzwp76jnr9" {};
+    xnu-full        = applePackage "xnu/full.nix"      "osx-10.13.3"     "0b8n643svc85n55hvnc2rayzpl8gdjarnfgpvwi8s9r6252savp2" {};
     Librpcsvc       = applePackage "Librpcsvc"         "osx-10.11.6"     "1zwfwcl9irxl1dlnf2b4v30vdybp0p0r6n6g1pd14zbdci1jcg2k" {};
     adv_cmds        = applePackage "adv_cmds/xcode.nix" "osx-10.11.6"    "12gbv35i09aij9g90p6b3x2f3ramw43qcb2gjrg8lzkzmwvcyw9q" {};
     basic_cmds      = applePackage "basic_cmds"        "osx-10.11.6"     "0hvab4b1v5q2x134hdkal0rmz5gsdqyki1vb0dbw4py1bqf0yaw9" {};
