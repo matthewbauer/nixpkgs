@@ -1,4 +1,4 @@
-{ stdenv, appleDerivation, fetchurl, xcbuild, ncurses, libutil-new }:
+{ stdenv, appleDerivation, fetchurl, xcbuild, ncurses, libutil }:
 
 appleDerivation {
   # We can't just run the root build, because https://github.com/facebook/xcbuild/issues/264
@@ -49,7 +49,7 @@ appleDerivation {
   '';
 
   nativeBuildInputs = [ xcbuild ];
-  buildInputs = [ ncurses libutil-new ];
+  buildInputs = [ ncurses libutil ];
 
   meta = {
     platforms = stdenv.lib.platforms.darwin;

@@ -211,7 +211,7 @@ in rec {
 
       darwin = super.darwin // {
         inherit (darwin)
-          dyld Libsystem xnu configd ICU libdispatch libclosure launchd;
+          dyld Libsystem xnu configd ICU libdispatch-boot libclosure launchd;
       };
     };
   in with prevStage; stageFun 2 prevStage {
@@ -247,7 +247,8 @@ in rec {
 
       darwin = super.darwin // {
         inherit (darwin)
-          dyld Libsystem xnu configd libdispatch libclosure launchd libiconv locale;
+          dyld Libsystem xnu configd libdispatch-boot
+          libclosure launchd libiconv locale;
       };
     };
   in with prevStage; stageFun 3 prevStage {

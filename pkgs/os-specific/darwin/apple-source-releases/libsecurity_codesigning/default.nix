@@ -1,8 +1,8 @@
 { appleDerivation, libsecurity_cdsa_utilities, libsecurity_utilities
 , Security, xnu, xar, antlr, libsecurityd, apple_sdk
-, dtrace-xcode, osx_private_sdk }:
+, dtrace, osx_private_sdk }:
 appleDerivation {
-  buildInputs = [ libsecurity_utilities libsecurity_cdsa_utilities dtrace-xcode
+  buildInputs = [ libsecurity_utilities libsecurity_cdsa_utilities dtrace
                   Security xar antlr libsecurityd ];
   NIX_CFLAGS_COMPILE = "-Iinclude -I${xnu}/Library/Frameworks/System.framework/Headers";
   patchPhase = ''
