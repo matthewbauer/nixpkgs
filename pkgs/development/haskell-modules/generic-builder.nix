@@ -233,7 +233,7 @@ stdenv.mkDerivation ({
 
   inherit src;
 
-  strictDeps = true;
+  strictDeps = (versionAtLeast ghc.version "8.4");
   inherit depsBuildBuild nativeBuildInputs;
   buildInputs = otherBuildInputs ++ optionals (!hasActiveLibrary) propagatedBuildInputs;
   propagatedBuildInputs = optionals hasActiveLibrary propagatedBuildInputs;
