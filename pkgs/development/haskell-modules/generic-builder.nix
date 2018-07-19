@@ -258,6 +258,8 @@ stdenv.mkDerivation ({
     echo "Build with ${ghc}."
     ${optionalString (hasActiveLibrary && hyperlinkSource) "export PATH=${hscolour}/bin:$PATH"}
 
+    export TMPDIR=$(mktemp -d)
+
     setupPackageConfDir="$TMPDIR/setup-package.conf.d"
     mkdir -p $setupPackageConfDir
     packageConfDir="$TMPDIR/package.conf.d"
