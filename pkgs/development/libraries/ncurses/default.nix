@@ -3,7 +3,7 @@
 , abiVersion ? "6"
 , mouseSupport ? false
 , unicode ? true
-, enableStatic ? stdenv.hostPlatform.useAndroidPrebuilt
+, enableStatic ? false
 , withCxx ? !stdenv.hostPlatform.useAndroidPrebuilt
 
 , gpm
