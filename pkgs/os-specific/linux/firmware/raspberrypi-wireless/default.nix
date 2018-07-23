@@ -42,7 +42,7 @@ stdenv.mkDerivation rec {
   meta = with stdenv.lib; {
     description = "Firmware for builtin Wifi/Bluetooth devices in the Raspberry Pi 3 and Zero W";
     homepage = https://archive.raspberrypi.org/debian/pool/main/f/firmware-nonfree/;
-    license = licenses.unfreeRedistributableFirmware;
+    license = licenses.unfreeRedistributable;
     platforms = platforms.linux;
     maintainers = with maintainers; [ lopsided98 ];
   };

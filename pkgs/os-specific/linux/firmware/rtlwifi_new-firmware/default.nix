@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Firmware for the newest Realtek rtlwifi codes";
     inherit (src.meta) homepage;
-    license = licenses.unfreeRedistributableFirmware;
+    license = licenses.unfreeRedistributable;
     platforms = with platforms; linux;
     maintainers = with maintainers; [ tvorog ];
   };

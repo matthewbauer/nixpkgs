@@ -22,7 +22,7 @@ stdenv.mkDerivation rec {
   meta = with stdenv.lib; {
     description = "Binary firmware collection packaged by kernel.org";
     homepage = http://packages.debian.org/sid/firmware-linux-nonfree;
-    license = licenses.unfreeRedistributableFirmware;
+    license = licenses.unfreeRedistributable;
     platforms = platforms.linux;
     maintainers = with maintainers; [ fpletz ];
     priority = 6; # give precedence to kernel firmware

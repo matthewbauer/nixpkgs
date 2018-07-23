@@ -27,7 +27,7 @@ stdenv.mkDerivation rec {
   meta = with stdenv.lib; {
     homepage = http://www.intel.com/;
     description = "Microcode for Intel processors";
-    license = licenses.unfreeRedistributableFirmware;
+    license = licenses.unfreeRedistributable;
     maintainers = with maintainers; [ wkennington ];
     platforms = platforms.linux;
   };
