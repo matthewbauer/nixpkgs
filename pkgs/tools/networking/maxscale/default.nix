@@ -80,7 +80,7 @@ stdenv.mkDerivation rec {
   meta = with stdenv.lib; {
      description = ''MaxScale database proxy extends MariaDB Server's high availability'';
      homepage = https://mariadb.com/products/technology/maxscale;
-     license = licenses.bsl11;
+     license = licenses.bsl11; # turns into GPL2 on 2020-01-01
      platforms = platforms.linux;
      maintainers = with maintainers; [ izorkin ];
  };
