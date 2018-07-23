@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, enableStatic ? false }:
+{ stdenv, fetchurl, enableShared ? true }:
 
 stdenv.mkDerivation rec {
   name = "xz-5.2.4";
@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
 
   outputs = [ "bin" "dev" "out" "man" "doc" ];
 
-  configureFlags = stdenv.lib.optional enableStatic "--disable-shared";
+  configureFlags = stdenv.lib.optional (!enableShared) "--disable-shared";
 
   doCheck = true;
 
