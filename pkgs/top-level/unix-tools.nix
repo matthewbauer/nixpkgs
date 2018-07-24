@@ -16,7 +16,14 @@ let
   version = "1003.1-2008";
 
   singleBinary = cmd: providers: let
-      provider = providers.${hostPlatform.parsed.kernel.name};
+      provider = providers.${hostPlatform.parsed.kernel.name}
+                 or (throw ''
+
+No provider for ${cmd} available in unix tools for
+${hostPlatform.parsed.kernel.name}.
+
+      '');
+
       bin = "${getBin provider}/bin/${cmd}";
       manpage = "${getOutput "man" provider}/share/man/man1/${cmd}.1.gz";
     in runCommand "${cmd}-${version}" {
