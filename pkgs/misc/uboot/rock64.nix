@@ -32,6 +32,6 @@ in buildUBoot rec {
     maintainers = [ maintainers.lopsided98 ];
     platforms = ["aarch64-linux"];
     # Because of the TPL blob
-    license = licenses.unfreeRedistributable;
+    license = licenses.unfreeRedistributableFirmware;
   };
 }

@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
   meta = with stdenv.lib; {
     description = "AMD Processor microcode patch";
     homepage = http://www.amd64.org/support/microcode.html;
-    license = licenses.unfreeRedistributable;
+    license = licenses.unfreeRedistributableFirmware;
     maintainers = with maintainers; [ wkennington ];
     platforms = platforms.linux;
   };

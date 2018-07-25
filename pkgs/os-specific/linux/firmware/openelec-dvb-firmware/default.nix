@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
   meta = with stdenv.lib; {
     description = "DVB firmware from OpenELEC";
     homepage = https://github.com/OpenELEC/dvb-firmware;
-    license = licenses.unfreeRedistributable;
+    license = licenses.unfreeRedistributableFirmware;
     platforms = platforms.linux;
     priority = 7;
   };
