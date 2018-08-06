@@ -5,4 +5,8 @@
   (bug-reference-bug-regexp . "\\(\\(?:[Ii]ssue \\|[Ff]ixe[ds] \\|[Rr]esolve[ds]? \\|[Cc]lose[ds]? \\|[Pp]\\(?:ull [Rr]equest\\|[Rr]\\) \\|(\\)#\\([0-9]+\\))?\\)")
   (bug-reference-url-format . "https://github.com/NixOS/nixpkgs/issues/%s"))
  (nix-mode
-  (tab-width . 2)))
+  (tab-width . 2)
+  (c-basic-offset . 2))
+ (sh-script-mode
+  (indent-tabs-mode . nil)
+  (sh-basic-offset . 4)))
