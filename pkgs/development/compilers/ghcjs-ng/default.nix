@@ -1,8 +1,6 @@
 { stdenv
 , callPackage
 , fetchgit
-, ghcjsSrcJson ? null
-, ghcjsSrc ? fetchgit (builtins.fromJSON (builtins.readFile ghcjsSrcJson))
 , bootPkgs
 , alex
 , happy
@@ -22,61 +20,53 @@
 }:
 
 let
-  passthru = {
-    configuredSrc = callPackage ./configured-ghcjs-src.nix {
-      inherit ghcjsSrc alex happy;
-      inherit (bootPkgs) ghc;
-    };
-    genStage0 = callPackage ./mk-stage0.nix { inherit (passthru) configuredSrc; };
-    bootPkgs = bootPkgs.extend (lib.foldr lib.composeExtensions (_:_:{}) [
-      (self: _: import stage0 {
-        inherit (passthru) configuredSrc;
-        inherit (self) callPackage;
-      })
+  bootPkgs = bootPkgs.extend (lib.foldr lib.composeExtensions (_:_:{}) [
+    (self: _: import stage0 {
+      inherit configuredSrc;
+      inherit (self) callPackage;
+    })
 
-      (callPackage ./common-overrides.nix { inherit haskellLib alex happy; })
-      ghcjsDepOverrides
-    ]);
+    (callPackage ./common-overrides.nix { inherit haskellLib alex happy; })
+    ghcjsDepOverrides
+  ]);
 
-    targetPrefix = "";
-    inherit bootGhcjs;
-    inherit (bootGhcjs) version;
-    isGhcjs = true;
-
-    enableShared = true;
-
-    socket-io = nodePackages."socket.io";
-
-    # Relics of the old GHCJS build system
-    stage1Packages = [];
-    mkStage2 = { callPackage }: {
-      # https://github.com/ghcjs/ghcjs-base/issues/110
-      # https://github.com/ghcjs/ghcjs-base/pull/111
-      ghcjs-base = haskell.lib.dontCheck (haskell.lib.doJailbreak (callPackage ./ghcjs-base.nix {}));
-    };
-
-    haskellCompilerName = "ghcjs-${bootGhcjs.version}";
-  };
-
-  bootGhcjs = haskellLib.justStaticExecutables passthru.bootPkgs.ghcjs;
-  libexec = "${bootGhcjs}/libexec/${builtins.replaceStrings ["darwin" "i686"] ["osx" "i386"] stdenv.system}-${passthru.bootPkgs.ghc.name}/${bootGhcjs.name}";
+  libexec = "${bootGhcjs}/libexec/${builtins.replaceStrings ["darwin" "i686"] ["osx" "i386"] stdenv.system}-${bootPkgs.ghc.name}/${bootGhcjs.name}";
 
 in stdenv.mkDerivation {
     name = bootGhcjs.name;
-    src = passthru.configuredSrc;
+    src = configuredSrc;
     nativeBuildInputs = [
-      bootGhcjs
-      passthru.bootPkgs.ghc
+      bootPkgs.ghcjs
+      bootPkgs.ghc
       cabal-install
       nodejs
       makeWrapper
-      xorg.lndir
       gmp
       pkgconfig
+      perl
+      autoconf
+      automake
+      python3
+      happy
+      alex
     ] ++ lib.optionals stdenv.isDarwin [
       gcc # https://github.com/ghcjs/ghcjs/issues/663
     ];
-    dontConfigure = true;
+    configurePhase = ''
+      export HOME=$(pwd)
+      mkdir $HOME/.cabal
+      touch $HOME/.cabal/config
+
+      # TODO: Find a better way to avoid impure version numbers
+      sed -i 's/RELEASE=NO/RELEASE=YES/' ghc/configure.ac
+
+      # TODO: How to actually fix this?
+      # Seems to work fine and produce the right files.
+      touch ghc/includes/ghcautoconf.h
+
+      patchShebangs .
+      ./utils/makePackages.sh copy
+    '';
     dontInstall = true;
     buildPhase = ''
       export HOME=$TMP
@@ -86,7 +76,9 @@ in stdenv.mkDerivation {
 
       mkdir -p $out/bin
       mkdir -p $out/lib/${bootGhcjs.name}
-      lndir ${libexec} $out/bin
+      for bin in ${libexec}/*; do
+        ln -s $bin $out/bin
+      done
 
       wrapProgram $out/bin/ghcjs --add-flags "-B$out/lib/${bootGhcjs.name}"
       wrapProgram $out/bin/haddock-ghcjs --add-flags "-B$out/lib/${bootGhcjs.name}"
@@ -99,7 +91,28 @@ in stdenv.mkDerivation {
     # https://github.com/ghcjs/ghcjs/issues/654
     # enableParallelBuilding = true;
 
-    inherit passthru;
+    passthru = {
+      targetPrefix = "";
+      inherit bootGhcjs;
+      inherit (bootGhcjs) version;
+      isGhcjs = true;
+
+      enableShared = true;
+
+      inherit bootPkgs;
+
+      socket-io = nodePackages."socket.io";
+
+      # Relics of the old GHCJS build system
+      stage1Packages = [];
+      mkStage2 = { callPackage }: {
+        # https://github.com/ghcjs/ghcjs-base/issues/110
+        # https://github.com/ghcjs/ghcjs-base/pull/111
+        ghcjs-base = haskell.lib.dontCheck (haskell.lib.doJailbreak (callPackage ./ghcjs-base.nix {}));
+      };
+
+      haskellCompilerName = "ghcjs-${bootGhcjs.version}";
+    };
 
     meta.platforms = passthru.bootPkgs.ghc.meta.platforms;
   }
