@@ -145,6 +145,10 @@ rec {
     config = "i686-pc-mingw32";
     libc = "msvcrt"; # This distinguishes the mingw (non posix) toolchain
     platform = {};
+
+    # The emulator is necessary in some cases when we need to execute
+    # some thing on the cross system.
+    emulator = pkgs: "WINEDEBUG=-all ${pkgs.winePackages.minimal}/bin/wine ";
   };
 
   # 64 bit mingw-w64
@@ -153,5 +157,9 @@ rec {
     config = "x86_64-pc-mingw32";
     libc = "msvcrt"; # This distinguishes the mingw (non posix) toolchain
     platform = {};
+
+    # The emulator is necessary in some cases when we need to execute
+    # some thing on the cross system.
+    emulator = pkgs: "WINEDEBUG=-all ${pkgs.wineWowPackages.minimal}/bin/wine ";
   };
 }

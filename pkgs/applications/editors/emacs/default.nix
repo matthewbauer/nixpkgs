@@ -1,8 +1,9 @@
 { stdenv, lib, fetchurl, ncurses, xlibsWrapper, libXaw, libXpm, Xaw3d
 , pkgconfig, gettext, libXft, dbus, libpng, libjpeg, libungif
-, libtiff, librsvg, gconf, libxml2, imagemagick, gnutls, libselinux
+, libtiff, librsvg, gconf, libxml2, imagemagick, libselinux
 , alsaLib, cairo, acl, gpm, AppKit, GSS, ImageIO
-, withX ? !stdenv.isDarwin
+, withGnutls ? !hostPlatform.isWindows, gnutls
+, withX ? !hostPlatform.isDarwin && !hostPlatform.isWindows
 , withGTK2 ? false, gtk2 ? null
 , withGTK3 ? true, gtk3 ? null, gsettings-desktop-schemas ? null
 , withXwidgets ? false, webkitgtk24x-gtk3 ? null, wrapGAppsHook ? null, glib-networking ? null
@@ -19,6 +20,19 @@ assert withGTK3 -> !withGTK2 && gtk3 != null;
 assert withXwidgets -> withGTK3 && webkitgtk24x-gtk3 != null;
 
 let
+
+  # Temacs need to be run in a host emulator when doing cross. We want
+  # the emulator to come /from/ the original build platform (before
+  # the offsets have changed).
+  emulator = lib.optionalString (hostPlatform != buildPlatform)
+             ((hostPlatform.emulator
+               or (throw "Emacs requires an emulator to cross compile"))
+               (import buildPackages.path { localSystem = { system = builtins.currentSystem; }; }));
+
+  # The env -i call is needed to clear the environment, preventing
+  # impurities.
+  RUN_TEMACS = "env -i LC_ALL=C ${emulator}./temacs";
+
   toolkit =
     if withGTK2 then "gtk2"
     else if withGTK3 then "gtk3"
@@ -36,12 +50,17 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  patches = [
-    ./clean-env.patch
-  ];
+  inherit RUN_TEMACS;
+  makeFlags = [ "RUN_TEMACS=$$RUN_TEMACS"];
 
   postPatch = lib.optionalString srcRepo ''
     rm -fr .git
+  '' + lib.optionalString hostPlatform.isWindows ''
+    substituteInPlace nt/emacsclient.rc.in \
+      --replace icons\\emacs.ico icons/emacs.ico
+    substituteInPlace src/Makefile.in \
+      --replace '$(AM_V_at)$(libsrc)/make-docfile' \
+                '$(AM_V_at)${emulator}$(libsrc)/make-docfile'
   '';
 
   CFLAGS = "-DMAC_OS_X_VERSION_MAX_ALLOWED=101200";
@@ -51,8 +70,10 @@ stdenv.mkDerivation rec {
     ++ lib.optional (withX && (withGTK3 || withXwidgets)) wrapGAppsHook;
 
   buildInputs =
-    [ ncurses gconf libxml2 gnutls alsaLib acl gpm gettext ]
-    ++ lib.optionals stdenv.isLinux [ dbus libselinux ]
+    [ ncurses libxml2 alsaLib acl gpm ]
+    ++ lib.optional withGnutls gnutls
+    ++ lib.optionals (!hostPlatform.isWindows) [gettext]
+    ++ lib.optionals hostPlatform.isLinux [ dbus libselinux ]
     ++ lib.optionals withX
       [ xlibsWrapper libXaw Xaw3d libXpm libpng libjpeg libungif libtiff librsvg libXft
         imagemagick gconf ]
@@ -72,14 +93,12 @@ stdenv.mkDerivation rec {
       then [ "--with-x-toolkit=${toolkit}" "--with-xft" ]
       else [ "--with-x=no" "--with-xpm=no" "--with-jpeg=no" "--with-png=no"
              "--with-gif=no" "--with-tiff=no" ])
-    ++ lib.optional withXwidgets "--with-xwidgets";
+    ++ lib.optional withXwidgets "--with-xwidgets"
+    ++ lib.optional (!withGnutls) "--with-gnutls=no";
 
   preConfigure = lib.optionalString srcRepo ''
     ./autogen.sh
   '' + ''
-    substituteInPlace lisp/international/mule-cmds.el \
-      --replace /usr/share/locale ${gettext}/share/locale
-
     for makefile_in in $(find . -name Makefile.in -print); do
         substituteInPlace $makefile_in --replace /bin/pwd pwd
     done
