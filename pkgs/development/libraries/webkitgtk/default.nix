@@ -3,7 +3,7 @@
 , gtk3, wayland, libwebp, enchant2, xorg, libxkbcommon, epoxy, at-spi2-core
 , libxml2, libsoup, libsecret, libxslt, harfbuzz, libpthreadstubs, pcre, nettle, libtasn1, p11-kit
 , libidn, libedit, readline, libGLU_combined, libintl
-, enableGeoLocation ? true, geoclue2, sqlite
+, enableGeoLocation ? stdenv.isLinux, geoclue2, sqlite
 , enableGtk2Plugins ? false, gtk2 ? null
 , gst-plugins-base, gst-plugins-bad, woff2
 }:
@@ -15,20 +15,19 @@ assert stdenv.isDarwin -> !enableGtk2Plugins;
 with stdenv.lib;
 stdenv.mkDerivation rec {
   name = "webkitgtk-${version}";
-  version = "2.20.3";
+  version = "2.21.5";
 
   meta = {
     description = "Web content rendering engine, GTK+ port";
     homepage = https://webkitgtk.org/;
     license = licenses.bsd2;
     platforms = platforms.linux;
-    hydraPlatforms = [];
     maintainers = with maintainers; [ ];
   };
 
   src = fetchurl {
     url = "https://webkitgtk.org/releases/${name}.tar.xz";
-    sha256 = "1n0dy94bm7wvxln4jis1gp8plv8n4a01g41724zsf5psg1yk16sp";
+    sha256 = "07w28ppak036ninyiiz6nnmqdjcyaj5z0y7wk1l4l5yw073wh7n3";
   };
 
   patches = optionals stdenv.isDarwin [

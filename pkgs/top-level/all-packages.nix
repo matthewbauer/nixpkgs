@@ -12163,23 +12163,21 @@ with pkgs;
 
   wcslib = callPackage ../development/libraries/wcslib { };
 
-  webkitgtk = webkitgtk220x;
-
   webkitgtk24x-gtk3 = callPackage ../development/libraries/webkitgtk/2.4.nix {
     harfbuzz = harfbuzz-icu-58;
     gst-plugins-base = gst_all_1.gst-plugins-base;
     inherit (darwin) libobjc;
   };
 
-  webkitgtk220x = callPackage ../development/libraries/webkitgtk/2.20.nix {
-    harfbuzz = harfbuzz-icu;
-    inherit (gst_all_1) gst-plugins-base gst-plugins-bad;
-    stdenv = overrideCC stdenv gcc6;
-  };
-
   webkitgtk24x-gtk2 = webkitgtk24x-gtk3.override {
     withGtk2 = true;
     enableIntrospection = false;
+  };
+
+  webkitgtk = callPackage ../development/libraries/webkitgtk/default.nix {
+    harfbuzz = harfbuzz-icu;
+    inherit (gst_all_1) gst-plugins-base gst-plugins-bad;
+    stdenv = overrideCC stdenv gcc6;
   };
 
   websocketpp = callPackage ../development/libraries/websocket++ { };
