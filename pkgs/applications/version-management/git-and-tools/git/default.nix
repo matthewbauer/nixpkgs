@@ -48,6 +48,8 @@ stdenv.mkDerivation {
     ./installCheck-path.patch
   ];
 
+  strictDeps = true;
+
   postPatch = ''
     for x in connect.c git-gui/lib/remote_add.tcl ; do
       substituteInPlace "$x" \
