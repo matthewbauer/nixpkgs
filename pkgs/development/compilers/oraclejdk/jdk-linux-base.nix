@@ -46,7 +46,7 @@ let
     x86_64-linux  = "amd64";
     armv7l-linux  = "arm";
     aarch64-linux = "aarch64";
-  }.${stdenv.system};
+  }.${stdenv.system} or (throw "No JRE architecture for ${stdenv.system}");
 
   jce =
     if installjce then

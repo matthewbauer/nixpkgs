@@ -26,7 +26,7 @@ let
       url = "${baseUrl}/${name}-linux-x86_64.tar.gz";
       sha256 = "d39293914b2e969bfe18dd19eb77ba96d283995f8cf1e5d7ba6ac712a3c9479a";
     };
-  }.${system} or throw "Google Cloud SDK binaries for ${system} are unavailable.";
+  }.${system} or (throw "Google Cloud SDK binaries for ${system} are unavailable.");
 
 in stdenv.mkDerivation rec {
   name = "google-cloud-sdk-${version}";

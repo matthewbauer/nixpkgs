@@ -84,7 +84,7 @@ stdenv.mkDerivation rec {
   '';
 
   postFixup = ''
-    patchelf --set-interpreter ${stdenv.glibc}/lib/ld-linux-x86-64.so.2 $out/electron/crashplan
+    patchelf --set-interpreter ${stdenv.cc.libc}/lib/ld-linux-x86-64.so.2 $out/electron/crashplan
     wrapProgram $out/bin/CrashPlanDesktop --prefix LD_LIBRARY_PATH ":" "${stdenv.lib.makeLibraryPath [
       stdenv.cc.cc.lib gtk2 atk glib pango gdk_pixbuf cairo freetype
       fontconfig dbus gconf nss nspr alsaLib cups expat udev

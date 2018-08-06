@@ -3,7 +3,7 @@
 let
   myPatchElf = file: with stdenv.lib; ''
     patchelf --set-interpreter \
-      ${stdenv.glibc}/lib/ld-linux${optionalString stdenv.is64bit "-x86-64"}.so.2 \
+      ${stdenv.cc.libc}/lib/ld-linux${optionalString stdenv.is64bit "-x86-64"}.so.2 \
       ${file}
   '';
 
@@ -11,7 +11,7 @@ let
 
 in stdenv.mkDerivation rec {
   name = "brscan4-0.4.4-4";
-  src = 
+  src =
     if stdenv.system == "i686-linux" then
       fetchurl {
         url = "http://download.brother.com/welcome/dlf006646/${name}.i386.deb";

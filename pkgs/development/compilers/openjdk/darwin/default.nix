@@ -41,6 +41,7 @@ let
     passthru = {
       jre = jdk;
       home = jdk;
+      architecture = "";
     };
 
     meta.platforms = stdenv.lib.platforms.darwin;

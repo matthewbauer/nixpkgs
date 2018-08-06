@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
       -i Makefile
   '';
 
-  buildInputs = [ stdenv.cc.libc.linuxHeaders libtool gettext ];
+  buildInputs = [ (stdenv.cc.libc.linuxHeaders or null) libtool gettext ];
 
   meta = {
     description = "Tools to display or change the CPU governor settings";
