@@ -8050,9 +8050,7 @@ with pkgs;
      wrapCC (distcc.links extraConfig)) {};
   distccStdenv = lowPrio (overrideCC stdenv distccWrapper);
 
-  distccMasquerade = if stdenv.isDarwin
-    then null
-    else callPackage ../development/tools/misc/distcc/masq.nix {
+  distccMasquerade = callPackage ../development/tools/misc/distcc/masq.nix {
       gccRaw = gcc.cc;
       binutils = binutils;
     };
@@ -9356,7 +9354,7 @@ with pkgs;
   libcCross = assert targetPlatform != buildPlatform; libcCrossChooser targetPlatform.libc;
 
   # Only supported on Linux, using glibc
-  glibcLocales = if hostPlatform.libc == "glibc" then callPackage ../development/libraries/glibc/locales.nix { } else null;
+  glibcLocales = callPackage ../development/libraries/glibc/locales.nix { };
 
   glibcInfo = callPackage ../development/libraries/glibc/info.nix { };
 
@@ -9474,9 +9472,7 @@ with pkgs;
 
   gnu-config = callPackage ../development/libraries/gnu-config { };
 
-  gnu-efi = if hostPlatform.isEfi
-              then callPackage ../development/libraries/gnu-efi { }
-            else null;
+  gnu-efi = callPackage ../development/libraries/gnu-efi { };
 
   gnutls = callPackage
     (if stdenv.isDarwin
@@ -12362,7 +12358,6 @@ with pkgs;
   ### DEVELOPMENT / LIBRARIES / AGDA
 
   agda = callPackage ../build-support/agda {
-    glibcLocales = if pkgs.stdenv.isLinux then pkgs.glibcLocales else null;
     extension = self : super : { };
     inherit (haskellPackages) Agda;
   };
@@ -13506,7 +13501,9 @@ with pkgs;
     })
     else if stdenv.isLinux
     then utillinuxMinimal
-    else null;
+    else if stdenv.isDarwin
+    then null # somehow it is already in the stdenv for darwin
+    else libossp_uuid;
 
   light = callPackage ../os-specific/linux/light { };
 
@@ -19336,7 +19333,7 @@ with pkgs;
   amoeba = callPackage ../games/amoeba { };
   amoeba-data = callPackage ../games/amoeba/data.nix { };
 
-  andyetitmoves = if stdenv.isLinux then callPackage ../games/andyetitmoves {} else null;
+  andyetitmoves = callPackage ../games/andyetitmoves {};
 
   angband = callPackage ../games/angband { };
 
