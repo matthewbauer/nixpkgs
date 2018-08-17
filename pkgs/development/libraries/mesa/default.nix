@@ -12,6 +12,8 @@
 , galliumDrivers ? null
 , driDrivers ? null
 , vulkanDrivers ? null
+, mesaPlatforms ? ["x11"] ++ lib.optional stdenv.isLinux ["wayland" "drm"]
+, OpenGL, Xplugin
 }:
 
 /** Packaging design:
@@ -32,20 +34,23 @@ if ! lists.elem stdenv.system platforms.mesaPlatforms then
 else
 
 let
-  defaultGalliumDrivers =
-    if stdenv.isAarch32
-    then ["virgl" "nouveau" "freedreno" "vc4" "etnaviv" "imx"]
-    else if stdenv.isAarch64
-    then ["virgl" "nouveau" "vc4" ]
-    else ["virgl" "svga" "i915" "r300" "r600" "radeonsi" "nouveau"];
-  defaultDriDrivers =
-    if (stdenv.isAarch32 || stdenv.isAarch64)
-    then ["nouveau"]
-    else ["i915" "i965" "nouveau" "radeon" "r200"];
-  defaultVulkanDrivers =
-    if (stdenv.isAarch32 || stdenv.isAarch64)
-    then []
-    else ["intel"] ++ lib.optional enableRadv "radeon";
+  defaultGalliumDrivers = []
+    ++ lib.optionals stdenv.isLinux
+      (if stdenv.isAarch32
+      then ["virgl" "nouveau" "freedreno" "vc4" "etnaviv" "imx"]
+      else if stdenv.isAarch64
+      then ["virgl" "nouveau" "vc4" ]
+      else ["virgl" "svga" "i915" "r300" "r600" "radeonsi" "nouveau"]);
+  defaultDriDrivers = []
+    ++ lib.optionals stdenv.isLinux
+      (if (stdenv.isAarch32 || stdenv.isAarch64)
+      then ["nouveau"]
+      else ["i915" "i965" "nouveau" "radeon" "r200"]);
+  defaultVulkanDrivers = []
+    ++ lib.optionals stdenv.isLinux
+      (if (stdenv.isAarch32 || stdenv.isAarch64)
+       then []
+       else ["intel"] ++ lib.optional enableRadv "radeon");
 in
 
 let gallium_ = galliumDrivers; dri_ = driDrivers; vulkan_ = vulkanDrivers; in
@@ -55,7 +60,7 @@ let
     (if gallium_ == null
           then defaultGalliumDrivers
           else gallium_)
-    ++ ["swrast" "virgl"];
+    ++ ["swrast"];
   driDrivers =
     (if dri_ == null
       then defaultDriDrivers
@@ -93,6 +98,7 @@ let self = stdenv.mkDerivation {
     ./glx_ro_text_segm.patch # fix for grsecurity/PaX
     ./symlink-drivers.patch
     ./missing-includes.patch # dev_t needs sys/stat.h, time_t needs time.h, etc.-- fixes build w/musl
+    ./darwin-gettime.patch
   ];
 
   outputs = [ "out" "dev" "drivers" "osmesa" ];
@@ -103,7 +109,7 @@ let self = stdenv.mkDerivation {
     "--localstatedir=/var"
     "--with-dri-driverdir=$(drivers)/lib/dri"
     "--with-dri-searchpath=${libglvnd.driverLink}/lib/dri"
-    "--with-platforms=x11,wayland,drm"
+    "--with-platforms=${lib.concatStringsSep "," mesaPlatforms}"
   ]
   ++ (optional (galliumDrivers != [])
       ("--with-gallium-drivers=" +
@@ -127,18 +133,18 @@ let self = stdenv.mkDerivation {
     "--enable-glx"
     # https://bugs.freedesktop.org/show_bug.cgi?id=35268
     (enableFeature (!stdenv.hostPlatform.isMusl) "glx-tls")
-    "--enable-gallium-osmesa" # used by wine
+    (enableFeature stdenv.isLinux "gallium-osmesa") # used by wine
     "--enable-llvm"
-    "--enable-egl"
-    "--enable-xa" # used in vmware driver
-    "--enable-gbm"
+    (enableFeature stdenv.isLinux "egl")
+    (enableFeature stdenv.isLinux "xa") # used in vmware driver
+    (enableFeature stdenv.isLinux "gbm")
     "--enable-xvmc"
     "--enable-vdpau"
     "--enable-shared-glapi"
     "--enable-sysfs"
     "--enable-llvm-shared-libs"
-    "--enable-omx-bellagio"
-    "--enable-va"
+    (enableFeature stdenv.isLinux "omx-bellagio")
+    (enableFeature stdenv.isLinux "va")
     "--disable-opencl"
   ];
 
@@ -152,10 +158,12 @@ let self = stdenv.mkDerivation {
     expat llvmPackages.llvm libglvnd
     glproto dri2proto dri3proto presentproto
     libX11 libXext libxcb libXt libXfixes libxshmfence
-    libffi wayland wayland-protocols libvdpau libelf libXvMC
-    libomxil-bellagio libva-minimal libpthreadstubs openssl/*or another sha1 provider*/
+    libffi libvdpau libelf libXvMC
+    libpthreadstubs openssl/*or another sha1 provider*/
     valgrind-light python2 python2.pkgs.Mako
-  ];
+  ] ++ lib.optional stdenv.isLinux [ libva-minimal libomxil-bellagio ]
+    ++ lib.optionals (builtins.elem "wayland" mesaPlatforms) [ wayland wayland-protocols ]
+    ++ lib.optionals stdenv.isDarwin [OpenGL Xplugin];
 
   enableParallelBuilding = true;
   doCheck = false;
@@ -271,7 +279,7 @@ let self = stdenv.mkDerivation {
     description = "An open source implementation of OpenGL";
     homepage = https://www.mesa3d.org/;
     license = licenses.mit; # X11 variant, in most files
-    platforms = platforms.linux;
+    platforms = platforms.linux ++ platforms.darwin;
     maintainers = with maintainers; [ eduarrrd vcunat ];
   };
 };
