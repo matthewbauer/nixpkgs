@@ -59,7 +59,7 @@ let
       cc
     ];
 
-  defaultBuildInputs = extraBuildInputs;
+  defaultBuildInputs = [ shell ] ++ extraBuildInputs;
 
   # The stdenv that we are producing.
   stdenv =
