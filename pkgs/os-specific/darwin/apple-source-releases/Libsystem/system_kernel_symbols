@@ -790,6 +790,8 @@ _removexattr
 _rename
 _rename_ext
 _renameat
+_renamex_np
+_renameatx_np
 _revoke
 _rmdir
 _searchfs
