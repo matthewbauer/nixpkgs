@@ -1,6 +1,8 @@
-{ stdenv, appleDerivation, cpio, xnu, Libc, Libm, libdispatch, cctools, Libinfo,
-  dyld, Csu, architecture, libclosure, CarbonHeaders, ncurses, CommonCrypto, copyfile,
-  removefile, libresolv, Libnotify, libplatform, libpthread, mDNSResponder, launchd, libutil }:
+{ stdenv, appleDerivation, cpio, xnu, Libc, Libm, libdispatch, cctools, Libinfo
+, dyld, Csu, architecture, libclosure, CarbonHeaders, ncurses, CommonCrypto
+, copyfile, removefile, libresolv, Libnotify, libplatform, libpthread
+, mDNSResponder, launchd, libutil, hfs
+  }:
 
 appleDerivation rec {
   phases = [ "unpackPhase" "installPhase" ];
@@ -23,6 +25,7 @@ appleDerivation rec {
       (cd $dep/include && find . -name '*.h' | cpio -pdm $out/include)
     done
 
+    cp -r ${hfs}/include/* $out/include
 
     (cd ${cctools.dev}/include/mach-o && find . -name '*.h' | cpio -pdm $out/include/mach-o)
 
