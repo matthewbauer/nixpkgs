@@ -35,11 +35,6 @@ stdenv.mkDerivation rec {
          "ac_cv_printf_positional=yes"
        ];
 
-  # Hack to work with new libSystem that doesn’t have hfs
-  postPatch = stdenv.lib.optionalString stdenv.isDarwin ''
-    sed -i 's,#include <hfs/hfs_mount.h>,#define UNKNOWNUID ((uid_t)99),' src/lib/krb5/os/localauth_k5login.c
-  '';
-
   nativeBuildInputs = [ pkgconfig perl ]
     ++ optional (!libOnly) yacc
     # Provides the mig command used by the build scripts
