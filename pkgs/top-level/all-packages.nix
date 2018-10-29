@@ -8554,9 +8554,7 @@ in
 
   cpplint = callPackage ../development/tools/analysis/cpplint { };
 
-  cquery = callPackage ../development/tools/misc/cquery {
-    llvmPackages = llvmPackages_latest;
-  };
+  cquery = callPackage ../development/tools/misc/cquery { };
 
   ccls = callPackage ../development/tools/misc/ccls {
     llvmPackages = llvmPackages_latest;
@@ -13172,9 +13170,7 @@ in
 
   zmqpp = callPackage ../development/libraries/zmqpp { };
 
-  zig = callPackage ../development/compilers/zig {
-    llvmPackages = llvmPackages_7;
-  };
+  zig = callPackage ../development/compilers/zig { };
 
   zimlib = callPackage ../development/libraries/zimlib { };
 
