@@ -237,6 +237,29 @@ rec {
           ++ lib.optional (stdenv.buildPlatform.uname.system != null) "-DCMAKE_HOST_SYSTEM_NAME=${stdenv.buildPlatform.uname.system}"
           ++ lib.optional (stdenv.buildPlatform.uname.processor != null) "-DCMAKE_HOST_SYSTEM_PROCESSOR=${stdenv.buildPlatform.uname.processor}"
           ++ lib.optional (stdenv.buildPlatform.uname.release != null) "-DCMAKE_HOST_SYSTEM_VERSION=${stdenv.buildPlatform.uname.release}";
+          crossMesonFlags = "--cross-file=<(echo ${''
+[binaries]
+c = '${stdenv.cc.targetPrefix or ""}cc'
+cpp = '${stdenv.cc.targetPrefix or ""}c++'
+ar = '${stdenv.cc.targetPrefix or ""}ar'
+strip = '${stdenv.cc.targetPrefix or ""}strip'
+pkgconfig = 'pkgs-config'
+
+[properties]
+needs_exe_wrapper = true
+
+[host_machine]
+system = '${stdenv.buildPlatform.parsed.kernel.name}'
+cpu_family = '${stdenv.buildPlatform.parsed.cpu.family}'
+cpu = '${stdenv.buildPlatform.parsed.cpu.name}'
+endian = '${if stdenv.buildPlatform.isLittleEndian then "little" else "big"}'
+
+[target_machine]
+system = '${stdenv.hostPlatform.parsed.kernel.name}'
+cpu_family = '${stdenv.hostPlatform.parsed.cpu.family}'
+cpu = '${stdenv.hostPlatform.parsed.cpu.name}'
+endian = '${if stdenv.hostPlatform.isLittleEndian then "little" else "big"}'
+          ''})";
         } // lib.optionalAttrs (attrs.enableParallelBuilding or false) {
           enableParallelChecking = attrs.enableParallelChecking or true;
         } // lib.optionalAttrs (hardeningDisable != [] || hardeningEnable != []) {
