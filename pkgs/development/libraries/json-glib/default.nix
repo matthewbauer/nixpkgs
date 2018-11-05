@@ -14,8 +14,7 @@ in stdenv.mkDerivation rec {
   };
 
   propagatedBuildInputs = [ glib ];
-  nativeBuildInputs = [ meson ninja pkgconfig gettext gobjectIntrospection ];
-  buildInputs = stdenv.lib.optional stdenv.isDarwin fixDarwinDylibNames;
+  nativeBuildInputs = [ meson ninja pkgconfig gettext gobjectIntrospection fixDarwinDylibNames ];
 
   patches = [
     # https://gitlab.gnome.org/GNOME/json-glib/issues/27

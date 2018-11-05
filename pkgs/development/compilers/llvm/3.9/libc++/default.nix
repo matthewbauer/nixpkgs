@@ -24,8 +24,8 @@ stdenv.mkDerivation rec {
     ../../libcxx-max_align_t.patch
   ];
 
-  nativeBuildInputs = [ cmake ];
-  buildInputs = [ libcxxabi ] ++ lib.optional stdenv.isDarwin fixDarwinDylibNames;
+  nativeBuildInputs = [ cmake fixDarwinDylibNames ];
+  buildInputs = [ libcxxabi ];
 
   cmakeFlags = [
     "-DLIBCXX_LIBCXXABI_LIB_PATH=${libcxxabi}/lib"

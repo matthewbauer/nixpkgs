@@ -25,7 +25,7 @@ stdenv.mkDerivation rec {
     sha256 = "0dqarmjc8544m2w7bqrqmvsfy55fw82707z3lz9cql8nr777bjmc";
   };
 
-  nativeBuildInputs = [ pkgconfig ];
+  nativeBuildInputs = [ pkgconfig fixDarwinDylibNames ];
   buildInputs = [
     gnupg # undefined dependencies
     xapian gmime talloc zlib  # dependencies described in INSTALL
@@ -34,10 +34,7 @@ stdenv.mkDerivation rec {
     bash-completion  # (optional) dependency to install bash completion
     emacs  # (optional) to byte compile emacs code, also needed for tests
     ruby  # (optional) ruby bindings
-    which dtach openssl bash  # test dependencies
-  ]
-  ++ optional stdenv.isDarwin fixDarwinDylibNames
-  ++ optionals (!stdenv.isDarwin) [ gdb man ]; # test dependencies
+  ];
 
   postPatch = ''
     patchShebangs configure
@@ -100,6 +97,7 @@ stdenv.mkDerivation rec {
     ln -s ${test-database} test/test-databases/database-v1.tar.xz
   '';
   doCheck = !stdenv.isDarwin && (versionAtLeast gmime.version "3.0");
+  checkInput = [ which dtach openssl bash gdb man ];
   checkTarget = "test V=1";
 
   postInstall = ''

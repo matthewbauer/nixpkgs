@@ -35,10 +35,10 @@ stdenv.mkDerivation rec {
     ++ stdenv.lib.optional sslSupport "openssl"
     ;
 
+  nativeBuildInputs = [ fixDarwinDylibNames ];
   buildInputs = []
     ++ stdenv.lib.optional sslSupport openssl
     ++ stdenv.lib.optional stdenv.isCygwin findutils
-    ++ stdenv.lib.optional stdenv.isDarwin fixDarwinDylibNames
     ;
 
   doCheck = false; # needs the net

@@ -15,8 +15,8 @@ in stdenv.mkDerivation rec {
     sha256 = "0jw6qlfl2g47hhx056nvnj6h92bk3sn46hy3ig61a911dzblvrkb";
   };
 
-  buildInputs = [ perl zlib sqlite ]
-    ++ stdenv.lib.optional stdenv.isDarwin fixDarwinDylibNames;
+  nativeBuildInputs = [ fixDarwinDylibNames ];
+  buildInputs = [ perl zlib sqlite ];
 
   propagatedBuildInputs = [ nspr ];
 

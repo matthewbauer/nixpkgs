@@ -43,9 +43,8 @@ in stdenv.mkDerivation rec {
     ++ optionals (stdenv.isLinux) [ libaio ]
     ++ optional odbcSupport unixODBC;
 
-  nativeBuildInputs = [ makeWrapper unzip ]
-    ++ optional stdenv.isLinux autoPatchelfHook
-    ++ optional stdenv.isDarwin fixDarwinDylibNames;
+  nativeBuildInputs = [ makeWrapper unzip fixDarwinDylibNames ]
+    ++ optional stdenv.isLinux autoPatchelfHook;
 
   unpackCmd = "unzip $curSrc";
 

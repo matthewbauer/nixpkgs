@@ -21,7 +21,8 @@ stdenv.mkDerivation rec {
     ./xlocale-glibc-2.26.patch
   ];
 
-  buildInputs = [ cmake libcxxabi ] ++ lib.optional stdenv.isDarwin fixDarwinDylibNames;
+  nativeBuildInputs = [ fixDarwinDylibNames ];
+  buildInputs = [ cmake libcxxabi ];
 
   cmakeFlags = [
     "-DLIBCXX_LIBCXXABI_LIB_PATH=${libcxxabi}/lib"

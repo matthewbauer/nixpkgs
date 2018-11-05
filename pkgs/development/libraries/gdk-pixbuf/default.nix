@@ -54,9 +54,8 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [
     meson ninja pkgconfig gettext python3 libxml2 libxslt docbook_xsl docbook_xml_dtd_43
-    gtk-doc gobjectIntrospection makeWrapper
-  ]
-    ++ stdenv.lib.optional stdenv.isDarwin fixDarwinDylibNames;
+    gtk-doc gobjectIntrospection makeWrapper fixDarwinDylibNames
+  ];
 
   propagatedBuildInputs = [ glib libtiff libjpeg libpng jasper ];
 

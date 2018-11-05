@@ -14,7 +14,7 @@ stdenv.mkDerivation rec {
     owner = "facebook";
   };
 
-  buildInputs = stdenv.lib.optional stdenv.isDarwin fixDarwinDylibNames;
+  nativeBuildInputs = [ fixDarwinDylibNames ];
 
   makeFlags = [
     "ZSTD_LEGACY_SUPPORT=${if legacySupport then "1" else "0"}"

@@ -16,11 +16,10 @@ let
       mv clang-tools-extra-* $sourceRoot/tools/extra
     '';
 
-    nativeBuildInputs = [ cmake python ]
+    nativeBuildInputs = [ cmake python fixDarwinDylibNames ]
       ++ stdenv.lib.optional enableManpages python.pkgs.sphinx;
 
-    buildInputs = [ libxml2 llvm ]
-      ++ stdenv.lib.optional stdenv.isDarwin fixDarwinDylibNames;
+    buildInputs = [ libxml2 llvm ];
 
     cmakeFlags = [
       "-DCMAKE_CXX_FLAGS=-std=c++11"

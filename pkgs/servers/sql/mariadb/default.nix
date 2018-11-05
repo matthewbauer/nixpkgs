@@ -33,12 +33,12 @@ common = rec { # attributes common to both builds
     name   = "mariadb-${version}.tar.gz";
   };
 
-  nativeBuildInputs = [ cmake pkgconfig ];
+  nativeBuildInputs = [ cmake pkgconfig fixDarwinDylibNames ];
 
   buildInputs = [
     ncurses openssl zlib pcre jemalloc libiconv
   ] ++ stdenv.lib.optionals stdenv.isLinux [ libaio systemd ]
-    ++ stdenv.lib.optionals stdenv.isDarwin [ perl fixDarwinDylibNames cctools CoreServices ];
+    ++ stdenv.lib.optionals stdenv.isDarwin [ perl cctools CoreServices ];
 
   prePatch = ''
     sed -i 's,[^"]*/var/log,/var/log,g' storage/mroonga/vendor/groonga/CMakeLists.txt

@@ -17,9 +17,10 @@ buildGoPackage rec {
 
   goDeps = ./deps.nix;
 
+  nativeBuildInputs = [ fixDarwinDylibNames ];
+
   propagatedBuildInputs = with darwin.apple_sdk.frameworks; [
     Cocoa
-    fixDarwinDylibNames
   ];
 
   meta = with stdenv.lib; {

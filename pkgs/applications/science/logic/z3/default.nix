@@ -11,7 +11,8 @@ stdenv.mkDerivation rec {
     sha256 = "1vr57bwx40sd5riijyrhy70i2wnv9xrdihf6y5zdz56yq88rl48f";
   };
 
-  buildInputs = [ python fixDarwinDylibNames ];
+  nativeBuildInputs = [ fixDarwinDylibNames ];
+  buildInputs = [ python ];
   propagatedBuildInputs = [ python.pkgs.setuptools ];
   enableParallelBuilding = true;
 

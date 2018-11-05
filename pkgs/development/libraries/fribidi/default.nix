@@ -25,8 +25,7 @@ stdenv.mkDerivation rec {
     patchShebangs test
   '';
 
-  nativeBuildInputs = [ meson ninja pkgconfig ];
-  buildInputs = stdenv.lib.optional stdenv.isDarwin fixDarwinDylibNames;
+  nativeBuildInputs = [ meson ninja pkgconfig fixDarwinDylibNames ];
 
   checkInptus = [ python3 ];
 

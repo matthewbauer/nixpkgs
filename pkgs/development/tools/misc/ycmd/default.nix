@@ -15,9 +15,9 @@ stdenv.mkDerivation rec {
     sha256 = "1lwa8xr76vapfpncvp81cn3m9219yw14fl7fzk5gnly60zkphbbl";
   };
 
-  nativeBuildInputs = [ cmake ];
+  nativeBuildInputs = [ cmake fixDarwinDylibNames ];
   buildInputs = [ boost llvmPackages.libclang ]
-    ++ stdenv.lib.optional stdenv.isDarwin [ fixDarwinDylibNames Cocoa ];
+    ++ stdenv.lib.optional stdenv.isDarwin Cocoa;
 
   buildPhase = ''
     export EXTRA_CMAKE_ARGS=-DPATH_TO_LLVM_ROOT=${llvmPackages.clang-unwrapped}

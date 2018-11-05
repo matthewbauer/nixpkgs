@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
       --replace "gcc" "cc"
   '';
 
-  nativeBuildInputs = stdenv.lib.optional stdenv.isDarwin fixDarwinDylibNames;
+  nativeBuildInputs = [ fixDarwinDylibNames ];
 
   buildInputs = [ blas liblapack gfortran.cc.lib ];
 
