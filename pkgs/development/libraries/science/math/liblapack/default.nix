@@ -7,7 +7,6 @@
   shared ? false
 }:
 let
-  usedLibExtension = if shared then ".so" else ".a";
   inherit (stdenv.lib) optional optionals;
   version = "3.8.0";
 in
@@ -19,8 +18,7 @@ stdenv.mkDerivation rec {
     sha256 = "1xmwi2mqmipvg950gb0rhgprcps8gy8sjm8ic9rgy2qjlv22rcny";
   };
 
-  buildInputs = [ gfortran cmake ];
-  nativeBuildInputs = [ python2 ];
+  nativeBuildInputs = [ python2 gfortran cmake ];
 
   cmakeFlags = [
     "-DUSE_OPTIMIZED_BLAS=ON"
@@ -30,9 +28,7 @@ stdenv.mkDerivation rec {
 
   doCheck = ! shared;
 
-  checkPhase = "
-    ctest
-  ";
+  checkPhase = "ctest";
 
   enableParallelBuilding = true;
 
