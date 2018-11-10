@@ -65,25 +65,17 @@ in
         ];
 
         serviceConfig =
-          { ExecStart = "@${pkgs.glibc.bin}/sbin/nscd nscd";
+          { ExecStart = "@${pkgs.unscd}/sbin/nscd nscd";
             Type = "forking";
             PIDFile = "/run/nscd/nscd.pid";
             Restart = "always";
             ExecReload =
-              [ "${pkgs.glibc.bin}/sbin/nscd --invalidate passwd"
-                "${pkgs.glibc.bin}/sbin/nscd --invalidate group"
-                "${pkgs.glibc.bin}/sbin/nscd --invalidate hosts"
+              [ "${pkgs.unscd}/sbin/nscd --invalidate passwd"
+                "${pkgs.unscd}/sbin/nscd --invalidate group"
+                "${pkgs.unscd}/sbin/nscd --invalidate hosts"
               ];
           };
 
-        # Urgggggh... Nscd forks before opening its socket and writing
-        # its pid. So wait until it's ready.
-        postStart =
-          ''
-            while ! ${pkgs.glibc.bin}/sbin/nscd -g > /dev/null; do
-              sleep 0.2
-            done
-          '';
       };
 
   };

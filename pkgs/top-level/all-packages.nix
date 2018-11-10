@@ -22949,4 +22949,6 @@ with pkgs;
   newlibCross = callPackage ../development/misc/newlib {
     stdenv = crossLibcStdenv;
   };
+
+  unscd = callPackage ../applications/networking/unscd {};
 }
