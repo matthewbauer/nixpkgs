@@ -13,9 +13,10 @@ wafConfigurePhase() {
     # shellcheck disable=SC2086
     local flagsArray=(
         $configureFlags ${configureFlagsArray+"${configureFlagsArray[@]}"}
+        ${configureTargets:-configure}
     )
     echoCmd 'configure flags' "${flagsArray[@]}"
-    python waf "${flagsArray[@]}" configure
+    python waf "${flagsArray[@]}"
 
     runHook postConfigure
 }
@@ -32,10 +33,11 @@ wafBuildPhase () {
       ${enableParallelBuilding:+-j ${NIX_BUILD_CORES}}
       $wafFlags ${wafFlagsArray+"${wafFlagsArray[@]}"}
       $buildFlags ${buildFlagsArray+"${buildFlagsArray[@]}"}
+      ${buildTargets:-build}
     )
 
     echoCmd 'build flags' "${flagsArray[@]}"
-    python waf "${flagsArray[@]}" build
+    python waf "${flagsArray[@]}"
 
     runHook postBuild
 }
@@ -52,10 +54,11 @@ wafInstallPhase() {
     local flagsArray=(
         $wafFlags ${wafFlagsArray+"${wafFlagsArray[@]}"}
         $installFlags ${installFlagsArray+"${installFlagsArray[@]}"}
+	${installTargets:-install}
     )
 
     echoCmd 'install flags' "${flagsArray[@]}"
-    python waf "${flagsArray[@]}" install
+    python waf "${flagsArray[@]}"
 
     runHook postInstall
 }
