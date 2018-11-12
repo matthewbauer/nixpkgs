@@ -20,14 +20,6 @@ stdenv.mkDerivation rec {
     sha256 = "1dxlk1xh69gj10sqcsyckiakb8an3h41206wby4z44mpmvxc7pi4";
   }) ];
 
-  buildPhase = ''
-    scons prefix=$out
-  '';
-
-  installPhase = ''
-    scons install
-  '';
-
   meta = {
     homepage = https://sourceforge.net/projects/btanks/;
     description = "Fast 2d tank arcade game";
