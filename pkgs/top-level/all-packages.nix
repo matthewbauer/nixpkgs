@@ -1092,7 +1092,6 @@ with pkgs;
   };
 
   cataract          = callPackage ../applications/misc/cataract { };
-  cataract-unstable = callPackage ../applications/misc/cataract/unstable.nix { };
 
   catch = callPackage ../development/libraries/catch { };
 
@@ -3490,7 +3489,6 @@ with pkgs;
   ispike = callPackage ../development/libraries/science/robotics/ispike { };
 
   isync = callPackage ../tools/networking/isync { };
-  isyncUnstable = callPackage ../tools/networking/isync/unstable.nix { };
 
   jaaa = callPackage ../applications/audio/jaaa { };
 
@@ -6284,7 +6282,6 @@ with pkgs;
   xtitle = callPackage ../tools/misc/xtitle { };
 
   xdelta = callPackage ../tools/compression/xdelta { };
-  xdeltaUnstable = callPackage ../tools/compression/xdelta/unstable.nix { };
 
   xdummy = callPackage ../tools/misc/xdummy { };
 
@@ -12162,7 +12159,6 @@ with pkgs;
   lilv = callPackage ../development/libraries/audio/lilv { };
 
   lv2 = callPackage ../development/libraries/audio/lv2 { };
-  lv2Unstable = callPackage ../development/libraries/audio/lv2/unstable.nix { };
 
   lvtk = callPackage ../development/libraries/audio/lvtk { };
 
@@ -15987,8 +15983,6 @@ with pkgs;
 
   bspwm = callPackage ../applications/window-managers/bspwm { };
 
-  bspwm-unstable = callPackage ../applications/window-managers/bspwm/unstable.nix { };
-
   btops = callPackage ../applications/window-managers/btops { };
 
   bvi = callPackage ../applications/editors/bvi { };
@@ -18230,8 +18224,6 @@ with pkgs;
   sidplayfp = callPackage ../applications/audio/sidplayfp { };
 
   sxhkd = callPackage ../applications/window-managers/sxhkd { };
-
-  sxhkd-unstable = callPackage ../applications/window-managers/sxhkd/unstable.nix { };
 
   mpop = callPackage ../applications/networking/mpop {
     inherit (darwin.apple_sdk.frameworks) Security;
@@ -21537,7 +21529,6 @@ with pkgs;
   mcrl2 = callPackage ../applications/science/logic/mcrl2 { };
 
   minisat = callPackage ../applications/science/logic/minisat {};
-  minisatUnstable = callPackage ../applications/science/logic/minisat/unstable.nix {};
 
   monosat = callPackage ../applications/science/logic/monosat {};
 
@@ -21987,7 +21978,6 @@ with pkgs;
   dell-530cdn = callPackage ../misc/drivers/dell-530cdn {};
 
   dosbox = callPackage ../misc/emulators/dosbox { };
-  dosbox-unstable = callPackage ../misc/emulators/dosbox/unstable.nix { };
 
   dpkg = callPackage ../tools/package-management/dpkg { };
 

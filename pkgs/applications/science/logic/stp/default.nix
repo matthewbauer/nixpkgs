@@ -1,4 +1,4 @@
-{ stdenv, cmake, boost, bison, flex, fetchFromGitHub, perl, python3, python3Packages, zlib, minisatUnstable, cryptominisat }:
+{ stdenv, cmake, boost, bison, flex, fetchFromGitHub, perl, python3, python3Packages, zlib, minisat, cryptominisat }:
 
 stdenv.mkDerivation rec {
   version = "2.2.0";
@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
     sha256 = "1jh23wjm62nnqfx447g2y53bbangq04hjrvqc35v9xxpcjgj3i49";
   };
 
-  buildInputs = [ boost zlib minisatUnstable cryptominisat python3 ];
+  buildInputs = [ boost zlib minisat cryptominisat python3 ];
   nativeBuildInputs = [ cmake bison flex perl ];
   preConfigure = ''
     python_install_dir=$out/${python3Packages.python.sitePackages}
