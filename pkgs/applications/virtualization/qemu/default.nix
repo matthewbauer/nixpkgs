@@ -19,6 +19,7 @@
 , smbdSupport ? false, samba
 , hostCpuOnly ? false
 , nixosTestRunner ? false
+, writeScriptBin, buildPackages
 }:
 
 with stdenv.lib;
@@ -30,8 +31,14 @@ let
   hostCpuTargets = if stdenv.isx86_64 then "i386-softmmu,x86_64-softmmu"
                    else if stdenv.isi686 then "i386-softmmu"
                    else if stdenv.isAarch32 then "arm-softmmu"
-                   else if stdenv.isAarch64 then "aarch64-softmmu"
-                   else throw "Don't know how to build a 'hostCpuOnly = true' QEMU";
+                   else "${stdenv.hostPlatform.parsed.cpu.name}-softmmu";
+
+  # qemu expects pkgconfig to be prefixed with the "cross-prefix" below
+  pkgconfigPrefixed = writeScriptBin "${stdenv.hostPlatform.config}-pkg-config" ''
+#!${stdenv.shell}
+pkg-config "$@"
+  '';
+
 in
 
 stdenv.mkDerivation rec {
@@ -47,9 +54,12 @@ stdenv.mkDerivation rec {
     sha256 = "1s7bm2xhcxbc9is0rg8xzwijx7azv67skq7mjc58spsgc2nn4glk";
   };
 
+  depsBuildBuild = [ buildPackages.stdenv.cc ];
+  nativeBuildInputs = [ python2 pkgconfig pkgconfigPrefixed flex bison
+                        texinfo perl makeWrapper ];
   buildInputs =
-    [ python2 zlib pkgconfig glib ncurses perl pixman
-      vde2 texinfo flex bison makeWrapper lzo snappy
+    [ zlib glib ncurses pixman
+      vde2 lzo snappy
       gnutls nettle curl
     ]
     ++ optionals stdenv.isDarwin [ CoreServices Cocoa rez setfile ]
@@ -120,7 +130,8 @@ stdenv.mkDerivation rec {
     ++ optional xenSupport "--enable-xen"
     ++ optional openGLSupport "--enable-opengl"
     ++ optional virglSupport "--enable-virglrenderer"
-    ++ optional smbdSupport "--smbd=${samba}/bin/smbd";
+    ++ optional smbdSupport "--smbd=${samba}/bin/smbd"
+    ++ optional (stdenv.hostPlatform != stdenv.buildPlatform) "--cross-prefix=${stdenv.hostPlatform.config}-";
 
   doCheck = false; # tries to access /dev
 
