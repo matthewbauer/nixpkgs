@@ -16,6 +16,7 @@ stdenv.mkDerivation rec {
   );
 
 
+  nativeBuildInputs = [ python2 ];
   buildInputs = [ openssl libpcap python2 ];
 
   hardeningDisable = [ "format" ];
