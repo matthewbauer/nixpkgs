@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, fetchFromGitHub, makeWrapper
+{ stdenv, fetchurl, fetchFromGitHub, makeWrapper, wafHook
 , docutils, perl, pkgconfig, python3, which, ffmpeg_4
 , freefont_ttf, freetype, libass, libpthreadstubs
 , lua, luasocket, libuchardet, libiconv ? null, darwin
@@ -78,16 +78,7 @@ assert xineramaSupport    -> x11Support && available libXinerama;
 assert xvSupport          -> x11Support && available libXv;
 assert youtubeSupport     -> available youtube-dl;
 
-let
-  # Purity: Waf is normally downloaded by bootstrap.py, but
-  # for purity reasons this behavior should be avoided.
-  wafVersion = "2.0.9";
-  waf = fetchurl {
-    urls = [ "https://waf.io/waf-${wafVersion}"
-             "http://www.freehackers.org/~tnagy/release/waf-${wafVersion}" ];
-    sha256 = "0j7sbn3w6bgslvwwh5v9527w3gi2sd08kskrgxamx693y0b0i3ia";
-  };
-in stdenv.mkDerivation rec {
+stdenv.mkDerivation rec {
   name = "mpv-${version}";
   version = "0.29.1";
 
@@ -123,13 +114,9 @@ in stdenv.mkDerivation rec {
     (enableFeature stdenv.isLinux  "dvbin")
   ];
 
-  configurePhase = ''
-    python3 ${waf} configure --prefix=$out $configureFlags
-  '';
-
   nativeBuildInputs = [
-    docutils makeWrapper perl
-    pkgconfig python3 which
+    python3 docutils wafHook makeWrapper perl
+    pkgconfig which
   ];
 
   buildInputs = [
@@ -169,9 +156,7 @@ in stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  buildPhase = ''
-    python3 ${waf} build
-  '' + optionalString stdenv.isDarwin ''
+  postBuild = optionalString stdenv.isDarwin ''
     python3 TOOLS/osxbundle.py -s build/mpv
   '';
 
@@ -192,9 +177,7 @@ in stdenv.mkDerivation rec {
       --prefix PYTHONPATH : "${vapoursynth}/lib/${python3.libPrefix}/site-packages:$PYTHONPATH"
   '';
 
-  installPhase = ''
-    python3 ${waf} install
-
+  postInstall  = ''
     # Use a standard font
     mkdir -p $out/share/mpv
     ln -s ${freefont_ttf}/share/fonts/truetype/FreeSans.ttf $out/share/mpv/subfont.ttf
