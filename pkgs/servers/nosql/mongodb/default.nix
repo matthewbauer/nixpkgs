@@ -76,9 +76,12 @@ in stdenv.mkDerivation rec {
     "--use-sasl-client"
     "--disable-warnings-as-errors"
     "VARIANT_DIR=nixos" # Needed so we don't produce argument lists that are too long for gcc / ld
-    "CC=$CC"
-    "CXX=$CXX"
   ] ++ map (lib: "--use-system-${lib}") system-libraries;
+
+  preBuild = ''
+    sconsFlags+=" CC=$CC"
+    sconsFlags+=" CXX=$CXX"
+  '';
 
   preInstall = ''
     mkdir -p $out/lib
