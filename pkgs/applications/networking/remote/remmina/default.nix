@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitLab, cmake, ninja, pkgconfig, wrapGAppsHook
+{ stdenv, fetchFromGitLab, cmake, pkgconfig, wrapGAppsHook
 , glib, gtk3, gettext, libxkbfile, libX11
 , freerdp, libssh, libgcrypt, gnutls, makeDesktopItem
 , pcre, libdbusmenu-gtk3, libappindicator-gtk3
@@ -22,7 +22,7 @@ stdenv.mkDerivation rec {
     sha256 = "15szv1xs6drxq6qyksmxcfdz516ja4zm52r4yf6hwij3fgl8qdpw";
   };
 
-  nativeBuildInputs = [ cmake ninja pkgconfig wrapGAppsHook ];
+  nativeBuildInputs = [ cmake pkgconfig wrapGAppsHook ];
   buildInputs = [
     gsettings-desktop-schemas
     glib gtk3 gettext libxkbfile libX11

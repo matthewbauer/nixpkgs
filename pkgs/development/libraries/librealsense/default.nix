@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, cmake, libusb, ninja, pkgconfig}:
+{ stdenv, fetchFromGitHub, cmake, libusb, pkgconfig}:
 
 stdenv.mkDerivation rec {
   name = "librealsense-${version}";
@@ -17,7 +17,6 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [
     cmake
-    ninja
     pkgconfig
   ];
 

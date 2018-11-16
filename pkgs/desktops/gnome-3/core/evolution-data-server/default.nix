@@ -1,7 +1,7 @@
 { fetchurl, stdenv, substituteAll, pkgconfig, gnome3, python3, gobjectIntrospection
 , intltool, libsoup, libxml2, libsecret, icu, sqlite, tzdata
 , p11-kit, db, nspr, nss, libical, gperf, wrapGAppsHook, glib-networking
-, vala, cmake, ninja, kerberos, openldap, webkitgtk, libaccounts-glib, json-glib }:
+, vala, cmake, kerberos, openldap, webkitgtk, libaccounts-glib, json-glib }:
 
 stdenv.mkDerivation rec {
   name = "evolution-data-server-${version}";
@@ -22,7 +22,7 @@ stdenv.mkDerivation rec {
   ];
 
   nativeBuildInputs = [
-    cmake ninja pkgconfig intltool python3 gperf wrapGAppsHook gobjectIntrospection vala
+    cmake pkgconfig intltool python3 gperf wrapGAppsHook gobjectIntrospection vala
   ];
   buildInputs = with gnome3; [
     glib libsoup libxml2 gtk gnome-online-accounts

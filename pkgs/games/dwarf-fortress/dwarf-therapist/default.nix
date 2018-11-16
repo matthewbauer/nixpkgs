@@ -1,5 +1,5 @@
 { stdenv, fetchFromGitHub, qtbase
-, qtdeclarative, cmake, texlive, ninja }:
+, qtdeclarative, cmake, texlive }:
 
 stdenv.mkDerivation rec {
   name = "dwarf-therapist-${version}";
@@ -13,7 +13,7 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [ qtbase qtdeclarative ];
-  nativeBuildInputs = [ texlive cmake ninja ];
+  nativeBuildInputs = [ texlive cmake ];
 
   installPhase = if stdenv.isDarwin then ''
     mkdir -p $out/Applications

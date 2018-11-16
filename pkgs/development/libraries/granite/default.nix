@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, cmake, ninja, vala_0_40, pkgconfig, gobjectIntrospection, gnome3, gtk3, glib, gettext }:
+{ stdenv, fetchFromGitHub, cmake, vala_0_40, pkgconfig, gobjectIntrospection, gnome3, gtk3, glib, gettext }:
 
 stdenv.mkDerivation rec {
   pname = "granite";
@@ -22,7 +22,6 @@ stdenv.mkDerivation rec {
     cmake
     gettext
     gobjectIntrospection
-    ninja
     pkgconfig
     vala_0_40 # should be `elementary.vala` when elementary attribute set is merged
   ];

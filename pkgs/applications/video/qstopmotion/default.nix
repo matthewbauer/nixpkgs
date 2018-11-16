@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchurl, qt5, ffmpeg, guvcview, cmake, ninja, libxml2
+{ stdenv, lib, fetchurl, qt5, ffmpeg, guvcview, cmake, libxml2
 , gettext, pkgconfig, libgphoto2, gphoto2, v4l_utils, libv4l, pcre
 , qwt, extra-cmake-modules }:
 
@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
   buildInputs = with qt5; [ v4l_utils libv4l pcre qtbase qtmultimedia ffmpeg guvcview
                             qwt qtquickcontrols qtimageformats qtxmlpatterns ];
 
-  nativeBuildInputs = [ pkgconfig cmake extra-cmake-modules ninja
+  nativeBuildInputs = [ pkgconfig cmake extra-cmake-modules
                         gettext libgphoto2 gphoto2 libxml2 libv4l ];
 
   patchPhase = ''

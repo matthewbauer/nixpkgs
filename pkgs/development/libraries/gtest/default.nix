@@ -1,4 +1,4 @@
-{ stdenv, cmake, ninja, fetchFromGitHub }:
+{ stdenv, cmake, fetchFromGitHub }:
 stdenv.mkDerivation rec {
   name = "gtest-${version}";
   version = "1.8.1";
@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
     sha256 = "0270msj6n7mggh4xqqjp54kswbl7mkcc8px1p5dqdpmw5ngh9fzk";
   };
 
-  nativeBuildInputs = [ cmake ninja ];
+  nativeBuildInputs = [ cmake ];
 
   meta = with stdenv.lib; {
     description = "Google's framework for writing C++ tests";

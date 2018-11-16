@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, fetchFromGitHub, pkgconfig, cmake, ninja, vala,
+{ stdenv, fetchurl, fetchFromGitHub, pkgconfig, cmake, vala,
   gettext, gobjectIntrospection, at-spi2-core, dbus, epoxy, expect,
   gtk3, json-glib, libXdmcp, libgee, libpthreadstubs, librsvg,
   libsecret, libtasn1, libxcb, libxkbcommon, p11-kit, pcre, vte, wnck,
@@ -19,7 +19,6 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [
     pkgconfig
     cmake
-    ninja
     vala
     gettext
     gobjectIntrospection # For setup hook

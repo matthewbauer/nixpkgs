@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, gdal, cmake, ninja, proj, clipper, zlib, qtbase, qttools
+{ stdenv, fetchFromGitHub, gdal, cmake, proj, clipper, zlib, qtbase, qttools
   , qtlocation, qtsensors, doxygen, cups, makeWrapper, qtimageformats
 }:
 
@@ -9,7 +9,7 @@ stdenv.mkDerivation rec {
   buildInputs = [ gdal qtbase qttools qtlocation qtimageformats
                   qtsensors clipper zlib proj doxygen cups];
 
-  nativeBuildInputs = [ cmake makeWrapper ninja ];
+  nativeBuildInputs = [ cmake makeWrapper ];
 
   src = fetchFromGitHub {
     owner = "OpenOrienteering";

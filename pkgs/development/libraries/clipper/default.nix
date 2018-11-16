@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, cmake, ninja, unzip }:
+{ stdenv, fetchurl, cmake, unzip }:
 
 stdenv.mkDerivation rec {
   version = "6.4.2";
@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ ];
 
-  nativeBuildInputs = [ cmake ninja unzip ];
+  nativeBuildInputs = [ cmake unzip ];
 
   meta = with stdenv.lib; {
     longDescription = ''

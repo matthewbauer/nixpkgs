@@ -1,4 +1,4 @@
-{stdenv, fetchgit, cmake, ninja, boost, libpng, glfw3, epoxy, guile, pkgconfig
+{stdenv, fetchgit, cmake, boost, libpng, glfw3, epoxy, guile, pkgconfig
 , libGLU_combined, libX11, libpthreadstubs, libXau, libXdmcp, libXrandr, libXext
 , libXinerama, libXxf86vm, libXcursor, libXfixes
 }:
@@ -8,7 +8,7 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ pkgconfig ];
   buildInputs = [
-    cmake ninja boost libpng glfw3 epoxy guile libGLU_combined libX11 
+    cmake boost libpng glfw3 epoxy guile libGLU_combined libX11
     libpthreadstubs libXau libXdmcp libXrandr libXext libXinerama libXxf86vm
     libXcursor libXfixes
   ];
@@ -19,9 +19,7 @@ stdenv.mkDerivation rec {
     sha256 = "1717k72vr0i5j7bvxmd6q16fpvkljnqfa1hr3i4yq8cjdsj69my7";
   };
 
-  cmakeFlags = "-G Ninja";
-  installPhase = ''
-    ninja install
+  postInstall = ''
     cd ..
     cp lib/lib* bind/lib* "$out/lib"
     cp -r bin "$out/bin"

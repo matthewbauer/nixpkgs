@@ -1,4 +1,4 @@
-{ stdenv, cmake, ninja, intltool, fetchurl, libxml2, webkitgtk, highlight
+{ stdenv, cmake, intltool, fetchurl, libxml2, webkitgtk, highlight
 , pkgconfig, gtk3, glib, libnotify, gtkspell3
 , wrapGAppsHook, itstool, shared-mime-info, libical, db, gcr, sqlite
 , gnome3, librsvg, gdk_pixbuf, libsecret, nss, nspr, icu
@@ -27,7 +27,7 @@ in stdenv.mkDerivation rec {
     gnome3.glib-networking openldap
   ];
 
-  nativeBuildInputs = [ cmake ninja intltool itstool libxml2 pkgconfig wrapGAppsHook ];
+  nativeBuildInputs = [ cmake intltool itstool libxml2 pkgconfig wrapGAppsHook ];
 
   cmakeFlags = [
     "-DENABLE_AUTOAR=OFF"

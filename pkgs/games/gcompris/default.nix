@@ -1,5 +1,5 @@
 {stdenv, cmake, qtbase, fetchurl, qtdeclarative, qtmultimedia, qttools, qtsensors, qmlbox2d, gettext, qtquickcontrols, qtgraphicaleffects, makeWrapper,
-  gst_all_1, ninja
+  gst_all_1
 }:
 stdenv.mkDerivation rec {
   version = "0.91";
@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
 
   cmakeFlags = "-DQML_BOX2D_LIBRARY=${qmlbox2d}/${qtbase.qtQmlPrefix}/Box2D.2.0";
 
-  nativeBuildInputs = [ cmake ninja makeWrapper ];
+  nativeBuildInputs = [ cmake makeWrapper ];
   buildInputs = [ qtbase qtdeclarative qttools qtsensors qmlbox2d gettext qtquickcontrols qtmultimedia qtgraphicaleffects] ++ soundPlugins;
   soundPlugins = with gst_all_1; [gst-plugins-good gstreamer gst-plugins-base gst-plugins-bad];
 

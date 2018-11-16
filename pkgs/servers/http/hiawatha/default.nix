@@ -2,7 +2,6 @@
 , fetchFromGitLab
 
 , cmake
-, ninja
 , mbedtls
 
 , enableCache     ? true     # Internal cache support.
@@ -26,7 +25,7 @@ stdenv.mkDerivation rec {
     sha256 = "1428byx0xpzzwyc0j157q70sjx18dykvg6fd5vp70kj85ank0xpa";
   };
 
-  nativeBuildInputs = [ cmake ninja ];
+  nativeBuildInputs = [ cmake ];
   buildInputs = [ mbedtls ] ++ stdenv.lib.optionals enableXslt [ libxslt libxml2 ];
 
   prePatch = ''

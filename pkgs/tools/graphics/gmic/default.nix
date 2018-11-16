@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, cmake, ninja, pkgconfig
+{ stdenv, fetchurl, cmake, pkgconfig
 , opencv, openexr, graphicsmagick, fftw, zlib, libjpeg, libtiff, libpng
 , withGimpPlugin ? true, gimp ? null}:
 
@@ -22,7 +22,7 @@ in stdenv.mkDerivation rec {
     sha256 = "0zqfj2ym5nn3ff93xh2wf9ayxqlznabbdi00xw4lm7vw3iwkzqnc";
   };
 
-  nativeBuildInputs = [ cmake ninja pkgconfig ];
+  nativeBuildInputs = [ cmake pkgconfig ];
 
   buildInputs = [
     fftw zlib libjpeg libtiff libpng opencv openexr graphicsmagick

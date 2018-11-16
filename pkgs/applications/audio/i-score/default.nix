@@ -9,7 +9,6 @@
   jamomacore,
   kdnssd,
   libsndfile,
-  ninja,
   portaudio,
   portmidi,
   qtbase,
@@ -47,7 +46,6 @@ stdenv.mkDerivation rec {
     jamomacore
     kdnssd
     libsndfile
-    ninja
     portaudio
     portmidi
     qtbase
@@ -63,7 +61,6 @@ stdenv.mkDerivation rec {
   ];
 
   cmakeFlags = [
-    "-GNinja"
     "-DISCORE_CONFIGURATION=static-release"
     "-DISCORE_ENABLE_LTO=OFF"
     "-DISCORE_BUILD_FOR_PACKAGE_MANAGER=True"

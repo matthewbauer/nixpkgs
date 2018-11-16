@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, substituteAll, cmake, ninja, pkgconfig
+{ stdenv, fetchurl, substituteAll, cmake, pkgconfig
 , glibc, gtk3, gtkmm3, pcre, swig, antlr4_7, sudo
 , mysql, libxml2, libmysqlconnectorcpp
 , vsqlite, gdal, libiodbc, libpthreadstubs
@@ -39,7 +39,7 @@ in stdenv.mkDerivation rec {
   ];
 
   nativeBuildInputs = [
-    cmake ninja pkgconfig jre swig wrapGAppsHook
+    cmake pkgconfig jre swig wrapGAppsHook
   ];
 
   buildInputs = [

@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, perl, python2, ruby, bison, gperf, cmake, ninja
+{ stdenv, fetchurl, perl, python2, ruby, bison, gperf, cmake
 , pkgconfig, gettext, gobjectIntrospection, libnotify, gnutls, libgcrypt
 , gtk3, wayland, libwebp, enchant2, xorg, libxkbcommon, epoxy, at-spi2-core
 , libxml2, libsoup, libsecret, libxslt, harfbuzz, libpthreadstubs, pcre, nettle, libtasn1, p11-kit
@@ -61,7 +61,7 @@ stdenv.mkDerivation rec {
   ];
 
   nativeBuildInputs = [
-    cmake ninja perl python2 ruby bison gperf
+    cmake perl python2 ruby bison gperf
     pkgconfig gettext gobjectIntrospection
   ];
 

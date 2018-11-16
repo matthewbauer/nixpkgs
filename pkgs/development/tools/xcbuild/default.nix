@@ -1,5 +1,5 @@
 { stdenv, cmake, fetchFromGitHub, zlib, libxml2, libpng
-, CoreServices, CoreGraphics, ImageIO, ninja }:
+, CoreServices, CoreGraphics, ImageIO }:
 
 let
   googletest = fetchFromGitHub {
@@ -52,9 +52,7 @@ in stdenv.mkDerivation rec {
 
   NIX_CFLAGS_COMPILE = "-Wno-error=strict-aliasing";
 
-  cmakeFlags = [ "-GNinja" ];
-
-  buildInputs = [ cmake zlib libxml2 libpng ninja ]
+  buildInputs = [ cmake zlib libxml2 libpng ]
     ++ stdenv.lib.optionals stdenv.isDarwin [ CoreServices CoreGraphics ImageIO ];
 
   meta = with stdenv.lib; {

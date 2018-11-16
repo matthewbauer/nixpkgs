@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, cmake, ninja, pkgconfig, vala_0_40, gtk3, libxml2, granite, webkitgtk, clutter-gtk
+{ stdenv, fetchFromGitHub, cmake, pkgconfig, vala_0_40, gtk3, libxml2, granite, webkitgtk, clutter-gtk
 , clutter-gst, libunity, libnotify, sqlite, gst_all_1, libsoup, json-glib, gnome3, gobjectIntrospection, wrapGAppsHook }:
 
 stdenv.mkDerivation rec {
@@ -18,7 +18,6 @@ stdenv.mkDerivation rec {
     cmake
     gobjectIntrospection
     libxml2
-    ninja
     pkgconfig
     vala_0_40 # should be `elementary.vala` when elementary attribute set is merged
     wrapGAppsHook

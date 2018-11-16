@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, pkgconfig, cmake, ninja, qtbase }:
+{ stdenv, fetchFromGitHub, pkgconfig, cmake, qtbase }:
 
 stdenv.mkDerivation rec {
   pname = "adwaita-qt";
@@ -13,10 +13,7 @@ stdenv.mkDerivation rec {
     sha256 = "0xn8bianmdj15k11mnw52by9vxkmvpqr2s304kl3dbjj1l7v4cd7";
   };
 
-  nativeBuildInputs = [
-    cmake
-    ninja
-  ];
+  nativeBuildInputs = [ cmake ];
 
   buildInputs = [
     qtbase

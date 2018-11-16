@@ -1,4 +1,4 @@
-{ fetchurl, stdenv, cmake, ninja }:
+{ fetchurl, stdenv, cmake }:
 
 stdenv.mkDerivation rec {
   name = "poppler-data-0.4.9";
@@ -8,7 +8,7 @@ stdenv.mkDerivation rec {
     sha256 = "04i0wgdkn5lhda8cyxd1ll4a2p41pwqrwd47n9mdpl7cx5ypx70z";
   };
 
-  nativeBuildInputs = [ cmake ninja ];
+  nativeBuildInputs = [ cmake ];
 
   meta = with stdenv.lib; {
     homepage = https://poppler.freedesktop.org/;

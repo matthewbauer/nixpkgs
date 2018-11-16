@@ -1,5 +1,5 @@
 { stdenv, fetchFromGitHub
-, vala, cmake, ninja, wrapGAppsHook, pkgconfig, gettext
+, vala, cmake, wrapGAppsHook, pkgconfig, gettext
 , gobjectIntrospection, gnome3, glib, gdk_pixbuf, gtk3, glib-networking
 , xorg, libXdmcp, libxkbcommon
 , libnotify, libsoup
@@ -26,7 +26,6 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [
     vala
     cmake
-    ninja
     pkgconfig
     wrapGAppsHook
   ];

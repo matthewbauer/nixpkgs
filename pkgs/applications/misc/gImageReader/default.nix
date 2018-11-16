@@ -1,7 +1,6 @@
 { stdenv, fetchFromGitHub, cmake, pkgconfig, libuuid
 , sane-backends, podofo, libjpeg, djvulibre, libxmlxx3, libzip, tesseract
 , enchant, intltool, poppler, json-glib
-, ninja
 , python3
 
 # Gtk deps
@@ -26,7 +25,7 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [
-    cmake ninja
+    cmake
     intltool
     pkgconfig
     pythonEnv

@@ -1,5 +1,5 @@
 { stdenv, fetchFromGitHub, fetchpatch, ftgl, glew, asciidoc
-, cmake, ninja, libGLU_combined, zlib, python, expat, libxml2, libsigcxx, libuuid, freetype
+, cmake, libGLU_combined, zlib, python, expat, libxml2, libsigcxx, libuuid, freetype
 , libpng, boost, doxygen, cairomm, pkgconfig, imagemagick, libjpeg, libtiff
 , gettext, intltool, perl, gtkmm2, glibmm, gtkglext, pangox_compat, libXmu }:
 
@@ -29,7 +29,7 @@ stdenv.mkDerivation rec {
     export LD_LIBRARY_PATH="$LD_LIBRARY_PATH''${LD_LIBRARY_PATH:+:}$PWD/build/lib"
   '';
 
-  nativeBuildInputs = [ cmake ninja gettext intltool doxygen pkgconfig perl asciidoc ];
+  nativeBuildInputs = [ cmake gettext intltool doxygen pkgconfig perl asciidoc ];
 
   buildInputs = [
      libGLU_combined zlib python expat libxml2 libsigcxx libuuid freetype libpng

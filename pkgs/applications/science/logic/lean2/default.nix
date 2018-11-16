@@ -15,12 +15,14 @@ stdenv.mkDerivation rec {
   buildInputs = [ gmp mpfr cmake python gperftools ninja makeWrapper ];
   enableParallelBuilding = true;
 
+  dontUseNinjaBuild = true;
+  dontUseNinjaInstall = true;
+  dontUseNinjaCheck = true;
+
   preConfigure = ''
     patchShebangs bin/leantags
     cd src
   '';
-
-  cmakeFlags = [ "-GNinja" ];
 
   postInstall = ''
     wrapProgram $out/bin/linja --prefix PATH : $out/bin:${ninja}/bin

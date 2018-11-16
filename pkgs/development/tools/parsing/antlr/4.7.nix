@@ -1,5 +1,5 @@
 { stdenv, fetchurl, jre
-, fetchFromGitHub, cmake, ninja, pkgconfig, libuuid, darwin }:
+, fetchFromGitHub, cmake, pkgconfig, libuuid, darwin }:
 
 let
   version = "4.7.1";
@@ -17,7 +17,7 @@ let
 
       outputs = [ "out" "dev" "doc" ];
 
-      nativeBuildInputs = [ cmake ninja pkgconfig ];
+      nativeBuildInputs = [ cmake pkgconfig ];
       buildInputs = stdenv.lib.optional stdenv.isLinux libuuid
         ++ stdenv.lib.optional stdenv.isDarwin darwin.apple_sdk.frameworks.CoreFoundation;
 

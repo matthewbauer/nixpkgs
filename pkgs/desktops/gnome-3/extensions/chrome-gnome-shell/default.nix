@@ -1,4 +1,4 @@
-{stdenv, fetchurl, cmake, ninja, jq, python3, gnome3, wrapGAppsHook}:
+{stdenv, fetchurl, cmake, jq, python3, gnome3, wrapGAppsHook}:
 
 let
   version = "10";
@@ -12,7 +12,7 @@ in stdenv.mkDerivation rec {
     sha256 = "1wp6qvcp758yfj8xlj15sk1d3jsb1p8136y8xxwpi9wfdjpzjs8j";
   };
 
-  nativeBuildInputs = [ cmake ninja jq wrapGAppsHook ];
+  nativeBuildInputs = [ cmake jq wrapGAppsHook ];
   buildInputs = [ gnome3.gnome-shell python pygobject3 requests ];
 
   preConfigure = ''

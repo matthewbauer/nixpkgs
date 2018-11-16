@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, cmake, ninja, gflags, libsodium, protobuf }:
+{ stdenv, fetchFromGitHub, cmake, gflags, libsodium, protobuf }:
 
 stdenv.mkDerivation rec {
   name = "eternal-terminal-${version}";
@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
     sha256 = "0fq9a1fn0c77wfpypl3z7y23gbkw295ksy97wi9lhb5zj2m3dkq0";
   };
 
-  nativeBuildInputs = [ cmake ninja ];
+  nativeBuildInputs = [ cmake ];
   buildInputs = [ gflags libsodium protobuf ];
 
   meta = with stdenv.lib; {

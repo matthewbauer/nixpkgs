@@ -9,7 +9,6 @@
 , gobjectIntrospection
 , json-glib
 , cmake
-, ninja
 , libgudev
 , libevdev
 , libsoup
@@ -34,7 +33,6 @@ stdenv.mkDerivation rec {
     wrapGAppsHook
     vala_0_40 # should be `elementary.vala` when elementary attribute set is merged
     cmake
-    ninja
     gettext
     libxml2
     gobjectIntrospection # For setup hook

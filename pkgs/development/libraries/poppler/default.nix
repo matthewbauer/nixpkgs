@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchurl, cmake, ninja, pkgconfig, libiconv, libintl
+{ stdenv, lib, fetchurl, cmake, pkgconfig, libiconv, libintl
 , zlib, curl, cairo, freetype, fontconfig, lcms, libjpeg, openjpeg
 , withData ? true, poppler_data
 , qt5Support ? false, qtbase ? null
@@ -31,7 +31,7 @@ stdenv.mkDerivation rec {
     ++ optional utils nss
     ++ optional introspectionSupport gobjectIntrospection;
 
-  nativeBuildInputs = [ cmake ninja pkgconfig ];
+  nativeBuildInputs = [ cmake pkgconfig ];
 
   # Not sure when and how to pass it.  It seems an upstream bug anyway.
   CXXFLAGS = stdenv.lib.optionalString stdenv.cc.isClang "-std=c++11";

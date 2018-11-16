@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, cmake, ninja, zlib, expat, rpm, db }:
+{ stdenv, fetchFromGitHub, cmake, zlib, expat, rpm, db }:
 
 stdenv.mkDerivation rec {
   rev  = "0.7.0";
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
     "-DENABLE_RPMDB_BYRPMHEADER=true"
   ];
 
-  nativeBuildInputs = [ cmake ninja ];
+  nativeBuildInputs = [ cmake ];
   buildInputs = [ zlib expat rpm db ];
 
   meta = with stdenv.lib; {
@@ -29,4 +29,3 @@ stdenv.mkDerivation rec {
     maintainers = with maintainers; [ copumpkin ];
   };
 }
-
