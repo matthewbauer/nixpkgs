@@ -15,10 +15,13 @@ let stackCmd = "stack --internal-re-exec-version=${stack.version}";
     # Add all dependencies in buildInputs including propagated ones to
     # STACK_IN_NIX_EXTRA_ARGS.
     addStackArgsHook = ''
-for pkg in ''${pkgsHostHost[@]} ''${pkgsHostBuild[@]} ''${pkgsHostTarget[@]}
+for pkg in ''${pkgsHostTarget[@]}
 do
-  [ -d "$pkg/lib" ] && \
-    export STACK_IN_NIX_EXTRA_ARGS+=" --extra-lib-dirs=$pkg/lib"
+  if [ -d "$pkg/lib" ]; then
+    if [ -n "$(echo $pkg/lib/lib*)" ]; then
+      export STACK_IN_NIX_EXTRA_ARGS+=" --extra-lib-dirs=$pkg/lib"
+    fi
+  fi
   [ -d "$pkg/include" ] && \
     export STACK_IN_NIX_EXTRA_ARGS+=" --extra-include-dirs=$pkg/include"
 done
