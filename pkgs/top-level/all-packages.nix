@@ -380,7 +380,7 @@ in
 
   singularity-tools = callPackage ../build-support/singularity-tools { };
 
-  srcOnly = args: callPackage ../build-support/src-only args;
+  srcOnly = callPackage ../build-support/src-only;
 
   substituteAll = callPackage ../build-support/substitute/substitute-all.nix { };
 
@@ -413,9 +413,6 @@ in
   makeGCOVReport = makeSetupHook
     { deps = [ pkgs.lcov pkgs.enableGCOVInstrumentation ]; }
     ../build-support/setup-hooks/make-coverage-analysis-report.sh;
-
-  # intended to be used like nix-build -E 'with import <nixpkgs> {}; enableDebugging fooPackage'
-  enableDebugging = pkg: pkg.override { stdenv = stdenvAdapters.keepDebugInfo pkg.stdenv; };
 
   findXMLCatalogs = makeSetupHook { } ../build-support/setup-hooks/find-xml-catalogs.sh;
 
@@ -15694,8 +15691,6 @@ in
   tango-icon-theme = callPackage ../data/icons/tango-icon-theme {
     gtk = res.gtk2;
   };
-
-  themes = name: callPackage (../data/misc/themes + ("/" + name + ".nix")) {};
 
   theano = callPackage ../data/fonts/theano { };
 
