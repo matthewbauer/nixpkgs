@@ -22,11 +22,16 @@ let
 
   # TODO: turn self into an error
 
-in
-{
+  inherit (lib) lowPrio hiPrio appendToName makeOverridable stringsWithDeps
+                recurseIntoAttrs;
+
+in {
 
   # Allow callPackage to fill in the pkgs argument
   inherit pkgs;
+
+  ### Helper functions.
+  inherit lib config;
 
   # A stdenv capable of building 32-bit binaries.  On x86_64-linux,
   # it uses GCC compiled with multilib support; on i686-linux, it's
@@ -53,18 +58,6 @@ in
 
   # For convenience, allow callers to get the path to Nixpkgs.
   path = ../..;
-
-
-  ### Helper functions.
-  inherit lib config;
-
-  inherit (lib) lowPrio hiPrio appendToName makeOverridable;
-
-  # Applying this to an attribute set will cause nix-env to look
-  # inside the set for derivations.
-  recurseIntoAttrs = attrs: attrs // { recurseForDerivations = true; };
-
-  stringsWithDeps = lib.stringsWithDeps;
 
   ### Evaluating the entire Nixpkgs naively will fail, make failure fast
   AAAAAASomeThingsFailToEvaluate = throw ''
@@ -4614,9 +4607,9 @@ in
       pam = if stdenv.isLinux then pam else null;
     };
 
-  openssh_hpn = pkgs.appendToName "with-hpn" (openssh.override { hpnSupport = true; });
+  openssh_hpn = appendToName "with-hpn" (openssh.override { hpnSupport = true; });
 
-  openssh_gssapi = pkgs.appendToName "with-gssapi" (openssh.override {
+  openssh_gssapi = appendToName "with-gssapi" (openssh.override {
     withGssapiPatches = true;
   });
 
@@ -15075,7 +15068,7 @@ in
 
   # In nixos, you can set systemd.package = pkgs.systemd_with_lvm2 to get
   # LVM2 working in systemd.
-  systemd_with_lvm2 = pkgs.appendToName "with-lvm2" (pkgs.lib.overrideDerivation pkgs.systemd (p: {
+  systemd_with_lvm2 = appendToName "with-lvm2" (pkgs.lib.overrideDerivation pkgs.systemd (p: {
       postInstall = p.postInstall + ''
         cp "${pkgs.lvm2}/lib/systemd/system-generators/"* $out/lib/systemd/system-generators
       '';
