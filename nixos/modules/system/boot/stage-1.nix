@@ -252,6 +252,7 @@ let
       echo checking syntax
       # check both with bash
       ${pkgs.buildPackages.bash}/bin/sh -n $target
+    '' + lib.optionalString stdenv.buildPlatform.isLinux ''
       # and with ash shell, just in case
       ${pkgs.buildPackages.busybox}/bin/ash -n $target
     '';
