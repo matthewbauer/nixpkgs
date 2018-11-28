@@ -102,6 +102,8 @@ in stdenv.mkDerivation {
 
   enableParallelBuilding = true;
 
+  strictDeps = true;
+
   shellHook = ''
     # to be able to run the resulting binary
     export WIRESHARK_RUN_FROM_BUILD_DIRECTORY=1
