@@ -60,8 +60,9 @@ rec {
           "openbsd" = "OpenBSD";
         }.${final.parsed.kernel.name} or null;
 
-         # uname -p
+         # uname -p / uname -m
          processor = final.parsed.cpu.name;
+         machine = final.parsed.cpu.name;
 
          # uname -r
          release = null;
