@@ -16886,6 +16886,7 @@ with pkgs;
     qt5 = qt59;
     withGtk = false;
     inherit (darwin.apple_sdk.frameworks) ApplicationServices SystemConfiguration;
+    inherit (darwin) cf-private libobjc;
   };
   wireshark-qt = wireshark;
 

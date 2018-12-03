@@ -3,7 +3,7 @@
 , libssh, zlib, cmake, extra-cmake-modules, fetchpatch, makeWrapper
 , withGtk ? false, gtk3 ? null, librsvg ? null, gsettings-desktop-schemas ? null, wrapGAppsHook ? null
 , withQt ? false, qt5 ? null
-, ApplicationServices, SystemConfiguration, gmp
+, ApplicationServices, SystemConfiguration, gmp, cf-private, libobjc
 }:
 
 assert withGtk -> !withQt  && gtk3 != null;
@@ -42,7 +42,8 @@ in stdenv.mkDerivation {
     ++ optionals withGtk [ gtk3 librsvg gsettings-desktop-schemas ]
     ++ optionals stdenv.isLinux  [ libcap libnl ]
     ++ optionals stdenv.isDarwin [ SystemConfiguration ApplicationServices gmp ]
-    ++ optionals (withQt && stdenv.isDarwin) (with qt5; [ qtmacextras ]);
+    ++ optionals (withQt && stdenv.isDarwin) (with qt5; [ qtmacextras ])
+    ++ optionals (withGtk && stdenv.isDarwin) [ cf-private libobjc ];
 
   patches = [ ./wireshark-lookup-dumpcap-in-path.patch ]
     # https://code.wireshark.org/review/#/c/23728/
@@ -51,6 +52,8 @@ in stdenv.mkDerivation {
       url = "https://code.wireshark.org/review/gitweb?p=wireshark.git;a=commitdiff_plain;h=8b5b843fcbc3e03e0fc45f3caf8cf5fc477e8613;hp=94af9724d140fd132896b650d10c4d060788e4f0";
       sha256 = "1g2dm7lwsnanwp68b9xr9swspx7hfj4v3z44sz3yrfmynygk8zlv";
     });
+
+  NIX_LDFLAGS = stdenv.lib.optionalString (stdenv.isDarwin && withGtk) "-lobjc";
 
   postPatch = ''
     sed -i -e '1i cmake_policy(SET CMP0025 NEW)' CMakeLists.txt
