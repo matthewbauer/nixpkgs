@@ -22214,6 +22214,8 @@ with pkgs;
     nixStable
     nixUnstable;
 
+  nix-command-store-plugin = callPackage ../tools/package-management/nix/plugins/nix-command-store-plugin.nix {};
+
   nixops = callPackage ../tools/package-management/nixops { };
 
   nixopsUnstable = lowPrio (callPackage ../tools/package-management/nixops/unstable.nix { });
