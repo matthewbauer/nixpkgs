@@ -8684,7 +8684,7 @@ in
   gnumake42 = callPackage ../development/tools/build-managers/gnumake/4.2 { };
   gnumake = gnumake42;
 
-  gnustep = recurseIntoAttrs (callPackage ../desktops/gnustep {});
+  gnustep = recurseIntoAttrs (callPackage ../desktops/gnustep { });
 
   gob2 = callPackage ../development/tools/misc/gob2 { };
 

@@ -47,15 +47,15 @@ addEnvVars() {
     fi
     tmp="$1/lib/GNUstep"
     if [ -d "$tmp" ] && case "$NIX_GNUSTEP_SYSTEM_LIBRARY" in *"${tmp}"*) false;; *) true;; esac; then
-    	addToSearchPath NIX_GNUSTEP_SYSTEM_LIBRARY "$tmp"
+	addToSearchPath NIX_GNUSTEP_SYSTEM_LIBRARY "$tmp"
     fi
     tmp="$1/include"
     if [ -d "$tmp" ] && case "$NIX_GNUSTEP_SYSTEM_HEADERS" in *"${tmp}"*) false;; *) true;; esac; then
-    	if [ -z "$NIX_GNUSTEP_SYSTEM_HEADERS" ]; then
-    	    export NIX_GNUSTEP_SYSTEM_HEADERS="$tmp"
-    	else
-    	    export NIX_GNUSTEP_SYSTEM_HEADERS+=" $tmp"
-    	fi
+	if [ -z "$NIX_GNUSTEP_SYSTEM_HEADERS" ]; then
+	    export NIX_GNUSTEP_SYSTEM_HEADERS="$tmp"
+	else
+	    export NIX_GNUSTEP_SYSTEM_HEADERS+=" $tmp"
+	fi
     fi
     tmp="$1/lib"
     if [ -d "$tmp" ] && case "$NIX_GNUSTEP_SYSTEM_LIBRARIES" in *"${tmp}"*) false;; *) true;; esac; then

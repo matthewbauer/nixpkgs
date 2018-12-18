@@ -1,11 +1,7 @@
-{ stdenv, fetchurl, clang, which, libobjc }:
-
-let
-  version = "2.7.0";
-in
-
+{ stdenv, fetchurl, which, libobjc }:
 stdenv.mkDerivation rec {
   name = "gnustep-make-${version}";
+  version = "2.7.0";
 
   src = fetchurl {
     url = "ftp://ftp.gnustep.org/pub/gnustep/core/gnustep-make-${version}.tar.gz";
@@ -15,6 +11,7 @@ stdenv.mkDerivation rec {
   configureFlags = [
     "--with-layout=fhs-system"
     "--disable-install-p"
+    "--with-library-combo=gnu-gnu-gnu"
   ];
 
   preConfigure = ''
@@ -25,9 +22,11 @@ stdenv.mkDerivation rec {
     "GNUSTEP_INSTALLATION_DOMAIN=SYSTEM"
   ];
 
-  buildInputs = [ clang which libobjc ];
+  nativeBuildInputs = [ which ];
+  buildInputs = [ libobjc ];
   patches = [ ./fixup-paths.patch ];
   setupHook = ./setup-hook.sh;
+  doCheck = true;
   meta = {
     description = "A build manager for GNUstep";
     homepage = http://gnustep.org/;

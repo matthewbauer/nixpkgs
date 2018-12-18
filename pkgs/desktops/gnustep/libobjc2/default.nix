@@ -1,22 +1,16 @@
 { stdenv, lib, fetchFromGitHub, cmake }:
-
-let
-  version = "1.8.1";
-in
-
 stdenv.mkDerivation rec {
   name = "libobjc2-${version}";
+  version = "1.9";
 
   src = fetchFromGitHub {
     owner = "gnustep";
     repo = "libobjc2";
-    rev = "v${version}";
-    sha256 = "12v9pjg97h56mb114cqd22q1pdwhmxrgdw5hal74ddlrhiq1nzvi";
+    rev = "cb13e5307f913bd540363483206a73d94a4d7c68";
+    sha256 = "15k1j498mxc61n2dcsd9f78ynf48pgylx0hdzhf9c1bha2318dbg";
   };
 
-  buildInputs = [ cmake ];
-
-  cmakeFlags = [ "-DCMAKE_INSTALL_LIBDIR=lib" ];
+  nativeBuildInputs = [ cmake ];
 
   meta = with lib; {
     description = "Objective-C runtime for use with GNUstep";
