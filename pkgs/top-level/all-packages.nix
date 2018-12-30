@@ -3159,7 +3159,6 @@ in
   gt5 = callPackage ../tools/system/gt5 { };
 
   gtest = callPackage ../development/libraries/gtest { };
-  gtest_static = callPackage ../development/libraries/gtest { static = true; };
   gmock = gtest; # TODO: move to aliases.nix
 
   gbenchmark = callPackage ../development/libraries/gbenchmark {};
@@ -9294,7 +9293,9 @@ in
 
   armadillo = callPackage ../development/libraries/armadillo {};
 
-  arrow-cpp = callPackage ../development/libraries/arrow-cpp {};
+  arrow-cpp = callPackage ../development/libraries/arrow-cpp {
+    gtest = gtest.override { static = true; };
+  };
 
   assimp = callPackage ../development/libraries/assimp { };
 
