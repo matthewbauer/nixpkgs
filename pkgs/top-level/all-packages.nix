@@ -5157,8 +5157,6 @@ in
     inherit (gnome2) gnome_vfs GConf;
   };
 
-  remarkjs = callPackage ../development/web/remarkjs { };
-
   alarm-clock-applet = callPackage ../tools/misc/alarm-clock-applet { };
 
   remind = callPackage ../tools/misc/remind { };
