@@ -1,6 +1,8 @@
 { stdenv, fetchFromGitHub, autoconf, automake, libtool, autoreconfHook
 , libcxxabi, libuuid, llvm
 , libobjc ? null, maloader ? null
+
+, enableTapiSupport ? stdenv.hostPlatform != stdenv.targetPlatform, libtapi
 }:
 
 let
@@ -31,7 +33,8 @@ let
 
     nativeBuildInputs = [ autoconf automake libtool autoreconfHook ];
     buildInputs = [ libuuid ]
-      ++ stdenv.lib.optionals stdenv.isDarwin [ libcxxabi libobjc ];
+      ++ stdenv.lib.optionals stdenv.isDarwin [ libcxxabi libobjc ]
+      ++ stdenv.lib.optional enableTapiSupport libtapi;
 
     patches = [ ./ld-rpath-nonfinal.patch ./ld-ignore-rpath-link.patch ];
 
@@ -46,7 +49,8 @@ let
     # TODO(@Ericson2314): Always pass "--target" and always targetPrefix.
     configurePlatforms = [ "build" "host" ]
       ++ stdenv.lib.optional (stdenv.targetPlatform != stdenv.hostPlatform) "target";
-    configureFlags = [ "--disable-clang-as" ];
+    configureFlags = [ "--disable-clang-as" ]
+      ++ stdenv.lib.optional enableTapiSupport "--enable-tapi-support";
 
     postPatch = stdenv.lib.optionalString stdenv.hostPlatform.isDarwin ''
       substituteInPlace cctools/Makefile.am --replace libobjc2 ""
