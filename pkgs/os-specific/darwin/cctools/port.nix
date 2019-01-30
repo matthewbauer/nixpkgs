@@ -50,7 +50,10 @@ let
     configurePlatforms = [ "build" "host" ]
       ++ stdenv.lib.optional (stdenv.targetPlatform != stdenv.hostPlatform) "target";
     configureFlags = [ "--disable-clang-as" ]
-      ++ stdenv.lib.optional enableTapiSupport "--enable-tapi-support";
+      ++ stdenv.lib.optionals enableTapiSupport [
+        "--enable-tapi-support"
+        "--with-libtapi=${libtapi}"
+      ];
 
     postPatch = stdenv.lib.optionalString stdenv.hostPlatform.isDarwin ''
       substituteInPlace cctools/Makefile.am --replace libobjc2 ""
