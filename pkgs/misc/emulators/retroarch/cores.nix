@@ -14,7 +14,7 @@ let
     version = "2017-06-04";
     inherit src;
 
-    buildInputs = [ makeWrapper retroarch zlib ] ++ a.extraBuildInputs or [];
+    buildInputs = [ zlib ] ++ a.extraBuildInputs or [];
 
     makefile = "Makefile.libretro";
 
@@ -23,8 +23,6 @@ let
       mkdir -p $out/bin
       mkdir -p $COREDIR
       mv ${d2u core}_libretro${stdenv.hostPlatform.extensions.sharedLibrary} $COREDIR/.
-      makeWrapper ${retroarch}/bin/retroarch $out/bin/retroarch-${core} \
-        --add-flags "-L $COREDIR/${d2u core}_libretro${stdenv.hostPlatform.extensions.sharedLibrary} $@"
     '';
 
     enableParallelBuilding = true;
