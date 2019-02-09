@@ -19,6 +19,17 @@ auditTmpdir() {
     while IFS= read -r -d $'\0' i; do
         if [[ "$i" =~ .build-id ]]; then continue; fi
 
+        if isMachO "$i"; then
+            if otool -L "$i" | grep -q -F "$TMPDIR/"; then
+                echo "Binary $i contains a forbidden reference to $TMPDIR"
+                exit 1
+            fi
+            if otool -D "$i" | grep -q -F "$TMPDIR/"; then
+                echo "Library $i has the install name of $TMPDIR/"
+                exit 1
+            fi
+        fi
+
         if isELF "$i"; then
             if { printf :; patchelf --print-rpath "$i"; } | grep -q -F ":$TMPDIR/"; then
                 echo "RPATH of binary $i contains a forbidden reference to $TMPDIR/"
