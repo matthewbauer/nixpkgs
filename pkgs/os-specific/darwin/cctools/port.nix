@@ -2,7 +2,7 @@
 , libcxxabi, libuuid, llvm
 , libobjc ? null, maloader ? null
 
-, enableTapiSupport ? stdenv.hostPlatform != stdenv.targetPlatform, libtapi
+, enableTapiSupport ? true, libtapi
 }:
 
 let
