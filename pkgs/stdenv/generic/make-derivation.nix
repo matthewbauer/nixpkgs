@@ -86,8 +86,7 @@ rec {
       doCheck' = doCheck && stdenv.hostPlatform == stdenv.buildPlatform;
       doInstallCheck' = doInstallCheck && stdenv.hostPlatform == stdenv.buildPlatform;
 
-      separateDebugInfo' = separateDebugInfo && stdenv.hostPlatform.isLinux;
-      outputs' = outputs ++ lib.optional separateDebugInfo' "debug";
+      outputs' = outputs ++ lib.optional separateDebugInfo "debug";
 
       fixedOutputDrv = attrs ? outputHash;
       noNonNativeDeps = builtins.length (depsBuildTarget ++ depsBuildTargetPropagated
@@ -122,7 +121,7 @@ rec {
         [
           (map (drv: drv.__spliced.buildBuild or drv) depsBuildBuild)
           (map (drv: drv.nativeDrv or drv) nativeBuildInputs
-             ++ lib.optional separateDebugInfo' ../../build-support/setup-hooks/separate-debug-info.sh
+             ++ lib.optional separateDebugInfo ../../build-support/setup-hooks/separate-debug-info.sh
              ++ lib.optional stdenv.hostPlatform.isWindows ../../build-support/setup-hooks/win-dll-link.sh
              ++ lib.optionals doCheck checkInputs
              ++ lib.optionals doInstallCheck' installCheckInputs)
