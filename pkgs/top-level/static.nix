@@ -119,7 +119,10 @@ in {
     static = true;
   };
   openblas = super.openblas.override { enableStatic = true; };
-  nix = super.nix.override { withAWS = false; };
+  nix = super.nix.override {
+    withAWS = false;
+    buildShared = false;
+  };
   # openssl 1.1 doesn't compile
   openssl = super.openssl_1_0_2.override {
     static = true;
