@@ -160,7 +160,10 @@ in {
     enableShared = false;
   };
   mkl = super.mkl.override { enableStatic = true; };
-  nix = super.nix.override { withAWS = false; };
+  nix = super.nix.override {
+    withAWS = false;
+    buildShared = false;
+  };
   openssl = (super.openssl_1_1.override { static = true; }).overrideAttrs (o: {
     # OpenSSL doesn't like the `--enable-static` / `--disable-shared` flags.
     configureFlags = (removeUnknownConfigureFlags o.configureFlags);

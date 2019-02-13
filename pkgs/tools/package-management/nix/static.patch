@@ -1,0 +1,55 @@
+diff --git a/configure.ac b/configure.ac
+index ebe6d426..20969c14 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -170,6 +170,18 @@ if test "x$GCC_ATOMIC_BUILTINS_NEED_LIBATOMIC" = xyes; then
+     LIBS="-latomic $LIBS"
+ fi
+ 
++PKG_PROG_PKG_CONFIG
++
++AC_ARG_ENABLE(shared, AC_HELP_STRING([--enable-shared],
++  [Build shared libraries for Nix [default=yes]]),
++  shared=$enableval, shared=yes)
++if test "$shared" = yes; then
++  AC_SUBST(BUILD_SHARED_LIBS, 1, [Whether to build shared libraries.])
++else
++  AC_SUBST(BUILD_SHARED_LIBS, 0, [Whether to build shared libraries.])
++  PKG_CONFIG="$PKG_CONFIG --static"
++fi
++
+ # Look for OpenSSL, a required dependency.
+ PKG_CHECK_MODULES([OPENSSL], [libcrypto], [CXXFLAGS="$OPENSSL_CFLAGS $CXXFLAGS"])
+ 
+@@ -302,16 +314,6 @@ AC_ARG_WITH(sandbox-shell, AC_HELP_STRING([--with-sandbox-shell=PATH],
+   sandbox_shell=$withval)
+ AC_SUBST(sandbox_shell)
+ 
+-AC_ARG_ENABLE(shared, AC_HELP_STRING([--enable-shared],
+-  [Build shared libraries for Nix [default=yes]]),
+-  shared=$enableval, shared=yes)
+-if test "$shared" = yes; then
+-  AC_SUBST(BUILD_SHARED_LIBS, 1, [Whether to build shared libraries.])
+-else
+-  AC_SUBST(BUILD_SHARED_LIBS, 0, [Whether to build shared libraries.])
+-fi
+-
+-
+ # Expand all variables in config.status.
+ test "$prefix" = NONE && prefix=$ac_default_prefix
+ test "$exec_prefix" = NONE && exec_prefix='${prefix}'
+diff --git a/mk/libraries.mk b/mk/libraries.mk
+index 14c95fa9..28173629 100644
+--- a/mk/libraries.mk
++++ b/mk/libraries.mk
+@@ -125,9 +125,9 @@ define build-library
+     $(1)_PATH := $$(_d)/$$($(1)_NAME).a
+ 
+     $$($(1)_PATH): $$($(1)_OBJS) | $$(_d)/
+ 	$(trace-ar) $(AR) crs $$@ $$?
+ 
+-    $(1)_LDFLAGS_USE += $$($(1)_PATH) $$($(1)_LDFLAGS)
++    $(1)_LDFLAGS_USE += -Wl,--whole-archive $$($(1)_PATH) -Wl,--no-whole-archive $$($(1)_LDFLAGS)
+ 
+     $(1)_INSTALL_PATH := $$(libdir)/$$($(1)_NAME).a
+ 

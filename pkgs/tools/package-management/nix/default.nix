@@ -21,6 +21,7 @@ common =
 
   , name, suffix ? "", src, includesPerl ? false, fromGit ? false
 
+  , buildShared ? true
   }:
   let
      sh = busybox-sandbox-shell;
@@ -32,12 +33,14 @@ common =
 
       VERSION_SUFFIX = lib.optionalString fromGit suffix;
 
+      patches = lib.optional (!buildShared) ./static.patch;
+
       outputs = [ "out" "dev" "man" "doc" ];
 
       nativeBuildInputs =
         [ pkgconfig ]
         ++ lib.optionals (!is20) [ curl perl ]
-        ++ lib.optionals fromGit [ autoreconfHook autoconf-archive bison flex libxml2 libxslt docbook5 docbook_xsl_ns jq ];
+        ++ lib.optionals (fromGit || !buildShared) [ autoreconfHook autoconf-archive bison flex libxml2 libxslt docbook5 docbook_xsl_ns jq ];
 
       buildInputs = [ curl openssl sqlite xz bzip2 nlohmann_json ]
         ++ lib.optional (stdenv.isLinux || stdenv.isDarwin) libsodium
@@ -62,7 +65,7 @@ common =
       preConfigure =
         # Copy libboost_context so we don't get all of Boost in our closure.
         # https://github.com/NixOS/nixpkgs/issues/45462
-        if is20 then ''
+        if (is20 && buildShared) then ''
           mkdir -p $out/lib
           cp -pd ${boost}/lib/{libboost_context*,libboost_thread*,libboost_system*} $out/lib
           rm -f $out/lib/*.a
@@ -70,9 +73,9 @@ common =
             chmod u+w $out/lib/*.so.*
             patchelf --set-rpath $out/lib:${stdenv.cc.cc.lib}/lib $out/lib/libboost_thread.so.*
           ''}
-        '' else ''
+        '' else if (!is20) then ''
           configureFlagsArray+=(BDW_GC_LIBS="-lgc -lgccpp")
-        '';
+        '' else "";
 
       configureFlags =
         [ "--with-store-dir=${storeDir}"
