@@ -1,6 +1,5 @@
 export NIX_SET_BUILD_ID=1
-export NIX_LDFLAGS+=" --compress-debug-sections=zlib"
-export NIX_CFLAGS_COMPILE+=" -g -Wa,--compress-debug-sections"
+export NIX_CFLAGS_COMPILE+=" -g"
 dontStrip=1
 
 fixupOutputHooks+=(_separateDebugInfo)
