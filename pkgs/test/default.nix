@@ -37,4 +37,6 @@ with pkgs;
   patch-shebangs = callPackage ./patch-shebangs {};
 
   writers = callPackage ../build-support/writers/test.nix {};
+
+  audit-tmpdir = callPackage ./audit-tmpdir {};
 }
