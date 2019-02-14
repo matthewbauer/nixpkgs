@@ -184,13 +184,6 @@ if [ -n "${NIX_COREFOUNDATION_RPATH:-}" ]; then
   extraAfter+=(-rpath $NIX_COREFOUNDATION_RPATH)
 fi
 
-# Only add --build-id if this is a final link. FIXME: should build gcc
-# with --enable-linker-build-id instead?
-if [ "$NIX_@infixSalt@_SET_BUILD_ID" = 1 ] && ! (( "$relocatable" )); then
-    extraAfter+=(--build-id)
-fi
-
-
 # Optionally print debug info.
 if (( "${NIX_DEBUG:-0}" >= 1 )); then
     # Old bash workaround, see above.

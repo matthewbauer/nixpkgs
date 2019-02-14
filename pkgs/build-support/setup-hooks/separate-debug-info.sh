@@ -1,4 +1,3 @@
-export NIX_SET_BUILD_ID=1
 export NIX_CFLAGS_COMPILE+=" -g"
 dontStrip=1
 

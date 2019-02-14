@@ -296,6 +296,7 @@ stdenv.mkDerivation ({
           )
         )
       }"
+      "--enable-linker-build-id"
     ] ++
 
     (if (enableMultilib || targetPlatform.isAvr)
