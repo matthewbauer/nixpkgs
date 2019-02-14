@@ -220,11 +220,12 @@ isMachO() {
     local fd
     local magic
     exec {fd}< "$fn"
-    read -r -n 2 -u "$fd" magic
+    read -r -n 4 -u "$fd" magic
     exec {fd}<&-
+
     if [ "$magic" = $'\xCF\xFA\xED\xFE' ] ||
        [ "$magic" = $'\xCE\xFA\xED\xFE' ] ||
-       [ "$magic" = $'\xCA\xFE\xBA' ]; then return 0; else return 1; fi
+       [ "$magic" = $'\xCA\xFE\xBA\xBE' ]; then return 0; else return 1; fi
 }
 
 # Return success if the specified file is a script (i.e. starts with
