@@ -1,5 +1,6 @@
-{ stdenv, config, libGLSupported, fetchurl, fetchpatch, pkgconfig, audiofile, libcap, libiconv
-, openglSupport ? libGLSupported, libGL, libGLU
+{ stdenv, lib, config, fetchurl, fetchpatch, pkgconfig, audiofile, libcap, libiconv
+, openglSupport ? lib.elem stdenv.hostPlatform.system lib.platforms.mesaPlatforms
+, libGL, libGLU
 , alsaSupport ? stdenv.isLinux, alsaLib
 , x11Support ? !stdenv.isCygwin, libXext, libICE, libXrandr
 , pulseaudioSupport ? config.pulseaudio or stdenv.isLinux, libpulseaudio

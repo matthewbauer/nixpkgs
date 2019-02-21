@@ -11643,8 +11643,6 @@ in
   # Default derivation with libGL.so.1 to link into /run/opengl-drivers (if need)
   libGL_driver = mesa_drivers;
 
-  libGLSupported = lib.elem stdenv.hostPlatform.system lib.platforms.mesaPlatforms;
-
   mesa_noglu = callPackage ../development/libraries/mesa {
     llvmPackages = llvmPackages_6;
     inherit (darwin.apple_sdk.frameworks) OpenGL;

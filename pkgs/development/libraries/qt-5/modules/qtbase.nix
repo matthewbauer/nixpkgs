@@ -18,7 +18,7 @@
   withGtk3 ? false, dconf ? null, gtk3 ? null,
 
   # options
-  libGLSupported ? !stdenv.isDarwin,
+  libGLSupported ? !stdenv.isDarwin && lib.elem stdenv.hostPlatform.system lib.platforms.mesaPlatforms,
   libGL,
   buildExamples ? false,
   buildTests ? false,

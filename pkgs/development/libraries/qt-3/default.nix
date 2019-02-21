@@ -1,4 +1,4 @@
-{ stdenv, fetchurl
+{ stdenv, lib, fetchurl
 , xftSupport ? true, libXft ? null
 , xrenderSupport ? true, libXrender ? null
 , xrandrSupport ? true, libXrandr ? null
@@ -6,8 +6,8 @@
 , cursorSupport ? true, libXcursor ? null
 , threadSupport ? true
 , mysqlSupport ? false, mysql ? null
-, libGLSupported
-, openglSupport ? libGLSupported, libGLU_combined ? null, libXmu ? null
+, openglSupport ? lib.elem stdenv.hostPlatform.system lib.platforms.mesaPlatforms
+, libGLU_combined ? null, libXmu ? null
 , xlibsWrapper, xorgproto, zlib, libjpeg, libpng, which
 }:
 

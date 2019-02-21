@@ -1,5 +1,6 @@
-{ stdenv, config, libGLSupported, fetchurl, pkgconfig
-, openglSupport ? libGLSupported, libGL
+{ stdenv, lib, config, fetchurl, pkgconfig
+, openglSupport ? lib.elem stdenv.hostPlatform.system lib.platforms.mesaPlatforms
+, libGL
 , alsaSupport ? stdenv.isLinux, alsaLib
 , x11Support ? !stdenv.isCygwin, libX11, xorgproto, libICE, libXi, libXScrnSaver, libXcursor, libXinerama, libXext, libXxf86vm, libXrandr
 , waylandSupport ? stdenv.isLinux, wayland, wayland-protocols, libxkbcommon

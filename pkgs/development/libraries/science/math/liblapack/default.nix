@@ -1,13 +1,5 @@
-{
-  stdenv,
-  fetchurl,
-  gfortran,
-  cmake,
-  python2,
-  shared ? false
-}:
+{ stdenv, fetchurl, gfortran, cmake, python2 }:
 let
-  usedLibExtension = if shared then ".so" else ".a";
   inherit (stdenv.lib) optional optionals;
   version = "3.8.0";
 in
@@ -25,10 +17,8 @@ stdenv.mkDerivation rec {
   cmakeFlags = [
     "-DUSE_OPTIMIZED_BLAS=ON"
     "-DCMAKE_Fortran_FLAGS=-fPIC"
-  ]
-  ++ (optional shared "-DBUILD_SHARED_LIBS=ON");
-
-  doCheck = ! shared;
+    "-DBUILD_SHARED_LIBS=ON"
+  ];
 
   enableParallelBuilding = true;
 

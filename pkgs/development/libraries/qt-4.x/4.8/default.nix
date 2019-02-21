@@ -1,7 +1,9 @@
 { stdenv, lib, fetchurl, fetchpatch, substituteAll
 , libXrender, libXinerama, libXcursor, libXv, libXext
 , libXfixes, libXrandr, libSM, freetype, fontconfig, zlib, libjpeg, libpng
-, libmng, which, libGLSupported, libGLU, openssl, dbus, cups, pkgconfig
+, libmng, which
+, libGLSupported ? lib.elem stdenv.hostPlatform.system lib.platforms.mesaPlatforms
+, libGLU, openssl, dbus, cups, pkgconfig
 , libtiff, glib, icu, mysql, postgresql, sqlite, perl, coreutils, libXi
 , buildMultimedia ? stdenv.isLinux, alsaLib, gstreamer, gst-plugins-base
 , buildWebkit ? (stdenv.isLinux || stdenv.isDarwin)
