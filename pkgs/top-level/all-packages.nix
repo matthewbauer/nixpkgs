@@ -11625,7 +11625,7 @@ in
   ## libGL/libGLU/Mesa stuff
 
   # Default libGL implementation, should provide headers and libGL.so/libEGL.so/... to link agains them
-  libGL = mesa_noglu.stubs;
+  libGL = mesa.stubs;
 
   # Default libGLU
   libGLU = mesa_glu;
@@ -11643,12 +11643,12 @@ in
   # Default derivation with libGL.so.1 to link into /run/opengl-drivers (if need)
   libGL_driver = mesa_drivers;
 
-  mesa_noglu = callPackage ../development/libraries/mesa {
+  mesa = callPackage ../development/libraries/mesa {
     llvmPackages = llvmPackages_6;
     inherit (darwin.apple_sdk.frameworks) OpenGL;
     inherit (darwin.apple_sdk.libs) Xplugin;
   };
-  mesa = mesa_noglu;
+  mesa_noglu = mesa;
 
   mesa_glu =  callPackage ../development/libraries/mesa-glu { };
 
@@ -11656,7 +11656,7 @@ in
   # gcsecurity bussiness is done: https://www.theregister.co.uk/2018/02/08/bruce_perens_grsecurity_anti_slapp/
   # floating point textures patents are expired,
   # so package reduced to alias
-  mesa_drivers = mesa_noglu.drivers;
+  mesa_drivers = mesa.drivers;
 
   ## End libGL/libGLU/Mesa stuff
 

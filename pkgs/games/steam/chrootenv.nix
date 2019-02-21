@@ -129,7 +129,7 @@ in buildFHSUserEnv rec {
     libidn
     tbb
     wayland
-    mesa_noglu
+    mesa
     libxkbcommon
 
     # Other things from runtime
@@ -204,7 +204,7 @@ in buildFHSUserEnv rec {
     **
     WARNING: Steam is not set up. Add the following options to /etc/nixos/configuration.nix
     and then run \`sudo nixos-rebuild switch\`:
-    { 
+    {
       hardware.opengl.driSupport32Bit = true;
       hardware.pulseaudio.support32Bit = true;
     }
