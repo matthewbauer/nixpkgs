@@ -65,6 +65,6 @@ in stdenv.mkDerivation rec {
     description = "An XML parsing library for C";
     license = lib.licenses.mit;
     platforms = lib.platforms.all;
-    maintainers = [ lib.maintainers.eelco ];
+    maintainers = [ lib.maintainers.eelco lib.maintainers.matthewbauer ];
   };
 }

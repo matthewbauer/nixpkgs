@@ -80,6 +80,7 @@ stdenv.mkDerivation (rec {
     description = "Lossless data-compression library";
     license = licenses.zlib;
     platforms = platforms.all;
+    maintainers = [ maintainers.matthewbauer ];
   };
 } // stdenv.lib.optionalAttrs (stdenv.hostPlatform != stdenv.buildPlatform) {
   preConfigure = ''

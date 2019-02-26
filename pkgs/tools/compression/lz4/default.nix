@@ -49,5 +49,6 @@ stdenv.mkDerivation rec {
     homepage = https://lz4.github.io/lz4/;
     license = with licenses; [ bsd2 gpl2Plus ];
     platforms = platforms.unix;
+    maintainers = [ maintainers.matthewbauer ];
   };
 }

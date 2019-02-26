@@ -192,7 +192,7 @@ stdenv.mkDerivation rec {
 
   meta = with lib; {
     description = "Google's open source JavaScript engine";
-    maintainers = with maintainers; [ cstrahan proglodyte ];
+    maintainers = with maintainers; [ cstrahan proglodyte matthewbauer ];
     platforms = platforms.linux ++ platforms.darwin;
     license = licenses.bsd3;
   };

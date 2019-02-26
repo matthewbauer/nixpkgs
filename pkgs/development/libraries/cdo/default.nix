@@ -31,7 +31,7 @@ stdenv.mkDerivation rec {
     '';
     homepage = https://code.mpimet.mpg.de/projects/cdo/;
     license = stdenv.lib.licenses.gpl2;
-    maintainers = [ stdenv.lib.maintainers.ltavard ];
+    maintainers = with stdenv.lib.maintainers; [ ltavard matthewbauer ];
     platforms = with stdenv.lib.platforms; linux ++ darwin;
   };
 }

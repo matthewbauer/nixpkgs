@@ -112,7 +112,7 @@ let
       description = "A cryptographic library that implements the SSL and TLS protocols";
       license = licenses.openssl;
       platforms = platforms.all;
-      maintainers = [ maintainers.peti ];
+      maintainers = [ maintainers.peti maintainers.matthewbauer ];
       priority = 10; # resolves collision with ‘man-pages’
     };
   };

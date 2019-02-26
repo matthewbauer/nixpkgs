@@ -153,7 +153,7 @@ let
       homepage = https://www.perl.org/;
       description = "The standard implementation of the Perl 5 programmming language";
       license = licenses.artistic1;
-      maintainers = [ maintainers.eelco ];
+      maintainers = [ maintainers.eelco maintainers.matthewbauer ];
       platforms = platforms.all;
     };
   } // stdenv.lib.optionalAttrs (stdenv.buildPlatform != stdenv.hostPlatform) rec {

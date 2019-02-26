@@ -49,7 +49,7 @@ stdenv.mkDerivation rec {
     homepage = https://www.gnu.org/software/libiconv/;
     license = lib.licenses.lgpl2Plus;
 
-    maintainers = [ ];
+    maintainers = [ lib.maintainers.matthewbauer ];
 
     # This library is not needed on GNU platforms.
     hydraPlatforms = with lib.platforms; cygwin ++ darwin ++ freebsd;

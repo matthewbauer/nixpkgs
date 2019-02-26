@@ -33,5 +33,6 @@ appleDerivation {
 
   meta = {
     platforms = lib.platforms.darwin;
+    maintainers = [ lib.maintainers.matthewbauer ];
   };
 }
