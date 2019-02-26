@@ -1,5 +1,5 @@
 { stdenv, fetchurl, fetchpatch, lvm2, libuuid, gettext, readline, perl, python2
-, utillinux, check, enableStatic ? false }:
+, utillinux, check }:
 
 stdenv.mkDerivation rec {
   name = "parted-3.2";
@@ -36,8 +36,7 @@ stdenv.mkDerivation rec {
        (if (readline != null)
         then [ "--with-readline" ]
         else [ "--without-readline" ])
-    ++ stdenv.lib.optional (lvm2 == null) "--disable-device-mapper"
-    ++ stdenv.lib.optional enableStatic "--enable-static";
+    ++ stdenv.lib.optional (lvm2 == null) "--disable-device-mapper";
 
   # Tests were previously failing due to Hydra running builds as uid 0.
   # That should hopefully be fixed now.

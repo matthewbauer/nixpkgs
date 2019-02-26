@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, m4, cxx ? true, withStatic ? true }:
+{ stdenv, fetchurl, m4, cxx ? true }:
 
 let inherit (stdenv.lib) optional optionalString; in
 
@@ -38,8 +38,6 @@ let self = stdenv.mkDerivation rec {
     ;
 
   doCheck = true;
-
-  dontDisableStatic = withStatic;
 
   enableParallelBuilding = true;
 

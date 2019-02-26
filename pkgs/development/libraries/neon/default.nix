@@ -1,13 +1,10 @@
 { stdenv, fetchurl, libxml2, pkgconfig, perl
 , compressionSupport ? true, zlib ? null
 , sslSupport ? true, openssl ? null
-, static ? false
-, shared ? true
 }:
 
 assert compressionSupport -> zlib != null;
 assert sslSupport -> openssl != null;
-assert static || shared;
 
 let
    inherit (stdenv.lib) optionals;
@@ -29,8 +26,6 @@ stdenv.mkDerivation rec {
     ++ stdenv.lib.optional compressionSupport zlib;
 
   configureFlags = [
-    (stdenv.lib.enableFeature shared "shared")
-    (stdenv.lib.enableFeature static "static")
     (stdenv.lib.withFeature compressionSupport "zlib")
     (stdenv.lib.withFeature sslSupport "ssl")
   ];

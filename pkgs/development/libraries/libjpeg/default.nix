@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, static ? false }:
+{ stdenv, fetchurl }:
 
 with stdenv.lib;
 
@@ -9,8 +9,6 @@ stdenv.mkDerivation {
     url = http://www.ijg.org/files/jpegsrc.v9c.tar.gz;
     sha256 = "08kixcf3a7s9x91174abjnk1xbvj4v8crdc73zi4k9h3jfbm00k5";
   };
-
-  configureFlags = optional static "--enable-static --disable-shared";
 
   outputs = [ "bin" "dev" "out" "man" ];
 

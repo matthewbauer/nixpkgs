@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, xorgproto, libXt, libX11, gifview ? false, static ? false }:
+{ stdenv, fetchurl, xorgproto, libXt, libX11, gifview ? false }:
 
 with stdenv.lib;
 
@@ -15,8 +15,6 @@ stdenv.mkDerivation rec {
 
   configureFlags = []
     ++ optional (!gifview) [ "--disable-gifview" ];
-
-  LDFLAGS = optional static "-static";
 
   doCheck = true;
   checkPhase = ''

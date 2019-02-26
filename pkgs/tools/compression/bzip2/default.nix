@@ -1,6 +1,4 @@
-{ stdenv, fetchurl
-, linkStatic ? (stdenv.hostPlatform.system == "i686-cygwin")
-}:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   name = "bzip2-${version}";
@@ -31,9 +29,6 @@ stdenv.mkDerivation rec {
 
 
   outputs = [ "bin" "dev" "out" "man" ];
-
-  configureFlags =
-    stdenv.lib.optionals linkStatic [ "--enable-static" "--disable-shared" ];
 
   meta = with stdenv.lib; {
     description = "High-quality data compression program";

@@ -1,6 +1,5 @@
 { stdenv, fetchurl, m4, cxx ? !stdenv.hostPlatform.useAndroidPrebuilt
-, buildPackages
-, withStatic ? false }:
+, buildPackages }:
 
 let inherit (stdenv.lib) optional optionalString; in
 
@@ -40,8 +39,6 @@ let self = stdenv.mkDerivation rec {
     ;
 
   doCheck = true; # not cross;
-
-  dontDisableStatic = withStatic;
 
   enableParallelBuilding = true;
 

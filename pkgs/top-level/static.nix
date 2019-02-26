@@ -76,9 +76,6 @@ in {
     # it doesn’t like the --disable-shared flag
     stdenv = super.stdenv;
   };
-  xz = super.xz.override {
-    enableStatic = true;
-  };
   busybox = super.busybox.override {
     enableStatic = true;
   };
@@ -87,25 +84,6 @@ in {
   };
   libiberty = super.libiberty.override {
     staticBuild = true;
-  };
-  ipmitool = super.ipmitool.override {
-    static = true;
-  };
-  neon = super.neon.override {
-    static = true;
-    shared = false;
-  };
-  libjpeg = super.libjpeg.override {
-    static = true;
-  };
-  gifsicle = super.gifsicle.override {
-    static = true;
-  };
-  bzip2 = super.bzip2.override {
-    linkStatic = true;
-  };
-  optipng = super.optipng.override {
-    static = true;
   };
   openssl = super.openssl.override {
     static = true;
@@ -118,17 +96,11 @@ in {
     enableStatic = true;
     enableShared = false;
   };
-  gmp = super.gmp.override {
-    withStatic = true;
-  };
   cdo = super.cdo.override {
     enable_all_static = true;
   };
   gsm = super.gsm.override {
     staticSupport = true;
-  };
-  parted = super.parted.override {
-    enableStatic = true;
   };
   libiconvReal = super.libiconvReal.override {
     enableShared = false;
