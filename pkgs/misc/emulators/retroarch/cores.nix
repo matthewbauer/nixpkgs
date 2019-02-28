@@ -18,6 +18,12 @@ let
 
     makefile = "Makefile.libretro";
 
+    makeFlags = [ (if stdenv.hostPlatform.isWasm then "platform=emscripten"
+                   else if stdenv.hostPlatform.isWindows then "platform=win"
+                   else if stdenv.hostPlatform.isDarwin then "platform=osx"
+                   else if stdenv.hostPlatform.isLinux then "platform=linux"
+                   else "") ];
+
     installPhase = ''
       COREDIR="$out/lib/retroarch/cores"
       mkdir -p $out/bin
@@ -37,7 +43,7 @@ let
       homepage = https://www.libretro.com/;
       inherit license;
       maintainers = with maintainers; [ edwtjo hrdinka MP2E ];
-      platforms = platforms.unix;
+      platforms = platforms.all;
     };
   } // a);
 
