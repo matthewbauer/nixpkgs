@@ -86,7 +86,7 @@ rec {
     i486     = { bits = 32; significantByte = littleEndian; family = "x86"; };
     i586     = { bits = 32; significantByte = littleEndian; family = "x86"; };
     i686     = { bits = 32; significantByte = littleEndian; family = "x86"; };
-    x86_64   = { bits = 64; significantByte = littleEndian; family = "x86"; };
+    x86_64   = { bits = 64; significantByte = littleEndian; family = "x86"; arch = "x86-64"; };
 
     mips     = { bits = 32; significantByte = bigEndian;    family = "mips"; };
     mipsel   = { bits = 32; significantByte = littleEndian; family = "mips"; };
