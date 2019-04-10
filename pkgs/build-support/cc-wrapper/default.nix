@@ -287,8 +287,8 @@ stdenv.mkDerivation {
     # Always add -march based on cpu in triple. Sometimes there is a
     # discrepency (x86_64 vs. x86-64), so we provide an "arch" arg in
     # that case.
-    + ''
-      echo "-march=${targetPlatform.gcc.arch or targetPlatform.parsed.cpu.arch or targetPlatform.parsed.cpu.name}" >> $out/nix-support/cc-cflags-before
+    + optionalString (targetPlatform ? gcc.arch || targetPlatform.parsed.cpu ? arch) ''
+      echo "-march=${targetPlatform.gcc.arch or targetPlatform.parsed.cpu.arch}" >> $out/nix-support/cc-cflags-before
     ''
 
     # -mcpu is not very useful. You should use mtune and march
