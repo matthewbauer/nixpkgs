@@ -31,8 +31,6 @@ in stdenv.mkDerivation rec {
     })
   ];
 
-  configurePlatforms = [ "host" "target" ];
-
   preConfigure = ''
     export CXXFLAGS="-fpermissive"
     export LIBXUL_DIST=$out
