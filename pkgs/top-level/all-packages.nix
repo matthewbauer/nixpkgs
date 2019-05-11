@@ -8752,6 +8752,7 @@ in
   binutils-unwrapped = callPackage ../development/tools/misc/binutils {
     # FHS sys dirs presumably only have stuff for the build platform
     noSysDirs = (stdenv.targetPlatform != stdenv.hostPlatform) || noSysDirs;
+    stdenv = if (stdenv.targetPlatform != stdenv.hostPlatform && stdenv.cc.isClang) then llvmPackages_6.stdenv else stdenv;
   };
   binutils = wrapBintoolsWith {
     bintools = binutils-unwrapped;
