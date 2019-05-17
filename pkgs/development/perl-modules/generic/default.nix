@@ -32,6 +32,7 @@ perl.stdenv.mkDerivation (
     name = "perl-" + name;
     builder = ./builder.sh;
     nativeBuildInputs = nativeBuildInputs ++ [ (perl.dev or perl) ];
+    buildInputs = [ perl ];
     inherit perl;
   }
 )
