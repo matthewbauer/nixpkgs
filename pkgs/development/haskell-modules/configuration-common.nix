@@ -696,6 +696,11 @@ self: super: {
 
   # We get lots of strange compiler errors during the test suite run.
   jsaddle = dontCheck super.jsaddle;
+  webkit2gtk3-javascriptcore = unmarkBroken super.webkit2gtk3-javascriptcore;
+  jsaddle-wkwebview = overrideCabal super.jsaddle-wkwebview {
+    broken = false;
+    libraryFrameworkDepends = with pkgs.darwin.apple_sdk.frameworks; [ Cocoa WebKit ];
+  };
 
   # Tools that use gtk2hs-buildtools now depend on them in a custom-setup stanza
   cairo = addBuildTool super.cairo self.buildHaskellPackages.gtk2hs-buildtools;
