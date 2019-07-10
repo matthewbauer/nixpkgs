@@ -303,6 +303,10 @@ stdenv.mkDerivation {
       done
     ''
 
+    + optionalString targetPlatform.useAndroidPrebuilt ''
+      hardening_unsupported_flags+=" pie"
+    ''
+
     + ''
       set +u
       substituteAll ${./add-flags.sh} $out/nix-support/add-flags.sh
