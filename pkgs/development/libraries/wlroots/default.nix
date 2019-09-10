@@ -1,7 +1,8 @@
 { stdenv, fetchFromGitHub, meson, ninja, pkgconfig
 , wayland, libGL, wayland-protocols, libinput, libxkbcommon, pixman
 , xcbutilwm, libX11, libcap, xcbutilimage, xcbutilerrors, mesa
-, libpng, ffmpeg_4, freerdp
+, libpng, ffmpeg_4
+, freerdpEnabled ? true, freerdp
 }:
 
 stdenv.mkDerivation rec {
@@ -23,13 +24,13 @@ stdenv.mkDerivation rec {
   buildInputs = [
     wayland libGL wayland-protocols libinput libxkbcommon pixman
     xcbutilwm libX11 libcap xcbutilimage xcbutilerrors mesa
-    libpng ffmpeg_4 freerdp
-  ];
+    libpng ffmpeg_4
+  ] ++ stdenv.lib.optional freerdpEnabled freerdp;
 
   mesonFlags = [
     "-Dlibcap=enabled" "-Dlogind=enabled" "-Dxwayland=enabled" "-Dx11-backend=enabled"
     "-Dxcb-icccm=enabled" "-Dxcb-errors=enabled"
-  ];
+  ] ++ stdenv.lib.optional (!freerdpEnabled) "-Dfreerdp=disabled";
 
   postInstall = ''
     # Copy the library to $examples
