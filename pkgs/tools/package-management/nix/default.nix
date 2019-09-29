@@ -22,7 +22,7 @@ common =
   , confDir
   , withLibseccomp ? lib.any (lib.meta.platformMatch stdenv.hostPlatform) libseccomp.meta.platforms, libseccomp
   , withAWS ? stdenv.isLinux || stdenv.isDarwin, aws-sdk-cpp
-
+  , enableStatic ? false
   , name, suffix ? "", src, crates ? null
 
   }:
@@ -70,7 +70,7 @@ common =
       preConfigure =
         # Copy libboost_context so we don't get all of Boost in our closure.
         # https://github.com/NixOS/nixpkgs/issues/45462
-        ''
+        lib.optionalString (!enableStatic) ''
           mkdir -p $out/lib
           cp -pd ${boost}/lib/{libboost_context*,libboost_thread*,libboost_system*} $out/lib
           rm -f $out/lib/*.a
