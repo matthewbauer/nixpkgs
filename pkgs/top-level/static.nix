@@ -272,4 +272,9 @@ in {
   python27 = super.python27.override { static = true; };
 
   libev = super.libev.override { static = true; };
+
+  busybox-sandbox-shell = super.busybox-sandbox-shell.override {
+    busybox = self.busybox;
+  };
+
 }
