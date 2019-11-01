@@ -11,6 +11,8 @@ let
 
     "mipsel-linux"
 
+    "i486-linux"
+
     "i686-cygwin" "i686-freebsd" "i686-linux" "i686-netbsd" "i686-openbsd"
 
     "x86_64-cygwin" "x86_64-freebsd" "x86_64-linux"
