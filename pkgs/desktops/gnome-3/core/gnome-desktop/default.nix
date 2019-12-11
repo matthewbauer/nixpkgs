@@ -1,19 +1,17 @@
 { stdenv, fetchurl, substituteAll, pkgconfig, libxslt, ninja, libX11, gnome3, gtk3, glib
-, gettext, libxml2, xkeyboard_config, isocodes, meson, wayland, fetchpatch
-, libseccomp, bubblewrap, gobject-introspection, gtk-doc, docbook_xsl }:
+, gettext, libxml2, xkeyboard_config, isocodes, meson, wayland
+, libseccomp, systemd, bubblewrap, gobject-introspection, gtk-doc, docbook_xsl, gsettings-desktop-schemas }:
 
 stdenv.mkDerivation rec {
-  name = "gnome-desktop-${version}";
-  version = "3.32.1";
+  pname = "gnome-desktop";
+  version = "3.34.2";
 
   outputs = [ "out" "dev" "devdoc" ];
 
   src = fetchurl {
-    url = "mirror://gnome/sources/gnome-desktop/${stdenv.lib.versions.majorMinor version}/${name}.tar.xz";
-    sha256 = "040s8ia26xyq25zcd9xji9f5jhsddqd7a23jassy429bir34sxkg";
+    url = "mirror://gnome/sources/gnome-desktop/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
+    sha256 = "1v983xirwp1y6ggz97bh742ak6gff0hxb359dgn37nikjxhvm0a0";
   };
-
-  enableParallelBuilding = true;
 
   nativeBuildInputs = [
     pkgconfig meson ninja gettext libxslt libxml2 gobject-introspection
@@ -21,10 +19,10 @@ stdenv.mkDerivation rec {
   ];
   buildInputs = [
     libX11 bubblewrap xkeyboard_config isocodes wayland
-    gtk3 glib libseccomp
+    gtk3 glib libseccomp systemd
   ];
 
-  propagatedBuildInputs = [ gnome3.gsettings-desktop-schemas ];
+  propagatedBuildInputs = [ gsettings-desktop-schemas ];
 
   patches = [
     (substituteAll {

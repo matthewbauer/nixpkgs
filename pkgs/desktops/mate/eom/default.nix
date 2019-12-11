@@ -1,12 +1,12 @@
-{ stdenv, fetchurl, pkgconfig, intltool, itstool, dbus-glib, exempi, lcms2, libexif, libjpeg, librsvg, libxml2, libpeas, shared-mime-info, gnome3, gtk3, mate, hicolor-icon-theme, wrapGAppsHook }:
+{ stdenv, fetchurl, pkgconfig, intltool, itstool, exempi, lcms2, libexif, libjpeg, librsvg, libxml2, libpeas, shared-mime-info, gtk3, mate, hicolor-icon-theme, wrapGAppsHook }:
 
 stdenv.mkDerivation rec {
-  name = "eom-${version}";
-  version = "1.20.2";
+  pname = "eom";
+  version = "1.22.2";
 
   src = fetchurl {
-    url = "http://pub.mate-desktop.org/releases/${mate.getRelease version}/${name}.tar.xz";
-    sha256 = "0440sfbidizn860w5avgwld08qc2fslrm0nx2659651cf3r7rw05";
+    url = "http://pub.mate-desktop.org/releases/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
+    sha256 = "0za1lw4awg1i0ls0r9iw0ail2hqa34y1dx65b50bw9kx9kbfyl9l";
   };
 
   nativeBuildInputs = [
@@ -17,7 +17,6 @@ stdenv.mkDerivation rec {
   ];
 
   buildInputs = [
-    dbus-glib
     exempi
     lcms2
     libexif

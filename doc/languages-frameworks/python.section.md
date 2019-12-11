@@ -144,6 +144,24 @@ What's happening here?
 2. Then we create a Python 3.5 environment with the `withPackages` function.
 3. The `withPackages` function expects us to provide a function as an argument that takes the set of all python packages and returns a list of packages to include in the environment. Here, we select the packages `numpy` and `toolz` from the package set.
 
+To combine this with `mkShell` you can:
+
+```nix
+with import <nixpkgs> {};
+
+let
+  pythonEnv = python35.withPackages (ps: [
+    ps.numpy
+    ps.toolz
+  ]);
+in mkShell {
+  buildInputs = [
+    pythonEnv
+    hello
+  ];
+}
+```
+
 ##### Execute command with `--run`
 A convenient option with `nix-shell` is the `--run`
 option, with which you can execute a command in the `nix-shell`. We can
@@ -205,7 +223,7 @@ buildPythonPackage rec {
     license = licenses.bsd3;
     maintainers = with maintainers; [ fridh ];
   };
-};
+}
 ```
 
 What happens here? The function `buildPythonPackage` is called and as argument
@@ -445,7 +463,7 @@ buildPythonPackage rec {
   };
 
   meta = with lib; {
-    homepage = "http://github.com/pytoolz/toolz/";
+    homepage = "https://github.com/pytoolz/toolz/";
     description = "List processing tools and functional utilities";
     license = licenses.bsd3;
     maintainers = with maintainers; [ fridh ];
@@ -510,7 +528,7 @@ Each interpreter has the following attributes:
 ### Building packages and applications
 
 Python libraries and applications that use `setuptools` or
-`distutils` are typically build with respectively the `buildPythonPackage` and
+`distutils` are typically built with respectively the `buildPythonPackage` and
 `buildPythonApplication` functions. These two functions also support installing a `wheel`.
 
 All Python packages reside in `pkgs/top-level/python-packages.nix` and all
@@ -540,7 +558,8 @@ and the aliases
 #### `buildPythonPackage` function
 
 The `buildPythonPackage` function is implemented in
-`pkgs/development/interpreters/python/build-python-package.nix`
+`pkgs/development/interpreters/python/mk-python-derivation`
+using setup hooks.
 
 The following is an example:
 ```nix
@@ -592,8 +611,9 @@ as the interpreter unless overridden otherwise.
 All parameters from `stdenv.mkDerivation` function are still supported. The following are specific to `buildPythonPackage`:
 
 * `catchConflicts ? true`: If `true`, abort package build if a package name appears more than once in dependency tree. Default is `true`.
-* `disabled` ? false: If `true`, package is not build for the particular Python interpreter version.
+* `disabled` ? false: If `true`, package is not built for the particular Python interpreter version.
 * `dontWrapPythonPrograms ? false`: Skip wrapping of python programs.
+* `permitUserSite ? false`: Skip setting the `PYTHONNOUSERSITE` environment variable in wrapped programs.
 * `installFlags ? []`: A list of strings. Arguments to be passed to `pip install`. To pass options to `python setup.py install`, use `--install-option`. E.g., `installFlags=["--install-option='--cpp_implementation'"]`.
 * `format ? "setuptools"`: Format of the source. Valid options are `"setuptools"`, `"pyproject"`, `"flit"`, `"wheel"`, and `"other"`. `"setuptools"` is for when the source has a `setup.py` and `setuptools` is used to build a wheel, `flit`, in case `flit` should be used to build a wheel, and `wheel` in case a wheel is provided. Use `other` when a custom `buildPhase` and/or `installPhase` is needed.
 * `makeWrapperArgs ? []`: A list of strings. Arguments to be passed to `makeWrapper`, which wraps generated binaries. By default, the arguments to `makeWrapper` set `PATH` and `PYTHONPATH` environment variables before calling the binary. Additional arguments here can allow a developer to set environment variables which will be available when the binary is run. For example, `makeWrapperArgs = ["--set FOO BAR" "--set BAZ QUX"]`.
@@ -602,6 +622,7 @@ All parameters from `stdenv.mkDerivation` function are still supported. The foll
 * `preShellHook`: Hook to execute commands before `shellHook`.
 * `postShellHook`: Hook to execute commands after `shellHook`.
 * `removeBinByteCode ? true`: Remove bytecode from `/bin`. Bytecode is only created when the filenames end with `.py`.
+* `setupPyGlobalFlags ? []`: List of flags passed to `setup.py` command.
 * `setupPyBuildFlags ? []`: List of flags passed to `setup.py build_ext` command.
 
 The `stdenv.mkDerivation` function accepts various parameters for describing build inputs (see "Specifying dependencies"). The following are of special
@@ -635,7 +656,7 @@ with import <nixpkgs> {};
         };
       });
     };
-  in pkgs.python3.override {inherit packageOverrides;};
+  in pkgs.python3.override {inherit packageOverrides; self = python;};
 
 in python.withPackages(ps: [ps.blaze])).env
 ```
@@ -756,6 +777,7 @@ specified packages in its path.
 * `extraLibs`: List of packages installed inside the environment.
 * `postBuild`: Shell command executed after the build of environment.
 * `ignoreCollisions`: Ignore file collisions inside the environment (default is `false`).
+* `permitUserSite`: Skip setting the `PYTHONNOUSERSITE` environment variable in wrapped binaries in the environment.
 
 #### `python.withPackages` function
 
@@ -794,6 +816,22 @@ such as `ignoreCollisions = true` or `postBuild`. If you need them, you have to 
 Python 2 namespace packages may provide `__init__.py` that collide. In that case `python.buildEnv`
 should be used with `ignoreCollisions = true`.
 
+#### Setup hooks
+
+The following are setup hooks specifically for Python packages. Most of these are
+used in `buildPythonPackage`.
+
+- `flitBuildHook` to build a wheel using `flit`.
+- `pipBuildHook` to build a wheel using `pip` and PEP 517. Note a build system (e.g. `setuptools` or `flit`) should still be added as `nativeBuildInput`.
+- `pipInstallHook` to install wheels.
+- `pytestCheckHook` to run tests with `pytest`.
+- `pythonCatchConflictsHook` to check whether a Python package is not already existing.
+- `pythonImportsCheckHook` to check whether importing the listed modules works.
+- `pythonRemoveBinBytecode` to remove bytecode from the `/bin` folder.
+- `setuptoolsBuildHook` to build a wheel using `setuptools`.
+- `setuptoolsCheckHook` to run tests with `python setup.py test`.
+- `wheelUnpackHook` to move a wheel to the correct folder so it can be installed with the `pipInstallHook`.
+
 ### Development mode
 
 Development or editable mode is supported. To develop Python packages
@@ -830,9 +868,8 @@ Note: There is a boolean value `lib.inNixShell` set to `true` if nix-shell is in
 Packages inside nixpkgs are written by hand. However many tools exist in
 community to help save time. No tool is preferred at the moment.
 
-- [python2nix](https://github.com/proger/python2nix) by Vladimir Kirillov
-- [pypi2nix](https://github.com/garbas/pypi2nix) by Rok Garbas
-- [pypi2nix](https://github.com/offlinehacker/pypi2nix) by Jaka Hudoklin
+- [pypi2nix](https://github.com/nix-community/pypi2nix): Generate Nix expressions for your Python project. Note that [sharing derivations from pypi2nix with nixpkgs is possible but not encouraged](https://github.com/nix-community/pypi2nix/issues/222#issuecomment-443497376).
+- [python2nix](https://github.com/proger/python2nix) by Vladimir Kirillov.
 
 ### Deterministic builds
 

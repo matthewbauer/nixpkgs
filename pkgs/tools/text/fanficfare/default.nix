@@ -1,12 +1,12 @@
-{ stdenv, fetchFromGitHub, python3Packages }:
+{ stdenv, python3Packages }:
 
 python3Packages.buildPythonApplication rec {
   pname = "FanFicFare";
-  version = "3.6.0";
+  version = "3.13.0";
 
   src = python3Packages.fetchPypi {
     inherit pname version;
-    sha256 = "1ir3m8wknr8shdbmbpiaw73mdpa7mvidkl6pbs9ca23mgwivxa84";
+    sha256 = "01mrqqz2rv6abdsk80nxizsm5h68m12bqkdsjyqfzyxl0kn7zs0v";
   };
 
   propagatedBuildInputs = with python3Packages; [

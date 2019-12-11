@@ -1,12 +1,12 @@
 { stdenv, fetchurl, pkgconfig, intltool, gtk3, libnotify, libxml2, libexif, exempi, mate, hicolor-icon-theme, wrapGAppsHook }:
 
 stdenv.mkDerivation rec {
-  name = "caja-${version}";
-  version = "1.20.3";
+  pname = "caja";
+  version = "1.22.2";
 
   src = fetchurl {
-    url = "http://pub.mate-desktop.org/releases/${mate.getRelease version}/${name}.tar.xz";
-    sha256 = "1wlrhcvhqving3pphbz50xnbp7z57mlkf7m36lfh8mim62kfmmd0";
+    url = "http://pub.mate-desktop.org/releases/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
+    sha256 = "1c5yr4b8pzd7nz7g7ln9jwp4fx6qgq8vgbv4spfryy53il3gv75h";
   };
 
   nativeBuildInputs = [

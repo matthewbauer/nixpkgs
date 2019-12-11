@@ -51,7 +51,7 @@ in
 
     services.monero = {
 
-      enable = mkEnableOption "Monero node daemon.";
+      enable = mkEnableOption "Monero node daemon";
 
       mining.enable = mkOption {
         type = types.bool;
@@ -224,15 +224,17 @@ in
       };
     };
 
-   assertions = singleton {
-     assertion = cfg.mining.enable -> cfg.mining.address != "";
-     message   = ''
+    assertions = singleton {
+      assertion = cfg.mining.enable -> cfg.mining.address != "";
+      message   = ''
        You need a Monero address to receive mining rewards:
        specify one using option monero.mining.address.
-    '';
-   };
+      '';
+    };
 
   };
+
+  meta.maintainers = with lib.maintainers; [ rnhmjoj ];
 
 }
 

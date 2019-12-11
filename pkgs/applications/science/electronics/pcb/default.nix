@@ -1,21 +1,21 @@
 { stdenv, fetchurl, pkgconfig, gtk2, bison, intltool, flex
-, netpbm, imagemagick, dbus, xlibsWrapper, libGLU_combined
+, netpbm, imagemagick, dbus, xlibsWrapper, libGLU, libGL
 , shared-mime-info, tcl, tk, gnome2, pangox_compat, gd, xorg
 }:
 
 stdenv.mkDerivation rec {
-  name = "pcb-${version}";
+  pname = "pcb";
   version = "20140316";
 
   src = fetchurl {
-    url = "http://ftp.geda-project.org/pcb/pcb-20140316/${name}.tar.gz";
+    url = "http://ftp.geda-project.org/pcb/pcb-20140316/${pname}-${version}.tar.gz";
     sha256 = "0l6944hq79qsyp60i5ai02xwyp8l47q7xdm3js0jfkpf72ag7i42";
   };
 
   nativeBuildInputs = [ pkgconfig ];
   buildInputs = [
     gtk2 bison intltool flex netpbm imagemagick dbus xlibsWrapper
-    libGLU_combined tcl shared-mime-info tk
+    libGLU libGL tcl shared-mime-info tk
     gnome2.gtkglext pangox_compat gd xorg.libXmu
   ];
 

@@ -1,17 +1,19 @@
-{ stdenv, fetchFromGitHub, yosys, python3 }:
+{ stdenv, fetchFromGitHub, yosys, bash, python3, yices }:
 
-stdenv.mkDerivation rec {
-  name = "symbiyosys-${version}";
-  version = "2019.03.28";
+stdenv.mkDerivation {
+  pname = "symbiyosys";
+  version = "2019.10.11";
 
   src = fetchFromGitHub {
     owner  = "yosyshq";
     repo   = "symbiyosys";
-    rev    = "44869656b86993e7ebdc59e7b27191f3ecf119dc";
-    sha256 = "1p18yzcadn91xzmqrg5xkwfl3p9mnlps57simz7dkkxzcqzjybvn";
+    rev    = "23f89011b678daa9da406d4f45f790e45f8f68ca";
+    sha256 = "01596yvfj79iywwczjwlb2l9qnh7bsj7jff66jdk1ybjnxf841f0";
   };
 
   buildInputs = [ python3 yosys ];
+
+  propagatedBuildInputs = [ yices ];
 
   buildPhase = "true";
   installPhase = ''
@@ -26,12 +28,14 @@ stdenv.mkDerivation rec {
     substituteInPlace $out/bin/sby \
       --replace "##yosys-sys-path##" \
                 "sys.path += [p + \"/share/yosys/python3/\" for p in [\"$out\", \"${yosys}\"]]"
+    substituteInPlace $out/share/yosys/python3/sby_core.py \
+      --replace '"/usr/bin/env", "bash"' '"${bash}/bin/bash"'
   '';
   meta = {
     description = "Tooling for Yosys-based verification flows";
     homepage    = https://symbiyosys.readthedocs.io/;
-    license     = stdenv.lib.licenses.mit;
-    maintainers = with stdenv.lib.maintainers; [ thoughtpolice ];
-    platforms   = stdenv.lib.platforms.unix;
+    license     = stdenv.lib.licenses.isc;
+    maintainers = with stdenv.lib.maintainers; [ thoughtpolice emily ];
+    platforms   = stdenv.lib.platforms.all;
   };
 }

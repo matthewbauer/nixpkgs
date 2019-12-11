@@ -1,52 +1,46 @@
 { stdenv, buildGoPackage, fetchFromGitHub
 , gpgme, libgpgerror, lvm2, btrfs-progs, pkgconfig, ostree, libselinux, libseccomp
-, go-md2man }:
+}:
 
-let
-  version = "1.7.2";
+buildGoPackage rec {
+  pname = "buildah";
+  version = "1.11.6";
 
   src = fetchFromGitHub {
-    rev = "v${version}";
-    owner = "containers";
-    repo = "buildah";
-    sha256 = "19rp5kgdgyjfvg23m8dqlv6g1cs2c57nnw64ifjv24hqhy1xc0qk";
+    owner  = "containers";
+    repo   = "buildah";
+    rev    = "v${version}";
+    sha256 = "0slhq11nmqsp2rjfwldvcwlpj823ckfpipggkaxhcb66dv8ymm7n";
   };
-  goPackagePath = "github.com/containers/buildah";
-
-in buildGoPackage rec {
-  name = "buildah-${version}";
-  inherit src;
 
   outputs = [ "bin" "man" "out" ];
 
-  inherit goPackagePath;
+  goPackagePath = "github.com/containers/buildah";
   excludedPackages = [ "tests" ];
 
-  # Optimizations break compilation of libseccomp c bindings
-  hardeningDisable = [ "fortify" ];
+  # Disable module-mode, because Go 1.13 automatically enables it if there is
+  # go.mod file. Remove after https://github.com/NixOS/nixpkgs/pull/73380
+  GO111MODULE = "off";
 
-  nativeBuildInputs = [ pkgconfig go-md2man.bin ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ gpgme libgpgerror lvm2 btrfs-progs ostree libselinux libseccomp ];
 
-  # Copied from the skopeo package, doesn’t seem to make a difference?
-  # If something related to these libs failed, uncomment these lines.
-  /*preBuild = with lib; ''
-    export CGO_CFLAGS="-I${getDev gpgme}/include -I${getDev libgpgerror}/include -I${getDev devicemapper}/include -I${getDev btrfs-progs}/include"
-    export CGO_LDFLAGS="-L${getLib gpgme}/lib -L${getLib libgpgerror}/lib -L${getLib devicemapper}/lib"
-  '';*/
+  patches = [ ./disable-go-module-mode.patch ];
 
-  postBuild = ''
-    # depends on buildGoPackage not changing …
-    pushd ./go/src/${goPackagePath}/docs
-    make docs
-    make install PREFIX="$man"
-    popd
+  buildPhase = ''
+    pushd go/src/${goPackagePath}
+    make GIT_COMMIT="unknown"
+    install -Dm755 buildah $bin/bin/buildah
   '';
 
-  meta = {
+  postBuild = ''
+    make -C docs install PREFIX="$man"
+  '';
+
+  meta = with stdenv.lib; {
     description = "A tool which facilitates building OCI images";
-    homepage = https://github.com/containers/buildah;
-    maintainers = with stdenv.lib.maintainers; [ Profpatsch ];
-    license = stdenv.lib.licenses.asl20;
+    homepage = "https://github.com/containers/buildah";
+    license = licenses.asl20;
+    maintainers = with maintainers; [ Profpatsch vdemeester saschagrunert ];
   };
 }

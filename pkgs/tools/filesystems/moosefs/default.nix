@@ -1,24 +1,22 @@
 { stdenv
-, fetchzip
 , fetchFromGitHub
 , makeWrapper
 , python
 , fuse
 , pkgconfig
 , libpcap
-, file
 , zlib 
 }:
 
 stdenv.mkDerivation rec {
   pname = "moosefs";
-  version = "3.0.104";
+  version = "3.0.107";
 
   src = fetchFromGitHub {
     owner = pname;
     repo = pname;
     rev = "v${version}";
-    sha256 = "057xg7zy872w4hczk9b9ckmqyah3qhgysvxddqizr204cyadicxh";
+    sha256 = "18mw7a1by8l09fb2pan6zak29bcrgbf5zgfzrlw3c203yawqbx3k";
   };
 
   nativeBuildInputs = [ pkgconfig makeWrapper ];

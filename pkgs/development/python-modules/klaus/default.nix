@@ -2,13 +2,13 @@
 
 python.pkgs.buildPythonPackage rec {
   pname = "klaus";
-  version = "1.3.0";
+  version = "1.5.0";
 
   src = fetchFromGitHub {
     owner = "jonashaag";
     repo = pname;
     rev = version;
-    sha256 = "04zjvrpx66x2c0v74nvmq8x7s7c8994cv1zwd5hfn9alq82hqcgr";
+    sha256 = "0pagyqfcj47ghd9m7b32hvi17hbl19f0wallkz6ncvmvvy919lfz";
   };
 
   prePatch = ''

@@ -2,17 +2,17 @@
 
 stdenv.mkDerivation rec {
   pname = "libmbim";
-  version = "1.18.0";
+  version = "1.20.2";
 
   src = fetchurl {
     url = "https://www.freedesktop.org/software/libmbim/${pname}-${version}.tar.xz";
-    sha256 = "10mjjy860aakfd3h1yaj9l1jw816amrpwmyqlx37j21xv0l03x3c";
+    sha256 = "16q550sy84izi5ic3sbbhjnnka2fwhj8vvdrirpn9xspbsgbc3sm";
   };
 
   outputs = [ "out" "dev" "man" ];
 
   configureFlags = [
-    "--with-udev-base-dir=${placeholder ''out''}/lib/udev"
+    "--with-udev-base-dir=${placeholder "out"}/lib/udev"
   ];
 
   nativeBuildInputs = [

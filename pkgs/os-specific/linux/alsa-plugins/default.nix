@@ -2,11 +2,11 @@
 
 stdenv.mkDerivation rec {
   pname = "alsa-plugins";
-  version = "1.1.8";
+  version = "1.2.1";
 
   src = fetchurl {
     url = "mirror://alsa/plugins/${pname}-${version}.tar.bz2";
-    sha256 = "152r82i6f97gfilfgiax5prxkd4xlcipciv8ha8yrk452qbxyxvz";
+    sha256 = "1nj8cpbi05rb62yzs01c1k7lymdn1ch229b599hbhd0psixdx52d";
   };
 
   # ToDo: a52, etc.?
@@ -14,10 +14,6 @@ stdenv.mkDerivation rec {
     [ pkgconfig alsaLib libogg ]
     ++ lib.optional (libpulseaudio != null) libpulseaudio
     ++ lib.optional (libjack2 != null) libjack2;
-
-  configureFlags = [
-    "--with-alsalconfdir=${placeholder "out"}/etc/alsa/conf.d"
-  ];
 
   meta = with lib; {
     description = "Various plugins for ALSA";

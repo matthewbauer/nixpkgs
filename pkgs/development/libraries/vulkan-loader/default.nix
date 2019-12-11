@@ -1,20 +1,20 @@
 { stdenv, fetchFromGitHub, cmake, python3, vulkan-headers, pkgconfig
-, xlibsWrapper, libxcb, libXrandr, libXext, wayland, libGL_driver }:
+, xlibsWrapper, libxcb, libXrandr, libXext, wayland, addOpenGLRunpath }:
 
 let
-  version = "1.1.101.0";
+  version = "1.1.114.0";
 in
 
 assert version == vulkan-headers.version;
-stdenv.mkDerivation rec {
-  name = "vulkan-loader-${version}";
+stdenv.mkDerivation {
+  pname = "vulkan-loader";
   inherit version;
 
   src = fetchFromGitHub {
     owner = "KhronosGroup";
     repo = "Vulkan-Loader";
     rev = "sdk-${version}";
-    sha256 = "0x891bha9mlsh4cvq59d1qnb4fnalwf6ml2b9y221cr7hikilamw";
+    sha256 = "08nibkbjf3g32qyp5bpdvj7i0zdv5ds1n5y52z8pvyzkpiz7s6ww";
   };
 
   nativeBuildInputs = [ pkgconfig ];
@@ -22,7 +22,7 @@ stdenv.mkDerivation rec {
   enableParallelBuilding = true;
 
   cmakeFlags = [
-    "-DFALLBACK_DATA_DIRS=${libGL_driver.driverLink}/share:/usr/local/share:/usr/share"
+    "-DSYSCONFDIR=${addOpenGLRunpath.driverLink}/share"
     "-DVULKAN_HEADERS_INSTALL_DIR=${vulkan-headers}"
   ];
 

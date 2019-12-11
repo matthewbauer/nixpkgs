@@ -1,21 +1,21 @@
-{ buildGoPackage, fetchpatch, stdenv, lib, procps, fetchFromGitHub }:
+{ buildGoModule, stdenv, lib, procps, fetchFromGitHub }:
 
 let
   common = { stname, target, postInstall ? "" }:
-    buildGoPackage rec {
-      version = "1.1.1";
+    buildGoModule rec {
+      version = "1.3.2";
       name = "${stname}-${version}";
 
       src = fetchFromGitHub {
         owner  = "syncthing";
         repo   = "syncthing";
         rev    = "v${version}";
-        sha256 = "1nkc4ivc8mg9c1njqlkhb9i5f4c1via1rdqfbhwgkj86s6cnxrg7";
+        sha256 = "029mym3vdfg616gpmhv6p22iy65h8vff2sq6z70l37bjf3zx1cms";
       };
 
       goPackagePath = "github.com/syncthing/syncthing";
 
-      goDeps = ./deps.nix;
+      modSha256 = "06anhfi9mswmwhhjyz8mla6h8v83cc7slfr752fvgfaxra1fwgx8";
 
       patches = [
         ./add-stcli-target.patch
@@ -25,18 +25,14 @@ let
 
       buildPhase = ''
         runHook preBuild
-        pushd go/src/${goPackagePath}
         go run build.go -no-upgrade -version v${version} build ${target}
-        popd
         runHook postBuild
       '';
 
       installPhase = ''
-        pushd go/src/${goPackagePath}
         runHook preInstall
-        install -Dm755 ${target} $bin/bin/${target}
+        install -Dm755 ${target} $out/bin/${target}
         runHook postInstall
-        popd
       '';
 
       inherit postInstall;
@@ -65,19 +61,19 @@ in {
       done
 
     '' + lib.optionalString (stdenv.isLinux) ''
-      mkdir -p $bin/lib/systemd/{system,user}
+      mkdir -p $out/lib/systemd/{system,user}
 
       substitute etc/linux-systemd/system/syncthing-resume.service \
-                 $bin/lib/systemd/system/syncthing-resume.service \
+                 $out/lib/systemd/system/syncthing-resume.service \
                  --replace /usr/bin/pkill ${procps}/bin/pkill
 
       substitute etc/linux-systemd/system/syncthing@.service \
-                 $bin/lib/systemd/system/syncthing@.service \
-                 --replace /usr/bin/syncthing $bin/bin/syncthing
+                 $out/lib/systemd/system/syncthing@.service \
+                 --replace /usr/bin/syncthing $out/bin/syncthing
 
       substitute etc/linux-systemd/user/syncthing.service \
-                 $bin/lib/systemd/user/syncthing.service \
-                 --replace /usr/bin/syncthing $bin/bin/syncthing
+                 $out/lib/systemd/user/syncthing.service \
+                 --replace /usr/bin/syncthing $out/bin/syncthing
     '';
   };
 
@@ -101,7 +97,7 @@ in {
 
       substitute cmd/strelaysrv/etc/linux-systemd/strelaysrv.service \
                  $out/lib/systemd/system/strelaysrv.service \
-                 --replace /usr/bin/strelaysrv $bin/bin/strelaysrv
+                 --replace /usr/bin/strelaysrv $out/bin/strelaysrv
     '';
   };
 }

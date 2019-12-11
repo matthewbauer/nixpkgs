@@ -1,20 +1,30 @@
-{ stdenv, fetchFromGitLab, buildGoPackage, ruby, bundlerEnv }:
+{ stdenv, fetchFromGitLab, buildGoPackage, ruby, bundlerEnv, pkgconfig, libgit2 }:
 
 let
-  rubyEnv = bundlerEnv {
+  rubyEnv = bundlerEnv rec {
     name = "gitaly-env";
     inherit ruby;
     gemdir = ./.;
+    gemset =
+      let x = import (gemdir + "/gemset.nix");
+      in x // {
+        # grpc expects the AR environment variable to contain `ar rpc`. See the
+        # discussion in nixpkgs #63056.
+        grpc = x.grpc // {
+          patches = [ ../fix-grpc-ar.patch ];
+          dontBuild = false;
+        };
+      };
   };
 in buildGoPackage rec {
-  version = "1.27.1";
-  name = "gitaly-${version}";
+  version = "1.72.1";
+  pname = "gitaly";
 
   src = fetchFromGitLab {
     owner = "gitlab-org";
     repo = "gitaly";
     rev = "v${version}";
-    sha256 = "0sr1jjw1rvyxrv6vaqvl138m0x2xgjksjdy92ajslrjxrnjlrjvp";
+    sha256 = "0gnhw7p8fgy3w15828qjgkkxcd4dg7gf1hpanc3xqawb8jqpfc91";
   };
 
   goPackagePath = "gitlab.com/gitlab-org/gitaly";
@@ -23,16 +33,19 @@ in buildGoPackage rec {
     inherit rubyEnv;
   };
 
-  buildInputs = [ rubyEnv.wrappedRuby ];
+  nativeBuildInputs = [ pkgconfig ];
+  buildInputs = [ rubyEnv.wrappedRuby libgit2 ];
+  goDeps = ./deps.nix;
+  preBuild = "rm -r go/src/gitlab.com/gitlab-org/labkit/vendor";
 
   postInstall = ''
     mkdir -p $ruby
-    cp -rv $src/ruby/{bin,lib,git-hooks,vendor} $ruby
+    cp -rv $src/ruby/{bin,lib,proto,git-hooks,gitlab-shell} $ruby
 
     # gitlab-shell will try to read its config relative to the source
     # code by default which doesn't work in nixos because it's a
     # read-only filesystem
-    substituteInPlace $ruby/vendor/gitlab-shell/lib/gitlab_config.rb --replace \
+    substituteInPlace $ruby/gitlab-shell/lib/gitlab_config.rb --replace \
        "File.join(ROOT_PATH, 'config.yml')" \
        "'/run/gitlab/shell-config.yml'"
   '';
@@ -40,9 +53,10 @@ in buildGoPackage rec {
   outputs = [ "bin" "out" "ruby" ];
 
   meta = with stdenv.lib; {
-    homepage = http://www.gitlab.com/;
-    platforms = platforms.unix;
-    maintainers = with maintainers; [ roblabla ];
+    homepage = https://gitlab.com/gitlab-org/gitaly;
+    description = "A Git RPC service for handling all the git calls made by GitLab";
+    platforms = platforms.linux;
+    maintainers = with maintainers; [ roblabla globin fpletz ];
     license = licenses.mit;
   };
 }

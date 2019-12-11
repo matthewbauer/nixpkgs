@@ -1,5 +1,5 @@
 { stdenv, fetchurl, gtk2-x11 , pkgconfig , python27 , gfortran , lesstif
-, cfitsio , getopt , perl , groff , which
+, cfitsio , getopt , perl , groff , which, darwin
 }:
 
 let
@@ -7,27 +7,30 @@ let
 in
 
 stdenv.mkDerivation rec {
-  srcVersion = "apr19a";
-  version = "20190401_a";
-  name = "gildas-${version}";
+  srcVersion = "dec19a";
+  version = "20191201_a";
+  pname = "gildas";
 
   src = fetchurl {
     # For each new release, the upstream developers of Gildas move the
     # source code of the previous release to a different directory
     urls = [ "http://www.iram.fr/~gildas/dist/gildas-src-${srcVersion}.tar.xz"
       "http://www.iram.fr/~gildas/dist/archive/gildas/gildas-src-${srcVersion}.tar.xz" ];
-    sha256 = "0yb8dv41qsr5w2yci62phk6mrxbjlfxl4nnj7zndlyym2i5ni89c";
+    sha256 = "0kwq5gzgzx5hkbabwvbrw2958pqz4m2s501k5cbllgxh4sqp86b1";
   };
 
   enableParallelBuilding = true;
 
   nativeBuildInputs = [ pkgconfig groff perl getopt gfortran which ];
 
-  buildInputs = [ gtk2-x11 lesstif cfitsio python27Env ];
+  buildInputs = [ gtk2-x11 lesstif cfitsio python27Env ]
+    ++ stdenv.lib.optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [ CoreFoundation ]);
 
   patches = [ ./wrapper.patch ./clang.patch ./aarch64.patch ];
 
   NIX_CFLAGS_COMPILE = stdenv.lib.optionalString stdenv.cc.isClang "-Wno-unused-command-line-argument";
+
+  NIX_LDFLAGS = stdenv.lib.optionalString stdenv.isDarwin (with darwin.apple_sdk.frameworks; "-F${CoreFoundation}/Library/Frameworks");
 
   configurePhase=''
     substituteInPlace admin/wrapper.sh --replace '%%OUT%%' $out

@@ -1,26 +1,26 @@
-{ stdenv, fetchFromGitHub }:
+{ stdenv, fetchFromGitHub, meson, ninja }:
 
 stdenv.mkDerivation rec {
   pname = "janet";
-  version = "0.4.0";
+  version = "1.5.1";
 
   src = fetchFromGitHub {
     owner = "janet-lang";
-    repo = "janet";
+    repo = pname;
     rev = "v${version}";
-    sha256 = "1590f1fxb6qfhf1vp2xhbvdn2jfrgipn5572cckk1ma7f13jnkpy";
+    sha256 = "13b4haaanlgi8qpwwvf59zf7qsw8p0zdqv7xdxjjyid5yww7jmm2";
   };
 
-  JANET_BUILD=''\"release\"'';
-  PREFIX = placeholder "out";
+  nativeBuildInputs = [ meson ninja ];
+  mesonFlags = [ "-Dgit_hash=release" ];
 
   doCheck = true;
 
   meta = with stdenv.lib; {
     description = "Janet programming language";
     homepage = https://janet-lang.org/;
-    license = stdenv.lib.licenses.mit;
+    license = licenses.mit;
     platforms = platforms.all;
-    maintainers = with stdenv.lib.maintainers; [ andrewchambers ];
+    maintainers = with maintainers; [ andrewchambers ];
   };
 }

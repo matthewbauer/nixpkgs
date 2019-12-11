@@ -4,8 +4,6 @@ with lib;
 
 let
 
-  kernelPackages = config.boot.kernelPackages;
-
   # Abbreviations.
   cfg = config.services.xserver;
   xorg = pkgs.xorg;
@@ -15,6 +13,9 @@ let
   knownVideoDrivers = {
     # Alias so people can keep using "virtualbox" instead of "vboxvideo".
     virtualbox = { modules = [ xorg.xf86videovboxvideo ]; driverName = "vboxvideo"; };
+
+    # Alias so that "radeon" uses the xf86-video-ati driver.
+    radeon = { modules = [ xorg.xf86videoati ]; driverName = "ati"; };
 
     # modesetting does not have a xf86videomodesetting package as it is included in xorgserver
     modesetting = {};
@@ -77,7 +78,7 @@ let
   in imap1 mkHead cfg.xrandrHeads;
 
   xrandrDeviceSection = let
-    monitors = flip map xrandrHeads (h: ''
+    monitors = forEach xrandrHeads (h: ''
       Option "monitor-${h.config.output}" "${h.name}"
     '');
     # First option is indented through the space in the config but any
@@ -148,6 +149,8 @@ in
     [ ./display-managers/default.nix
       ./window-managers/default.nix
       ./desktop-managers/default.nix
+      (mkRemovedOptionModule [ "services" "xserver" "startGnuPGAgent" ]
+        "See the 16.09 release notes for more information.")
     ];
 
 
@@ -243,7 +246,7 @@ in
       videoDrivers = mkOption {
         type = types.listOf types.str;
         # !!! We'd like "nv" here, but it segfaults the X server.
-        default = [ "ati" "cirrus" "vesa" "vmware" "modesetting" ];
+        default = [ "radeon" "cirrus" "vesa" "vmware" "modesetting" ];
         example = [
           "ati_unfree" "amdgpu" "amdgpu-pro"
           "nv" "nvidia" "nvidiaLegacy390" "nvidiaLegacy340" "nvidiaLegacy304"
@@ -347,6 +350,7 @@ in
 
       xkbDir = mkOption {
         type = types.path;
+        default = "${pkgs.xkeyboard_config}/etc/X11/xkb";
         description = ''
           Path used for -xkbdir xserver parameter.
         '';
@@ -555,7 +559,6 @@ in
           default = !( dmconf.auto.enable
                     || dmconf.gdm.enable
                     || dmconf.sddm.enable
-                    || dmconf.slim.enable
                     || dmconf.xpra.enable );
       in mkIf (default) true;
 
@@ -657,16 +660,15 @@ in
     systemd.services.display-manager =
       { description = "X11 Server";
 
-        after = [ "systemd-udev-settle.service" "local-fs.target" "acpid.service" "systemd-logind.service" ];
+        after = [ "systemd-udev-settle.service" "acpid.service" "systemd-logind.service" ];
         wants = [ "systemd-udev-settle.service" ];
 
         restartIfChanged = false;
 
         environment =
-          {
-            LD_LIBRARY_PATH = concatStringsSep ":" ([ "/run/opengl-driver/lib" ]
-              ++ concatLists (catAttrs "libPath" cfg.drivers));
-          } // cfg.displayManager.job.environment;
+          optionalAttrs config.hardware.opengl.setLdLibraryPath
+            { LD_LIBRARY_PATH = pkgs.addOpenGLRunpath.driverLink; }
+          // cfg.displayManager.job.environment;
 
         preStart =
           ''
@@ -708,14 +710,12 @@ in
         xorg.xf86inputevdev.out
       ];
 
-    services.xserver.xkbDir = mkDefault "${pkgs.xkeyboard_config}/etc/X11/xkb";
-
     system.extraDependencies = singleton (pkgs.runCommand "xkb-validated" {
       inherit (cfg) xkbModel layout xkbVariant xkbOptions;
       nativeBuildInputs = [ pkgs.xkbvalidate ];
       preferLocalBuild = true;
     } ''
-      validate "$xkbModel" "$layout" "$xkbVariant" "$xkbOptions"
+      xkbvalidate "$xkbModel" "$layout" "$xkbVariant" "$xkbOptions"
       touch "$out"
     '');
 

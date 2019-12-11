@@ -3,12 +3,12 @@
 with stdenv.lib;
 
 stdenv.mkDerivation rec {
-  name = "gifsicle-${version}";
-  version = "1.91";
+  pname = "gifsicle";
+  version = "1.92";
 
   src = fetchurl {
-    url = "https://www.lcdf.org/gifsicle/${name}.tar.gz";
-    sha256 = "00586z1yz86qcblgmf16yly39n4lkjrscl52hvfxqk14m81fckha";
+    url = "https://www.lcdf.org/gifsicle/${pname}-${version}.tar.gz";
+    sha256 = "0rffpzxcak19k6cngpxn73khvm3z1gswrqs90ycdzzb53p05ddas";
   };
 
   buildInputs = optional gifview [ xorgproto libXt libX11 ];
@@ -28,6 +28,6 @@ stdenv.mkDerivation rec {
     homepage = https://www.lcdf.org/gifsicle/;
     license = stdenv.lib.licenses.gpl2;
     platforms = platforms.all;
-    maintainers = with stdenv.lib.maintainers; [ fuuzetsu zimbatm ];
+    maintainers = with stdenv.lib.maintainers; [ zimbatm ];
   };
 }

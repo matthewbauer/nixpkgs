@@ -1,12 +1,12 @@
-{lib, fetchPypi, python, buildPythonPackage, gfortran, nose, pytest, numpy, fetchpatch}:
+{lib, fetchPypi, python, buildPythonPackage, gfortran, nose, pytest, numpy}:
 
 buildPythonPackage rec {
   pname = "scipy";
-  version = "1.2.1";
+  version = "1.3.2";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "e085d1babcb419bbe58e2e805ac61924dac4ca45a07c9fa081144739e500aa3c";
+    sha256 = "a03939b431994289f39373c57bbe452974a7da724ae7f9620a1beee575434da4";
   };
 
   checkInputs = [ nose pytest ];
