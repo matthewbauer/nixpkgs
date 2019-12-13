@@ -19,9 +19,7 @@
 , libcCross ? null
 , threadsCross ? null # for MinGW
 , crossStageStatic ? false
-, # Strip kills static libs of other archs (hence no cross)
-  stripped ? stdenv.hostPlatform == stdenv.buildPlatform
-          && stdenv.targetPlatform == stdenv.hostPlatform
+, stripped ? true
 , gnused ? null
 , cloog # unused; just for compat with gcc4, as we override the parameter on some places
 , buildPackages
@@ -95,9 +93,6 @@ stdenv.mkDerivation ({
   NIX_NO_SELF_RPATH = true;
 
   libc_dev = stdenv.cc.libc_dev;
-
-  # set this var to use in builder.sh
-  target_triple = targetPlatform.config;
 
   hardeningDisable = [ "format" "pie" ];
 
