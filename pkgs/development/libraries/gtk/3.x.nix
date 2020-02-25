@@ -34,9 +34,9 @@
 , mesa
 , wayland
 , wayland-protocols
-, xineramaSupport ? stdenv.isLinux
+, xineramaSupport ? stdenv.isLinux && x11Support
 , cupsSupport ? stdenv.isLinux
-, withGtkDoc ? stdenv.isLinux
+, withGtkDoc ? stdenv.isLinux && stdenv.hostPlatform == stdenv.buildPlatform
 , cups ? null
 , AppKit
 , Cocoa
@@ -80,13 +80,15 @@ stdenv.mkDerivation rec {
     # 3.24.13 failed to ship a header file
     # https://gitlab.gnome.org/GNOME/gtk/issues/2279
     ./patches/missing-header.patch
-  ];
+  ] ++ optional (stdenv.hostPlatform != stdenv.buildPlatform) ./patches/3.0-no-install-script.patch;
 
   separateDebugInfo = stdenv.isLinux;
 
   mesonFlags = [
     "-Dgtk_doc=${boolToString withGtkDoc}"
     "-Dtests=false"
+    "-Dx11_backend=${if x11Support then "true" else "false"}"
+    "-Dwayland_backend=${if waylandSupport then "true" else "false"}"
   ];
 
   # These are the defines that'd you'd get with --enable-debug=minimum (default).
@@ -118,7 +120,10 @@ stdenv.mkDerivation rec {
     pkgconfig
     python3
     sassc
-  ] ++ setupHooks ++ optionals withGtkDoc [
+    glib
+    gdk-pixbuf
+  ] ++ optional waylandSupport wayland
+    ++ setupHooks ++ optionals withGtkDoc [
     docbook_xml_dtd_43
     docbook_xsl
     gtk-doc
@@ -133,7 +138,7 @@ stdenv.mkDerivation rec {
   ++ optional stdenv.isDarwin AppKit
   ;
 
-  propagatedBuildInputs = with xorg; [
+  propagatedBuildInputs = [
     at-spi2-atk
     atk
     cairo
@@ -142,6 +147,8 @@ stdenv.mkDerivation rec {
     gdk-pixbuf
     glib
     gsettings-desktop-schemas
+    pango
+  ] ++ optionals x11Support (with xorg; [
     libICE
     libSM
     libXcomposite
@@ -149,11 +156,10 @@ stdenv.mkDerivation rec {
     libXi
     libXrandr
     libXrender
-    pango
-  ]
+  ])
   ++ optional stdenv.isDarwin Cocoa  # explicitly propagated, always needed
   ++ optionals waylandSupport [ mesa wayland wayland-protocols ]
-  ++ optional xineramaSupport libXinerama
+  ++ optional xineramaSupport xorg.libXinerama
   ++ optional cupsSupport cups
   ;
   #TODO: colord?
