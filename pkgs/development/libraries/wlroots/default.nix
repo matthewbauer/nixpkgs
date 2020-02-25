@@ -26,6 +26,8 @@ stdenv.mkDerivation rec {
     libpng ffmpeg xcbutilrenderutil xwayland libseat
   ];
 
+  depsBuildBuild = lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) pkg-config;
+
   postFixup = ''
     # Install ALL example programs to $examples:
     # screencopy dmabuf-capture input-inhibitor layer-shell idle-inhibit idle

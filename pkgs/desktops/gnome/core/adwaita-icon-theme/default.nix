@@ -13,9 +13,11 @@ stdenv.mkDerivation rec {
   # For convenience, we can specify adwaita-icon-theme only in packages
   propagatedBuildInputs = [ hicolor-icon-theme ];
 
-  buildInputs = [ gdk-pixbuf librsvg ];
+  buildInputs = [ gdk-pixbuf librsvg ]
+    ++ lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) gtk3;
 
-  nativeBuildInputs = [ pkg-config intltool iconnamingutils gtk3 ];
+  nativeBuildInputs = [ pkg-config intltool iconnamingutils ]
+    ++ lib.optional (stdenv.hostPlatform == stdenv.buildPlatform) gtk3;
 
   dontDropIconThemeCache = true;
 

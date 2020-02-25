@@ -37,6 +37,8 @@
 , enableCdparanoia ? (!stdenv.isDarwin)
 , cdparanoia
 , glib
+, makeDocs ? stdenv.hostPlatform == stdenv.buildPlatform
+, enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform
 }:
 
 stdenv.mkDerivation rec {
@@ -62,11 +64,11 @@ stdenv.mkDerivation rec {
     gettext
     orc
     glib
-    gobject-introspection
-
     # docs
     # TODO add hotdoc here
-  ] ++ lib.optional enableWayland wayland;
+  ] ++ lib.optional enableIntrospection gobject-introspection
+    ++ lib.optional enableWayland wayland
+    ++ lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) gstreamer;
 
   buildInputs = [
     orc
@@ -106,6 +108,7 @@ stdenv.mkDerivation rec {
     # See https://github.com/GStreamer/gst-plugins-base/blob/d64a4b7a69c3462851ff4dcfa97cc6f94cd64aef/meson_options.txt#L15 for a list of choices
     "-Dgl_winsys=${lib.concatStringsSep "," (lib.optional enableX11 "x11" ++ lib.optional enableWayland "wayland" ++ lib.optional enableCocoa "cocoa")}"
   ]
+  ++ lib.optional (!enableIntrospection) "-Dintrospection=disabled"
   ++ lib.optional (!enableX11) "-Dx11=disabled"
   # TODO How to disable Wayland?
   ++ lib.optional (!enableGl) "-Dgl=disabled"

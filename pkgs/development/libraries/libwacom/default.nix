@@ -19,6 +19,8 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ glib udev libgudev ];
 
+  patches = lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) ./skip-udev-gen.patch;
+
   meta = with lib; {
     platforms = platforms.linux;
     homepage = "https://linuxwacom.github.io/";

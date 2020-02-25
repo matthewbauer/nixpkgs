@@ -18,6 +18,10 @@
 , vala
 , gobject-introspection
 , nixosTests
+, enableVala ? stdenv.hostPlatform == stdenv.buildPlatform && !stdenv.isDarwin
+, enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform
+, buildPackages
+, rust
 }:
 
 stdenv.mkDerivation rec {
@@ -40,7 +44,7 @@ stdenv.mkDerivation rec {
   ] ++ lib.optionals stdenv.isDarwin [
     ApplicationServices
     Foundation
-  ];
+  ] ++ lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) gdk-pixbuf;
 
   buildInputs = [
     libxml2
@@ -51,6 +55,18 @@ stdenv.mkDerivation rec {
     libobjc
   ];
 
+  preConfigure = if (stdenv.hostPlatform != stdenv.buildPlatform) then ''
+    mkdir -p .cargo
+    cat >> .cargo/config <<'EOF'
+    [target."${rust.toRustTarget stdenv.buildPlatform}"]
+    "linker" = "${buildPackages.stdenv.cc}/bin/${buildPackages.stdenv.cc.targetPrefix}cc"
+    [target."${rust.toRustTarget stdenv.hostPlatform}"]
+    "linker" = "${stdenv.cc}/bin/${stdenv.cc.targetPrefix}cc"
+    EOF
+  '' else null;
+
+  RUST_TARGET = if (stdenv.hostPlatform != stdenv.buildPlatform) then rust.toRustTarget stdenv.hostPlatform else null;
+
   propagatedBuildInputs = [
     glib
     gdk-pixbuf
@@ -58,12 +74,8 @@ stdenv.mkDerivation rec {
   ];
 
   configureFlags = [
-    "--enable-introspection"
-  ] ++ lib.optionals (!stdenv.isDarwin) [
-    # Vapi does not build on MacOS.
-    # https://github.com/NixOS/nixpkgs/pull/117081#issuecomment-827782004
-    "--enable-vala"
-  ] ++ [
+    (if enableIntrospection then "--enable-introspection" else "--disable-introspection")
+  ] ++ lib.optional enableVala "--enable-vala" ++ [
     "--enable-installed-tests"
     "--enable-always-build-tests"
   ] ++ lib.optional stdenv.isDarwin "--disable-Bsymbolic";
@@ -96,7 +108,7 @@ stdenv.mkDerivation rec {
   '';
 
   # Merge gdkpixbuf and librsvg loaders
-  postInstall = ''
+  postInstall = lib.optionalString (stdenv.hostPlatform == stdenv.buildPlatform) ''
     mv $GDK_PIXBUF/loaders.cache $GDK_PIXBUF/loaders.cache.tmp
     cat ${gdk-pixbuf.out}/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache $GDK_PIXBUF/loaders.cache.tmp > $GDK_PIXBUF/loaders.cache
     rm $GDK_PIXBUF/loaders.cache.tmp

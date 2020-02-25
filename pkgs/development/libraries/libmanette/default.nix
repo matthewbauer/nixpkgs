@@ -4,8 +4,8 @@
 , meson
 , pkg-config
 , vala
-, gobject-introspection
-, gtk-doc
+, enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform, gobject-introspection
+, enableDoc ? stdenv.hostPlatform == stdenv.buildPlatform, gtk-doc
 , docbook-xsl-nons
 , docbook_xml_dtd_43
 , glib
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
   pname = "libmanette";
   version = "0.2.6";
 
-  outputs = [ "out" "dev" "devdoc" ];
+  outputs = [ "out" "dev" ] ++ lib.optional enableDoc "devdoc";
 
   src = fetchurl {
     url = "mirror://gnome/sources/${pname}/${lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
@@ -30,11 +30,13 @@ stdenv.mkDerivation rec {
     ninja
     pkg-config
     vala
+  ] ++ lib.optionals enableIntrospection [
     gobject-introspection
+  ] ++ lib.optionals enableDoc [
     gtk-doc
     docbook-xsl-nons
     docbook_xml_dtd_43
-  ];
+  ] ++ lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) glib;
 
   buildInputs = [
     glib
@@ -43,8 +45,10 @@ stdenv.mkDerivation rec {
   ];
 
   mesonFlags = [
-    "-Ddoc=true"
-  ];
+    "-Ddoc=${if enableDoc then "true" else "false"}"
+  ] ++ lib.optional (!enableIntrospection) "-Dintrospection=false";
+
+  depsBuildBuild = lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) pkg-config;
 
   doCheck = true;
 

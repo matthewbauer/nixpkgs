@@ -17,6 +17,8 @@
 , bash-completion
 , lib
 , CoreServices
+, enableDoc ? false
+, enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform
 }:
 
 stdenv.mkDerivation rec {
@@ -26,6 +28,7 @@ stdenv.mkDerivation rec {
   outputs = [
     "out"
     "dev"
+  ] ++ lib.optionals enableDoc [
     # "devdoc" # disabled until `hotdoc` is packaged in nixpkgs, see:
     # - https://github.com/NixOS/nixpkgs/pull/98767
     # - https://github.com/NixOS/nixpkgs/issues/98769#issuecomment-702296551
@@ -51,14 +54,16 @@ stdenv.mkDerivation rec {
     python3
     makeWrapper
     glib
+  ] ++ lib.optionals enableIntrospection [
     gobject-introspection
+  ] ++ lib.optionals (stdenv.hostPlatform == stdenv.buildPlatform) [
     bash-completion
-
+  ] ++ lib.optionals enableDoc [
     # documentation
     # TODO add hotdoc here
   ];
 
-  buildInputs = [
+  buildInputs = lib.optionals (stdenv.hostPlatform == stdenv.buildPlatform) [
     bash-completion
   ] ++ lib.optionals stdenv.isLinux [
     libcap
@@ -76,7 +81,10 @@ stdenv.mkDerivation rec {
     "-Ddbghelp=disabled" # not needed as we already provide libunwind and libdw, and dbghelp is a fallback to those
     "-Dexamples=disabled" # requires many dependencies and probably not useful for our users
     "-Ddoc=disabled" # `hotdoc` not packaged in nixpkgs as of writing
-  ] ++ lib.optionals stdenv.isDarwin [
+  ] ++ lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
+    "-Dbash-completion=disabled"
+  ] ++ lib.optional (!enableIntrospection) "-Dintrospection=disabled"
+    ++ lib.optionals stdenv.isDarwin [
     # darwin.libunwind doesn't have pkg-config definitions so meson doesn't detect it.
     "-Dlibunwind=disabled"
     "-Dlibdw=disabled"

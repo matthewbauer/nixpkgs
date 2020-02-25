@@ -23,6 +23,8 @@
 , gnome
 , libhandy
 , runCommand
+, enableDoc ? stdenv.hostPlatform == stdenv.buildPlatform
+, enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform
 }:
 
 stdenv.mkDerivation rec {
@@ -32,9 +34,10 @@ stdenv.mkDerivation rec {
   outputs = [
     "out"
     "dev"
-    "devdoc"
   ] ++ lib.optionals enableGlade [
     "glade"
+  ] ++ lib.optionals enableDoc [
+    "devdoc"
   ];
   outputBin = "dev";
 
@@ -73,8 +76,9 @@ stdenv.mkDerivation rec {
   ];
 
   mesonFlags = [
-    "-Dgtk_doc=true"
+    "-Dgtk_doc=${if enableDoc then "true" else "false"}"
     "-Dglade_catalog=${if enableGlade then "enabled" else "disabled"}"
+    "-Dintrospection=${if enableIntrospection then "enabled" else "disabled"}"
   ];
 
   # Uses define_variable in pkg-config, but we still need it to use the glade output

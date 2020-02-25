@@ -1,0 +1,35 @@
+diff --git a/meson.build b/meson.build
+index 0d4e346..e3b9bd1 100644
+--- a/meson.build
++++ b/meson.build
+@@ -133,18 +133,18 @@ executable('libwacom-list-local-devices',
+ 
+ tools_cflags = ['-DTOPSRCDIR="@0@"'.format(meson.source_root())]
+ 
+-gen_hwdb = executable('generate-hwdb',
+-		      'tools/generate-hwdb.c',
+-		      dependencies: [dep_libwacom, dep_glib],
+-		      include_directories: [includes_src],
+-		      c_args: tools_cflags,
+-		      install: false)
+-custom_target('hwdb',
+-	      command: gen_hwdb,
+-	      capture: true,
+-	      output: '65-libwacom.hwdb',
+-	      install: true,
+-	      install_dir: join_paths(dir_udev, 'hwdb.d'))
++# gen_hwdb = executable('generate-hwdb',
++# 		      'tools/generate-hwdb.c',
++# 		      dependencies: [dep_libwacom, dep_glib],
++# 		      include_directories: [includes_src],
++# 		      c_args: tools_cflags,
++# 		      install: false)
++# custom_target('hwdb',
++# 	      command: gen_hwdb,
++# 	      capture: true,
++# 	      output: '65-libwacom.hwdb',
++# 	      install: true,
++# 	      install_dir: join_paths(dir_udev, 'hwdb.d'))
+ 
+ configure_file(input: 'tools/65-libwacom.rules.in',
+ 	       output: '65-libwacom.rules',

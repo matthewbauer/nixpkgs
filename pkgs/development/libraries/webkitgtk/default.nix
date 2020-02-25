@@ -57,6 +57,10 @@
 , substituteAll
 , glib
 , addOpenGLRunpath
+, enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform
+, libwpe
+, libwpe-fdo
+, buildPackages
 }:
 
 assert enableGeoLocation -> geoclue2 != null;
@@ -121,18 +125,17 @@ stdenv.mkDerivation rec {
     bison
     cmake
     gettext
-    gobject-introspection
     gperf
     ninja
     perl
-    perl.pkgs.FileCopyRecursive # used by copy-user-interface-resources.pl
+    buildPackages.perl.pkgs.FileCopyRecursive # used by copy-user-interface-resources.pl
     pkg-config
     python3
     ruby
     glib # for gdbus-codegen
   ] ++ lib.optionals stdenv.isLinux [
     wayland # for wayland-scanner
-  ];
+  ] ++ lib.optional enableIntrospection gobject-introspection;
 
   buildInputs = [
     at-spi2-core
@@ -156,6 +159,8 @@ stdenv.mkDerivation rec {
     libsecret
     libtasn1
     libwebp
+    libwpe
+    libwpe-fdo
     libxkbcommon
     libxml2
     libxslt
@@ -193,10 +198,10 @@ stdenv.mkDerivation rec {
   ];
 
   cmakeFlags = [
-    "-DENABLE_INTROSPECTION=ON"
+    "-DENABLE_INTROSPECTION=${if enableIntrospection then "ON" else "OFF"}"
     "-DPORT=GTK"
     "-DUSE_LIBHYPHEN=OFF"
-    "-DUSE_WPE_RENDERER=OFF"
+    "-DWAYLAND_SCANNER=${lib.getBin buildPackages.wayland}/bin/wayland-scanner"
   ] ++ lib.optionals stdenv.isDarwin [
     "-DENABLE_GAMEPAD=OFF"
     "-DENABLE_GTKDOC=OFF"

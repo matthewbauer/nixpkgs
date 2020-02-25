@@ -51,11 +51,12 @@ in stdenv.mkDerivation rec {
     sha256 = "1n9lg8hpjgxlf7dpddkjhbslsfd0symla2wk6jjmnl9n9jv2gmzk";
   };
 
+  patches = lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) ./find-wayland-scanner.patch;
   nativeBuildInputs = [
     meson
     ninja
     pkg-config
-  ];
+  ] ++ lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) wayland;
 
   buildInputs = [
     eglexternalplatform

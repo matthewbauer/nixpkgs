@@ -140,7 +140,7 @@ self = stdenv.mkDerivation {
     ++ lib.optionals stdenv.isDarwin [ libunwind ]
     ++ lib.optional withValgrind valgrind-light;
 
-  depsBuildBuild = [ pkg-config ];
+  depsBuildBuild = [ pkg-config ] ++ lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) buildPackages.stdenv.cc;
 
   nativeBuildInputs = [
     meson pkg-config ninja

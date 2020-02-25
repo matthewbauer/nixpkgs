@@ -12,6 +12,7 @@
 , pango
 , cairo
 , libdrm
+, enableGtk ? false
 }:
 
 stdenv.mkDerivation rec {
@@ -41,7 +42,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [
     cairo
-    gtk3
+  ] ++ lib.optional enableGtk gtk3 ++ [
     libdrm
     pango
     systemd
@@ -70,7 +71,6 @@ stdenv.mkDerivation rec {
   configureFlags = [
     "--enable-documentation"
     "--enable-drm"
-    "--enable-gtk"
     "--enable-pango"
     "--enable-systemd-integration"
     "--enable-tracing"
@@ -85,8 +85,9 @@ stdenv.mkDerivation rec {
     "--with-systemdunitdir=${placeholder "out"}/etc/systemd/system"
     "--without-rhgb-compat-link"
     "--without-system-root-install"
+    (if enableGtk then ["--enable-gtk"] else ["--disable-gtk"])
     "ac_cv_path_SYSTEMD_ASK_PASSWORD_AGENT=${lib.getBin systemd}/bin/systemd-tty-ask-password-agent"
-  ];
+  ] ++ (if enableGtk then ["--enable-gtk"] else ["--disable-gtk"]);
 
   installFlags = [
     "localstatedir=\${TMPDIR}"

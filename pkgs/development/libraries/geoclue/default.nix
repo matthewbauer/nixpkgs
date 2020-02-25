@@ -22,13 +22,16 @@
 , gobject-introspection
 , vala
 , withDemoAgent ? false
+, withModemManager ? stdenv.hostPlatform == stdenv.buildPlatform && !stdenv.hostPlatform.isDarwin
+, withIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform
+, withDoc ? stdenv.hostPlatform == stdenv.buildPlatform
 }:
 
 stdenv.mkDerivation rec {
   pname = "geoclue";
   version = "2.5.7";
 
-  outputs = [ "out" "dev" "devdoc" ];
+  outputs = [ "out" "dev" ] ++ lib.optional withDoc "devdoc";
 
   src = fetchFromGitLab {
     domain = "gitlab.freedesktop.org";
@@ -61,12 +64,10 @@ stdenv.mkDerivation rec {
     wrapGAppsHook
     python3
     vala
-    gobject-introspection
-    # devdoc
-    gtk-doc
-    docbook-xsl-nons
-    docbook_xml_dtd_412
-  ];
+  ] ++ lib.optionals withDoc [ gtk-doc docbook-xsl-nons docbook_xml_dtd_412 ]
+    ++ lib.optional withIntrospection gobject-introspection;
+
+  depsBuildBuild = [ pkg-config ];
 
   buildInputs = [
     glib
@@ -75,7 +76,7 @@ stdenv.mkDerivation rec {
     avahi
   ] ++ lib.optionals withDemoAgent [
     libnotify gdk-pixbuf
-  ] ++ lib.optionals (!stdenv.isDarwin) [
+  ] ++ lib.optionals withModemManager [
     modemmanager
   ];
 
@@ -92,12 +93,13 @@ stdenv.mkDerivation rec {
     "-Dmozilla-api-key=5c28d1f4-9511-47ff-b11a-2bef80fc177c"
     "-Ddbus-srv-user=geoclue"
     "-Ddbus-sys-dir=${placeholder "out"}/share/dbus-1/system.d"
-  ] ++ lib.optionals stdenv.isDarwin [
+  ] ++ lib.optionals (!withModemManager) [
     "-D3g-source=false"
     "-Dcdma-source=false"
     "-Dmodem-gps-source=false"
     "-Dnmea-source=false"
-  ];
+  ] ++ lib.optional (!withIntrospection) "-Dintrospection=false"
+    ++ lib.optional (!withDoc) "-Dgtk-doc=false";
 
   postPatch = ''
     chmod +x demo/install-file.py

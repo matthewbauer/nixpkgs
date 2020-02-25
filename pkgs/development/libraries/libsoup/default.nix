@@ -1,6 +1,8 @@
 { stdenv, lib, fetchurl, fetchpatch, glib, libxml2, meson, ninja, pkg-config, gnome, libsysprof-capture
 , gnomeSupport ? true, sqlite, glib-networking, gobject-introspection, vala
 , libpsl, python3, brotli
+, enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform
+, enableVapi ? stdenv.hostPlatform == stdenv.buildPlatform
 }:
 
 stdenv.mkDerivation rec {
@@ -35,7 +37,12 @@ stdenv.mkDerivation rec {
   ] ++ lib.optionals stdenv.isLinux [
     libsysprof-capture
   ];
-  nativeBuildInputs = [ meson ninja pkg-config gobject-introspection vala glib ];
+  nativeBuildInputs = [ meson ninja pkg-config ]
+    ++ lib.optional enableIntrospection gobject-introspection
+    ++ lib.optional enableVapi vala
+    ++ [
+      glib
+    ];
   propagatedBuildInputs = [ glib libxml2 ];
 
   NIX_CFLAGS_COMPILE = [ "-lpthread" ];
@@ -43,12 +50,12 @@ stdenv.mkDerivation rec {
   mesonFlags = [
     "-Dtls_check=false" # glib-networking is a runtime dependency, not a compile-time dependency
     "-Dgssapi=disabled"
-    "-Dvapi=enabled"
+    "-Dvapi=${if enableVapi then "enabled" else "disabled"}"
     "-Dgnome=${lib.boolToString gnomeSupport}"
     "-Dntlm=disabled"
   ] ++ lib.optionals (!stdenv.isLinux) [
     "-Dsysprof=disabled"
-  ];
+  ] ++ lib.optional (!enableIntrospection) "-Dintrospection=disabled";
 
   doCheck = false; # ERROR:../tests/socket-test.c:37:do_unconnected_socket_test: assertion failed (res == SOUP_STATUS_OK): (2 == 200)
 

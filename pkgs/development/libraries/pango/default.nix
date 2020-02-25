@@ -17,13 +17,21 @@
 , ninja
 , glib
 , x11Support? !stdenv.isDarwin, libXft
+, enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform
+, enableDoc ? stdenv.hostPlatform == stdenv.buildPlatform, gtk-doc
 }:
 
 stdenv.mkDerivation rec {
   pname = "pango";
   version = "1.48.4";
 
-  outputs = [ "bin" "out" "dev" "devdoc" ];
+  outputs = [
+    "bin"
+    "out"
+    "dev"
+  ] ++ lib.optionals enableDoc [
+    "devdoc"
+  ];
 
   src = fetchurl {
     url = "mirror://gnome/sources/${pname}/${lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
@@ -34,9 +42,8 @@ stdenv.mkDerivation rec {
     meson ninja
     glib # for glib-mkenum
     pkg-config
-    gobject-introspection
-    gi-docgen
-  ];
+  ] ++ lib.optional enableIntrospection gobject-introspection
+    ++ lib.optional enableDoc gi-docgen;
 
   buildInputs = [
     fribidi
@@ -58,9 +65,11 @@ stdenv.mkDerivation rec {
   ];
 
   mesonFlags = [
-    "-Dgtk_doc=true"
+    "-Dgtk_doc=${if enableDoc then "true" else "false"}"
   ] ++ lib.optionals (!x11Support) [
     "-Dxft=disabled" # only works with x11
+  ] ++ lib.optionals (!enableIntrospection) [
+    "-Dintrospection=disabled"
   ];
 
   # Fontconfig error: Cannot load default config file
@@ -70,7 +79,7 @@ stdenv.mkDerivation rec {
 
   doCheck = false; # test-font: FAIL
 
-  postInstall = ''
+  postInstall = lib.optionalString enableDoc ''
     # So that devhelp can find this.
     # https://gitlab.gnome.org/GNOME/pango/merge_requests/293/diffs#note_1058448
     mkdir -p "$devdoc/share/devhelp"

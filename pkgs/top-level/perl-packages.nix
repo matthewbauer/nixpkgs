@@ -23993,6 +23993,8 @@ let
     postInstall = ''
       mkdir -p $out/bin
       cp tools/xml_grep/xml_grep $out/bin
+    '' + lib.optionalString (stdenv.hostPlatform != stdenv.buildPlatform) ''
+      sed -i 's,/usr/bin/perl,${pkgs.perl}/bin/perl,' $out/bin/xml_grep
     '';
     propagatedBuildInputs = [ XMLParser ];
     doCheck = false;  # requires lots of extra packages

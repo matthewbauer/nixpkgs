@@ -6,9 +6,9 @@
 , ninja
 , pkg-config
 , asciidoc
-, gobject-introspection
+, enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform, gobject-introspection
 , python3
-, gtk-doc
+, enableDoc ? stdenv.hostPlatform == stdenv.buildPlatform, gtk-doc
 , docbook-xsl-nons
 , docbook_xml_dtd_45
 , libxml2
@@ -26,13 +26,14 @@
 , systemd
 , dbus
 , substituteAll
+, buildPackages
 }:
 
 stdenv.mkDerivation rec {
   pname = "tracker";
   version = "3.1.1";
 
-  outputs = [ "out" "dev" "devdoc" ];
+  outputs = [ "out" "dev" ] ++ lib.optional enableDoc "devdoc";
 
   src = fetchurl {
     url = "mirror://gnome/sources/${pname}/${lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
@@ -42,7 +43,7 @@ stdenv.mkDerivation rec {
   patches = [
     (substituteAll {
       src = ./fix-paths.patch;
-      inherit asciidoc;
+      inherit (buildPackages) asciidoc;
     })
 
     # Add missing build target dependencies to fix parallel building of docs.
@@ -55,7 +56,7 @@ stdenv.mkDerivation rec {
       url = "https://gitlab.gnome.org/GNOME/tracker/merge_requests/401.patch";
       sha256 = "QEf+ciGkkCzanmtGO0aig6nAxd+NxjvuNi4RbNOwZEA=";
     })
-  ];
+  ] ++ lib.optional (!enableIntrospection) ./cross.patch;
 
   nativeBuildInputs = [
     meson
@@ -66,14 +67,17 @@ stdenv.mkDerivation rec {
     gettext
     libxslt
     wrapGAppsNoGuiHook
+  ] ++ lib.optionals enableIntrospection [
     gobject-introspection
+  ] ++ lib.optionals enableDoc [
     gtk-doc
     docbook-xsl-nons
     docbook_xml_dtd_45
+  ] ++ [
     python3 # for data-generators
     systemd # used for checks to install systemd user service
     dbus # used for checks and pkg-config to install dbus service/s
-  ];
+  ] ++ lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) glib;
 
   buildInputs = [
     glib
@@ -84,6 +88,9 @@ stdenv.mkDerivation rec {
     libuuid
     json-glib
     libstemmer
+  ] ++ lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
+    dbus
+    systemd
   ];
 
   checkInputs = with python3.pkgs; [
@@ -92,8 +99,10 @@ stdenv.mkDerivation rec {
   ];
 
   mesonFlags = [
-    "-Ddocs=true"
-  ];
+    "-Ddocs=${if enableDoc then "true" else "false"}"
+  ] ++ lib.optionals (!enableIntrospection) [ "-Dintrospection=disabled" "-Dtest_utils=false" ]
+    ++ lib.optional (!enableDoc) "-Dman=false"
+    ++ lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) "-Doverride_sqlite_version_check=true";
 
   doCheck = true;
 

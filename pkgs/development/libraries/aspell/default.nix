@@ -41,7 +41,9 @@ stdenv.mkDerivation rec {
 
   doCheck = true;
 
-  preConfigure = ''
+  preConfigure = lib.optionalString (stdenv.hostPlatform != stdenv.buildPlatform) ''
+    addToSearchPath HOST_PATH ${perl.out}/bin
+  '' + ''
     configureFlagsArray=(
       --enable-pkglibdir=$out/lib/aspell
       --enable-pkgdatadir=$out/lib/aspell

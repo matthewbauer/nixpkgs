@@ -9,6 +9,7 @@
 , gdk-pixbuf
 , gobject-introspection
 , gnome
+, enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform
 }:
 
 stdenv.mkDerivation rec {
@@ -27,15 +28,16 @@ stdenv.mkDerivation rec {
     "-Dtests=false"
     "-Ddocbook_docs=disabled"
     "-Dgtk_doc=false"
-  ];
+  ] ++ lib.optional (!enableIntrospection) "-Dintrospection=disabled";
 
-  nativeBuildInputs = [
-    gobject-introspection
+  nativeBuildInputs = lib.optional enableIntrospection gobject-introspection ++ [
     meson
     ninja
     pkg-config
     libxslt
     docbook-xsl-ns
+  ] ++ lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
+    glib
   ];
 
   propagatedBuildInputs = [

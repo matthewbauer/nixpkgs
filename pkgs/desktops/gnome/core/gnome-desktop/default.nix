@@ -22,6 +22,7 @@
 , gtk-doc
 , docbook-xsl-nons
 , gsettings-desktop-schemas
+, enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform
 }:
 
 stdenv.mkDerivation rec {
@@ -41,6 +42,7 @@ stdenv.mkDerivation rec {
       bubblewrap_bin = "${bubblewrap}/bin/bwrap";
       inherit (builtins) storeDir;
     })
+    ./disable-introspection.patch
   ];
 
   nativeBuildInputs = [
@@ -54,7 +56,7 @@ stdenv.mkDerivation rec {
     gtk-doc
     docbook-xsl-nons
     glib
-  ];
+  ] ++ lib.optional enableIntrospection gobject-introspection;
 
   buildInputs = [
     bubblewrap
@@ -66,7 +68,7 @@ stdenv.mkDerivation rec {
     glib
     libseccomp
     systemd
-  ];
+  ] ++ lib.optional (!enableIntrospection) "-Dintrospection=false";
 
   propagatedBuildInputs = [
     gsettings-desktop-schemas

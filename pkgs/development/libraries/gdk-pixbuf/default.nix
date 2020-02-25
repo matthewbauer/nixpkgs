@@ -20,13 +20,17 @@
 , doCheck ? false
 , makeWrapper
 , lib
+, enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform
+, enableDoc ? stdenv.hostPlatform == stdenv.buildPlatform
 }:
 
 stdenv.mkDerivation rec {
   pname = "gdk-pixbuf";
   version = "2.42.6";
 
-  outputs = [ "out" "dev" "man" "devdoc" "installedTests" ];
+  outputs = [ "out" "dev" "man" ]
+    ++ lib.optional enableDoc "devdoc"
+    ++ lib.optional (stdenv.hostPlatform == stdenv.buildPlatform) "installedTests";
 
   src = fetchurl {
     url = "mirror://gnome/sources/${pname}/${lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
@@ -44,11 +48,10 @@ stdenv.mkDerivation rec {
     pkg-config
     gettext
     python3
-    gobject-introspection
+  ] ++ lib.optional enableIntrospection gobject-introspection ++ [
     makeWrapper
     glib
-    gi-docgen
-
+  ] ++ lib.optional enableDoc gi-docgen ++ [
     # for man pages
     libxslt
     docbook-xsl-nons
@@ -63,8 +66,8 @@ stdenv.mkDerivation rec {
   ];
 
   mesonFlags = [
-    "-Dgtk_doc=true"
-    "-Dintrospection=${if gobject-introspection != null then "enabled" else "disabled"}"
+    "-Dgtk_doc=${if enableDoc then "true" else "false"}"
+    "-Dintrospection=${if enableIntrospection then "enabled" else "disabled"}"
     "-Dgio_sniffing=false"
   ];
 
@@ -85,6 +88,7 @@ stdenv.mkDerivation rec {
       moveToOutput "bin" "$dev"
       moveToOutput "bin/gdk-pixbuf-thumbnailer" "$out"
 
+    '' + lib.optionalString enableDoc ''
       # So that devhelp can find this.
       mkdir -p "$devdoc/share/devhelp"
       mv "$out/share/doc" "$devdoc/share/devhelp/books"

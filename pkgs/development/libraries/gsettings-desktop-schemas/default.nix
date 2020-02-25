@@ -1,13 +1,13 @@
-{ lib, stdenv
+{ lib, stdenv, gobject-introspection
 , fetchurl
 , pkg-config
 , glib
-, gobject-introspection
 , meson
 , ninja
 , python3
   # just for passthru
 , gnome
+, enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform
 }:
 
 stdenv.mkDerivation rec {
@@ -29,8 +29,9 @@ stdenv.mkDerivation rec {
 
   buildInputs = [
     glib
-    gobject-introspection
-  ];
+  ] ++ lib.optional enableIntrospection gobject-introspection;
+
+  mesonFlags = if (!enableIntrospection) then [ "-Dintrospection=false" ] else null;
 
   postPatch = ''
     chmod +x build-aux/meson/post-install.py

@@ -84,6 +84,8 @@ stdenv.mkDerivation rec {
     ++ optional (reqMin "1.0") "doc" ; # just dev-doc
   setOutputFlags = false; # doesn't accept all and stores configureFlags in libs!
 
+  NIX_LDFLAGS = if (stdenv.hostPlatform.system == "armv5tel-linux" || stdenv.hostPlatform.system == "armv6l-linux") then "-latomic" else null;
+
   configurePlatforms = [];
   configureFlags = filter (v: v != null) ([
       "--arch=${stdenv.hostPlatform.parsed.cpu.name}"

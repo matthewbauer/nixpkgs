@@ -19,6 +19,8 @@
 , gdk-pixbuf
 , libxslt
 , gsettings-desktop-schemas
+, enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform
+, enablePython ? stdenv.hostPlatform == stdenv.buildPlatform
 }:
 
 stdenv.mkDerivation rec {
@@ -29,6 +31,10 @@ stdenv.mkDerivation rec {
     url = "mirror://gnome/sources/glade/${lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
     sha256 = "1dxsiz9ahqkxg2a1dw9sbd8jg59y5pdz4c1gvnbmql48gmj8gz4q";
   };
+
+  configureFlags =
+       lib.optional (!enablePython) "--disable-python"
+    ++ lib.optional (!enableIntrospection) "--disable-introspection";
 
   nativeBuildInputs = [
     meson
@@ -41,8 +47,7 @@ stdenv.mkDerivation rec {
     docbook_xml_dtd_42
     libxslt
     libxml2
-    gobject-introspection
-  ];
+  ] ++ lib.optional enableIntrospection gobject-introspection;
 
   buildInputs = [
     gtk3
@@ -50,12 +55,10 @@ stdenv.mkDerivation rec {
     gjs
     webkitgtk
     libxml2
-    python3
-    python3.pkgs.pygobject3
     gsettings-desktop-schemas
     gdk-pixbuf
     gnome.adwaita-icon-theme
-  ];
+  ] ++ lib.optionals enablePython [ python3 python3.pkgs.pygobject3 ];
 
   passthru = {
     updateScript = gnome.updateScript {

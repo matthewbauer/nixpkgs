@@ -1,5 +1,6 @@
 { lib, stdenv, fetchurl, meson, ninja, gettext, pkg-config, glib
 , fixDarwinDylibNames, gobject-introspection, gnome
+, enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform
 }:
 
 let
@@ -17,8 +18,12 @@ stdenv.mkDerivation rec {
 
   outputs = [ "out" "dev" ];
 
-  nativeBuildInputs = [ meson ninja pkg-config gettext gobject-introspection glib ]
+  nativeBuildInputs = [ meson ninja pkg-config gettext ]
+    ++ lib.optional enableIntrospection gobject-introspection
+    ++ [ glib ]
     ++ lib.optional stdenv.hostPlatform.isDarwin fixDarwinDylibNames;
+
+  mesonFlags = if (!enableIntrospection) then [ "-Dintrospection=false" ] else null;
 
   propagatedBuildInputs = [
     # Required by atk.pc

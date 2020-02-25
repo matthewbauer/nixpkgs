@@ -39,13 +39,14 @@
 , libGL
 , wayland
 , wayland-protocols
-, xineramaSupport ? stdenv.isLinux
+, xineramaSupport ? stdenv.isLinux && x11Support
 , cupsSupport ? stdenv.isLinux
-, withGtkDoc ? stdenv.isLinux
+, withGtkDoc ? stdenv.isLinux && stdenv.hostPlatform == stdenv.buildPlatform
 , cups
 , AppKit
 , Cocoa
 , broadwaySupport ? true
+, enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform
 }:
 
 let
@@ -84,11 +85,11 @@ stdenv.mkDerivation rec {
     # e.g. https://gitlab.gnome.org/GNOME/gtk/blob/3.24.4/gtk/gtk-launch.c#L31-33
     # https://gitlab.gnome.org/GNOME/gtk/merge_requests/536
     ./patches/3.0-darwin-x11.patch
-  ];
+  ] ++ lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) ./patches/3.0-no-install-script.patch;
 
   nativeBuildInputs = [
     gettext
-    gobject-introspection
+  ] ++ lib.optional enableIntrospection gobject-introspection ++ [
     makeWrapper
     meson
     ninja
@@ -101,6 +102,10 @@ stdenv.mkDerivation rec {
     gtk-doc
     # For xmllint
     libxml2
+  ] ++ lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
+    glib
+    gdk-pixbuf
+    wayland
   ];
 
   buildInputs = [
@@ -115,7 +120,7 @@ stdenv.mkDerivation rec {
   ];
   #TODO: colord?
 
-  propagatedBuildInputs = with xorg; [
+  propagatedBuildInputs = [
     at-spi2-atk
     atk
     cairo
@@ -124,6 +129,7 @@ stdenv.mkDerivation rec {
     gdk-pixbuf
     glib
     gsettings-desktop-schemas
+  ] ++ lib.optionals x11Support (with xorg; [
     libICE
     libSM
     libXcomposite
@@ -143,14 +149,16 @@ stdenv.mkDerivation rec {
     libXinerama
   ] ++ lib.optionals cupsSupport [
     cups
-  ];
+  ]);
 
   mesonFlags = [
     "-Dgtk_doc=${lib.boolToString withGtkDoc}"
     "-Dtests=false"
     "-Dtracker3=${lib.boolToString trackerSupport}"
     "-Dbroadway_backend=${lib.boolToString broadwaySupport}"
-  ];
+  ] ++ lib.optional (!x11Support) "-Dx11_backend=false"
+    ++ lib.optional (!waylandSupport) "-Dwayland_backend=false"
+    ++ lib.optional (!enableIntrospection) "-Dintrospection=false";
 
   doCheck = false; # needs X11
 
