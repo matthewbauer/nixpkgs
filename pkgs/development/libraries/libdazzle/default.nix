@@ -1,11 +1,14 @@
-{ stdenv, fetchurl, ninja, meson, pkgconfig, vala, gobject-introspection, libxml2
-, gtk-doc, docbook_xsl, docbook_xml_dtd_43, dbus, xvfb_run, glib, gtk3, gnome3 }:
+{ stdenv, fetchurl, ninja, meson, pkgconfig, libxml2
+, docbook_xsl, docbook_xml_dtd_43, dbus, xvfb_run, glib, gtk3, gnome3
+, enableDoc ? stdenv.hostPlatform == stdenv.buildPlatform, gtk-doc
+, enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform, gobject-introspection
+, enableVapi ? stdenv.hostPlatform == stdenv.buildPlatform, vala }:
 
 stdenv.mkDerivation rec {
   pname = "libdazzle";
   version = "3.34.1";
 
-  outputs = [ "out" "dev" "devdoc" ];
+  outputs = [ "out" "dev" ] ++ stdenv.lib.optional enableDoc "devdoc";
   outputBin = "dev";
 
   src = fetchurl {
@@ -13,12 +16,15 @@ stdenv.mkDerivation rec {
     sha256 = "01cmcrd75b7ns7j2b4p6h7pv68vjhkcl9zbvzzx7pf4vknxir61x";
   };
 
-  nativeBuildInputs = [ ninja meson pkgconfig vala gobject-introspection libxml2 gtk-doc docbook_xsl docbook_xml_dtd_43 dbus xvfb_run glib ];
+  nativeBuildInputs = [ ninja meson pkgconfig gtk-doc docbook_xsl docbook_xml_dtd_43 dbus xvfb_run glib ]
+    ++ stdenv.lib.optional enableVapi vala
+    ++ stdenv.lib.optional enableIntrospection gobject-introspection;
   buildInputs = [ glib gtk3 ];
 
   mesonFlags = [
-    "-Denable_gtk_doc=true"
-  ];
+    "-Denable_gtk_doc=${if enableDoc then "true" else "false"}"
+  ] ++ stdenv.lib.optional (!enableIntrospection) "-Dwith_introspection=false"
+    ++ stdenv.lib.optional (!enableVapi) "-Dwith_vapi=false";
 
   doCheck = true;
 
