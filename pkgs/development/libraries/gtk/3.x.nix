@@ -40,6 +40,7 @@
 , cups ? null
 , AppKit
 , Cocoa
+, enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform
 }:
 
 assert cupsSupport -> cups != null;
@@ -92,7 +93,7 @@ stdenv.mkDerivation rec {
     "-Dtests=false"
     "-Dx11_backend=${if x11Support then "true" else "false"}"
     "-Dwayland_backend=${if waylandSupport then "true" else "false"}"
-  ];
+  ] ++ stdenv.lib.optional (!enableIntrospection) "-Dintrospection=false";
 
   # These are the defines that'd you'd get with --enable-debug=minimum (default).
   # See: https://developer.gnome.org/gtk3/stable/gtk-building.html#extra-configuration-options
@@ -121,7 +122,6 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [
     gettext
-    gobject-introspection
     makeWrapper
     meson
     ninja
@@ -131,6 +131,7 @@ stdenv.mkDerivation rec {
     glib
     gdk-pixbuf
   ] ++ optional waylandSupport wayland
+    ++ optional enableIntrospection gobject-introspection
     ++ setupHooks ++ optionals withGtkDoc [
     docbook_xml_dtd_43
     docbook_xsl
