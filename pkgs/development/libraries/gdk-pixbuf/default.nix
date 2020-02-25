@@ -11,23 +11,25 @@
 , libxslt
 , docbook-xsl-nons
 , docbook_xml_dtd_43
-, gtk-doc
 , glib
 , libtiff
 , libjpeg
 , libpng
 , gnome3
-, gobject-introspection
 , doCheck ? false
 , makeWrapper
 , fetchpatch
+, enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform, gobject-introspection
+, enableDoc ? stdenv.hostPlatform == stdenv.buildPlatform, gtk-doc
 }:
 
 stdenv.mkDerivation rec {
   pname = "gdk-pixbuf";
   version = "2.40.0";
 
-  outputs = [ "out" "dev" "man" "devdoc" "installedTests" ];
+  outputs = [ "out" "dev" "man" ]
+    ++ stdenv.lib.optional enableDoc "devdoc"
+    ++ stdenv.lib.optional (stdenv.hostPlatform == stdenv.buildPlatform) "installedTests";
 
   src = fetchurl {
     url = "mirror://gnome/sources/${pname}/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
@@ -56,13 +58,12 @@ stdenv.mkDerivation rec {
     libxslt
     docbook-xsl-nons
     docbook_xml_dtd_43
-    gtk-doc
-    gobject-introspection
     makeWrapper
     glib
   ] ++ stdenv.lib.optional stdenv.isDarwin [
     fixDarwinDylibNames
-  ];
+  ] ++ stdenv.lib.optional enableDoc gtk-doc
+    ++ stdenv.lib.optional enableIntrospection gobject-introspection;
 
   propagatedBuildInputs = [
     glib
@@ -72,9 +73,9 @@ stdenv.mkDerivation rec {
   ];
 
   mesonFlags = [
-    "-Ddocs=true"
+    "-Ddocs=${if enableDoc then "true" else "false"}"
     "-Dx11=false" # use gdk-pixbuf-xlib
-    "-Dgir=${if gobject-introspection != null then "true" else "false"}"
+    "-Dgir=${if enableIntrospection then "true" else "false"}"
     "-Dgio_sniffing=false"
   ];
 

@@ -1,8 +1,10 @@
 { stdenv, fetchurl, fetchpatch, pkgconfig, cairo, harfbuzz
-, libintl, gobject-introspection, darwin, fribidi, gnome3
-, gtk-doc, docbook_xsl, docbook_xml_dtd_43, makeFontsConf, freefont_ttf
+, libintl, darwin, fribidi, gnome3
+, docbook_xsl, docbook_xml_dtd_43, makeFontsConf, freefont_ttf
 , meson, ninja, glib
 , x11Support? !stdenv.isDarwin, libXft
+, enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform, gobject-introspection
+, enableDoc ? stdenv.hostPlatform == stdenv.buildPlatform && stdenv.isDarwin, gtk-doc
 }:
 
 with stdenv.lib;
@@ -19,13 +21,14 @@ in stdenv.mkDerivation rec {
   };
 
   # FIXME: docs fail on darwin
-  outputs = [ "bin" "dev" "out" ] ++ optional (!stdenv.isDarwin) "devdoc";
+  outputs = [ "bin" "dev" "out" ] ++ optional enableDoc "devdoc";
 
   nativeBuildInputs = [
     meson ninja
     glib # for glib-mkenum
-    pkgconfig gobject-introspection gtk-doc docbook_xsl docbook_xml_dtd_43
-  ];
+    pkgconfig docbook_xsl docbook_xml_dtd_43
+  ] ++ optional enableIntrospection gobject-introspection
+    ++ optional enableDoc gtk-doc;
   buildInputs = [
     fribidi
   ] ++ optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [
@@ -38,8 +41,8 @@ in stdenv.mkDerivation rec {
     optional x11Support libXft;
 
   mesonFlags = [
-    "-Dgtk_doc=${if stdenv.isDarwin then "false" else "true"}"
-  ];
+    "-Dgtk_doc=${if enableDoc then "true" else "false"}"
+  ] ++ optional (!enableIntrospection) "-Dintrospection=false";
 
   enableParallelBuilding = true;
 

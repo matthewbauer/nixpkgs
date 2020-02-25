@@ -1,11 +1,9 @@
 { stdenv
 , gettext
 , fetchurl
-, python3
 , pkg-config
 , gtk3
 , glib
-, gobject-introspection
 , wrapGAppsHook
 , itstool
 , libxml2
@@ -14,6 +12,8 @@
 , gdk-pixbuf
 , libxslt
 , gsettings-desktop-schemas
+, enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform, gobject-introspection
+, enablePython ? stdenv.hostPlatform == stdenv.buildPlatform, python3
 }:
 
 stdenv.mkDerivation rec {
@@ -25,6 +25,10 @@ stdenv.mkDerivation rec {
     sha256 = "023gx8rj51njn8fsb6ma5kz1irjpxi4js0n8rwy22inc4ysldd8r";
   };
 
+  configureFlags =
+       stdenv.lib.optional (!enablePython) "--disable-python"
+    ++ stdenv.lib.optional (!enableIntrospection) "--disable-introspection";
+
   nativeBuildInputs = [
     pkg-config
     gettext
@@ -33,19 +37,16 @@ stdenv.mkDerivation rec {
     docbook-xsl-nons
     libxslt
     libxml2
-    gobject-introspection
-  ];
+  ] ++ stdenv.lib.optional enableIntrospection gobject-introspection;
 
   buildInputs = [
     gtk3
     glib
     libxml2
-    python3
-    python3.pkgs.pygobject3
     gsettings-desktop-schemas
     gdk-pixbuf
     gnome3.adwaita-icon-theme
-  ];
+  ] ++ stdenv.lib.optionals enablePython [ python3 python3.pkgs.pygobject3 ];
 
   enableParallelBuilding = true;
 

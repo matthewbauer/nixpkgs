@@ -38,6 +38,8 @@
 , enableCdparanoia ? (!stdenv.isDarwin)
 , cdparanoia
 , glib
+, makeDocs ? stdenv.hostPlatform == stdenv.buildPlatform
+, enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform
 }:
 
 stdenv.mkDerivation rec {
@@ -63,9 +65,9 @@ stdenv.mkDerivation rec {
     gettext
     orc
     glib
-    gobject-introspection
-
-    # docs
+  ] ++ lib.optional enableIntrospection gobject-introspection
+    ++ lib.optionals makeDocs [
+    # documentation
     gtk-doc
     docbook_xsl
     docbook_xml_dtd_43
@@ -115,6 +117,7 @@ stdenv.mkDerivation rec {
     # In 1.18 they should switch to hotdoc, which should make this issue irrelevant.
     "-Dgtk_doc=disabled"
   ]
+  ++ lib.optional (!enableIntrospection) "-Dintrospection=disabled"
   ++ lib.optional (!enableX11) "-Dx11=disabled"
   # TODO How to disable Wayland?
   ++ lib.optional (!enableGl) "-Dgl=disabled"
