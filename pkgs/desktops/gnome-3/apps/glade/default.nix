@@ -1,7 +1,10 @@
-{ stdenv, intltool, fetchurl, python3
-, pkgconfig, gtk3, glib, gobject-introspection
+{ stdenv, intltool, fetchurl
+, pkgconfig, gtk3, glib
 , wrapGAppsHook, itstool, libxml2, docbook_xsl
-, gnome3, gdk-pixbuf, libxslt, gsettings-desktop-schemas }:
+, gnome3, gdk-pixbuf, libxslt, gsettings-desktop-schemas
+, enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform, gobject-introspection
+, enablePython ? stdenv.hostPlatform == stdenv.buildPlatform, python3
+ }:
 
 stdenv.mkDerivation rec {
   pname = "glade";
@@ -12,18 +15,22 @@ stdenv.mkDerivation rec {
     sha256 = "08bayb1rrpblxf6jhhbw2n3c425w170is4l94pampldl4kmsdvzd";
   };
 
+  configureFlags =
+       stdenv.lib.optional (!enablePython) "--disable-python"
+    ++ stdenv.lib.optional (!enableIntrospection) "--disable-introspection";
+
   passthru = {
     updateScript = gnome3.updateScript { packageName = "glade"; attrPath = "gnome3.glade"; };
   };
 
   nativeBuildInputs = [
-    pkgconfig intltool itstool wrapGAppsHook docbook_xsl libxslt libxml2 gobject-introspection
-  ];
+    pkgconfig intltool itstool wrapGAppsHook docbook_xsl libxslt libxml2
+  ] ++ stdenv.lib.optional enableIntrospection gobject-introspection;
   buildInputs = [
-    gtk3 glib libxml2 python3 python3.pkgs.pygobject3
+    gtk3 glib libxml2
     gsettings-desktop-schemas
     gdk-pixbuf gnome3.adwaita-icon-theme
-  ];
+  ] ++ stdenv.lib.optionals enablePython [ python3 python3.pkgs.pygobject3 ];
 
   enableParallelBuilding = true;
 

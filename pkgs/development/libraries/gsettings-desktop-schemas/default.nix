@@ -1,9 +1,10 @@
-{ stdenv, fetchurl, pkgconfig, glib, gobject-introspection
+{ stdenv, fetchurl, pkgconfig, glib
 , meson
 , ninja
 , python3
   # just for passthru
-, gnome3 }:
+, gnome3
+, enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform, gobject-introspection }:
 
 stdenv.mkDerivation rec {
   pname = "gsettings-desktop-schemas";
@@ -37,9 +38,10 @@ stdenv.mkDerivation rec {
     patchShebangs build-aux/meson/post-install.py
   '';
 
-  buildInputs = [ glib gobject-introspection ];
+  buildInputs = [ glib ];
 
-  nativeBuildInputs = [ pkgconfig python3 meson ninja glib ];
+  nativeBuildInputs = [ pkgconfig python3 meson ninja glib ]
+    ++ stdenv.lib.optional enableIntrospection gobject-introspection;
 
   meta = with stdenv.lib; {
     maintainers = gnome3.maintainers;

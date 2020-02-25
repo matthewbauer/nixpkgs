@@ -1,7 +1,9 @@
-{ stdenv, fetchurl, nixosTests, fixDarwinDylibNames, meson, ninja, pkgconfig, gettext, python3, libxml2, libxslt, docbook_xsl
-, docbook_xml_dtd_43, gtk-doc, glib, libtiff, libjpeg, libpng, libX11, gnome3
-, gobject-introspection, doCheck ? false, makeWrapper
+{ stdenv, fetchurl, nixosTests, fixDarwinDylibNames, meson, ninja, pkgconfig, gettext, python3, libxml2, libxslt, glib, docbook_xsl
+, docbook_xml_dtd_43, libtiff, libjpeg, libpng, libX11, gnome3
+, doCheck ? false, makeWrapper
 , fetchpatch
+, enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform, gobject-introspection
+, enableDoc ? stdenv.hostPlatform == stdenv.buildPlatform, gtk-doc
 }:
 
 let
@@ -26,7 +28,9 @@ in stdenv.mkDerivation rec {
     })
   ];
 
-  outputs = [ "out" "dev" "man" "devdoc" "installedTests" ];
+  outputs = [ "out" "dev" "man" ]
+    ++ stdenv.lib.optional enableDoc "devdoc"
+    ++ stdenv.lib.optional (stdenv.hostPlatform == stdenv.buildPlatform) "installedTests";
 
   setupHook = ./setup-hook.sh;
 
@@ -35,16 +39,17 @@ in stdenv.mkDerivation rec {
 
   nativeBuildInputs = [
     meson ninja pkgconfig gettext python3 libxml2 libxslt docbook_xsl docbook_xml_dtd_43
-    gtk-doc gobject-introspection makeWrapper glib
-  ]
-    ++ stdenv.lib.optional stdenv.isDarwin fixDarwinDylibNames;
+    makeWrapper glib
+  ] ++ stdenv.lib.optional stdenv.isDarwin fixDarwinDylibNames
+    ++ stdenv.lib.optional enableDoc gtk-doc
+    ++ stdenv.lib.optional enableIntrospection gobject-introspection;
 
   propagatedBuildInputs = [ glib libtiff libjpeg libpng ];
 
   mesonFlags = [
-    "-Ddocs=true"
+    "-Ddocs=${if enableDoc then "true" else "false"}"
     "-Dx11=true"
-    "-Dgir=${if gobject-introspection != null then "true" else "false"}"
+    "-Dgir=${if enableIntrospection then "true" else "false"}"
     "-Dgio_sniffing=false"
   ];
 

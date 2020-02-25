@@ -1,5 +1,7 @@
-{ stdenv, fetchurl, meson, ninja, python3, vala, libxslt, pkgconfig, glib, bash-completion, dbus, gnome3
-, libxml2, gtk-doc, docbook_xsl, docbook_xml_dtd_42 }:
+{ stdenv, fetchurl, meson, ninja, python3, libxslt, pkgconfig, glib, bash-completion, dbus, gnome3
+, libxml2, docbook_xsl, docbook_xml_dtd_42, fetchpatch
+, enableVapi ? stdenv.hostPlatform == stdenv.buildPlatform, vala
+, enableDoc ? stdenv.hostPlatform == stdenv.buildPlatform, gtk-doc }:
 
 let
   pname = "dconf";
@@ -19,15 +21,17 @@ stdenv.mkDerivation rec {
     patchShebangs tests/test-dconf.py
   '';
 
-  outputs = [ "out" "lib" "dev" "devdoc" ];
+  outputs = [ "out" "lib" "dev" ] ++ stdenv.lib.optional enableDoc "devdoc";
 
-  nativeBuildInputs = [ meson ninja vala pkgconfig python3 libxslt libxml2 glib gtk-doc docbook_xsl docbook_xml_dtd_42 ];
+  nativeBuildInputs = [ meson ninja pkgconfig python3 libxslt libxml2 glib docbook_xsl docbook_xml_dtd_42 ]
+    ++ stdenv.lib.optional enableVapi vala
+    ++ stdenv.lib.optional enableDoc gtk-doc;
   buildInputs = [ glib bash-completion dbus ];
 
   mesonFlags = [
     "--sysconfdir=/etc"
-    "-Dgtk_doc=true"
-  ];
+    "-Dgtk_doc=${if enableDoc then "true" else "false"}"
+  ] ++ stdenv.lib.optional (!enableVapi) "-Dvapi=false";
 
   doCheck = !stdenv.isAarch32 && !stdenv.isAarch64 && !stdenv.isDarwin;
 

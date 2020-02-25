@@ -1,15 +1,17 @@
-{ stdenv, fetchFromGitLab, meson, ninja, pkgconfig, gobject-introspection, vala
-, gtk-doc, docbook_xsl, docbook_xml_dtd_43
+{ stdenv, fetchFromGitLab, meson, ninja, pkgconfig, vala
+, docbook_xsl, docbook_xml_dtd_43
 , gtk3, gnome3
 , dbus, xvfb_run, libxml2
 , hicolor-icon-theme
+, enableDoc ? stdenv.hostPlatform == stdenv.buildPlatform, gtk-doc
+, enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform, gobject-introspection
 }:
 
 stdenv.mkDerivation rec {
   pname = "libhandy";
   version = "0.0.13";
 
-  outputs = [ "out" "dev" "devdoc" "glade" ];
+  outputs = [ "out" "dev" "glade" ] ++ stdenv.lib.optional enableDoc "devdoc";
   outputBin = "dev";
 
   src = fetchFromGitLab {
@@ -28,9 +30,9 @@ stdenv.mkDerivation rec {
   checkInputs = [ dbus xvfb_run hicolor-icon-theme ];
 
   mesonFlags = [
-    "-Dgtk_doc=true"
+    "-Dgtk_doc=${if enableDoc then "true" else "false"}"
     "-Dglade_catalog=enabled"
-    "-Dintrospection=enabled"
+    "-Dintrospection=${if enableIntrospection then "enabled" else "disabled"}"
   ];
 
   PKG_CONFIG_GLADEUI_2_0_MODULEDIR = "${placeholder "glade"}/lib/glade/modules";
