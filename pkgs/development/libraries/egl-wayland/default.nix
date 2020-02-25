@@ -53,12 +53,14 @@ in stdenv.mkDerivation rec {
 
   # Add missing include
   # https://github.com/NVIDIA/egl-wayland/pull/24
-  patches = [ ./eglmesaext.patch ];
+  patches = [ ./eglmesaext.patch ]
+    ++ stdenv.lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) ./find-wayland-scanner.patch;
 
   nativeBuildInputs = [
     meson
     ninja
     pkgconfig
+    wayland
   ];
 
   buildInputs = [
