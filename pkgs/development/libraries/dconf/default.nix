@@ -4,7 +4,6 @@
 , meson
 , ninja
 , python3
-, vala
 , libxslt
 , pkg-config
 , glib
@@ -12,16 +11,17 @@
 , dbus
 , gnome3
 , libxml2
-, gtk-doc
 , docbook-xsl-nons
 , docbook_xml_dtd_42
+, enableVapi ? stdenv.hostPlatform == stdenv.buildPlatform, vala
+, enableDoc ? stdenv.hostPlatform == stdenv.buildPlatform, gtk-doc
 }:
 
 stdenv.mkDerivation rec {
   pname = "dconf";
   version = "0.36.0";
 
-  outputs = [ "out" "lib" "dev" "devdoc" ];
+  outputs = [ "out" "lib" "dev" ] ++ stdenv.lib.optional enableDoc "devdoc";
 
   src = fetchurl {
     url = "mirror://gnome/sources/${pname}/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
@@ -40,16 +40,15 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [
     meson
     ninja
-    vala
     pkg-config
     python3
     libxslt
     libxml2
     glib
-    gtk-doc
     docbook-xsl-nons
     docbook_xml_dtd_42
-  ];
+  ] ++ stdenv.lib.optional enableVapi vala
+    ++ stdenv.lib.optional enableDoc gtk-doc;
 
   buildInputs = [
     glib
@@ -59,8 +58,8 @@ stdenv.mkDerivation rec {
 
   mesonFlags = [
     "--sysconfdir=/etc"
-    "-Dgtk_doc=true"
-  ];
+    "-Dgtk_doc=${if enableDoc then "true" else "false"}"
+  ] ++ stdenv.lib.optional (!enableVapi) "-Dvapi=false";
 
   doCheck = !stdenv.isAarch32 && !stdenv.isAarch64 && !stdenv.isDarwin;
 
