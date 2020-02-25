@@ -71,7 +71,11 @@ stdenv.mkDerivation {
         url = "https://gitlab.freedesktop.org/mesa/mesa/commit/b01524fff05eef66e8cd24f1c5aacefed4209f03.patch";
         sha256 = "1pszr6acx2xw469zq89n156p3bf3xf84qpbjw5fr1sj642lbyh7c";
       })
-    ];
+    ]
+      # We don’t provide a build pkg-config version, so we can’t
+      # lookup native wayland scanner properly. This patch just uses
+      # meson’s find_program.
+      ++ lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) ./wayland-scanner-without-pkgconfig.patch;
 
   outputs = [ "out" "dev" "drivers" "osmesa" ];
 
@@ -116,7 +120,7 @@ stdenv.mkDerivation {
     pkgconfig meson ninja
     intltool bison flex file
     python3Packages.python python3Packages.Mako
-  ];
+  ] ++ lib.optional (elem "wayland" eglPlatforms) wayland;
 
   propagatedBuildInputs = with xorg; [
     libXdamage libXxf86vm
