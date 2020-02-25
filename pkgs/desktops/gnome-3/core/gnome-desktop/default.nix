@@ -1,6 +1,7 @@
 { stdenv, fetchurl, fetchpatch, substituteAll, pkgconfig, libxslt, ninja, libX11, gnome3, gtk3, glib
 , gettext, libxml2, xkeyboard_config, isocodes, meson, wayland
-, libseccomp, systemd, bubblewrap, gobject-introspection, gtk-doc, docbook_xsl, gsettings-desktop-schemas }:
+, libseccomp, systemd, bubblewrap, gtk-doc, docbook_xsl, gsettings-desktop-schemas
+, enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform, gobject-introspection }:
 
 stdenv.mkDerivation rec {
   pname = "gnome-desktop";
@@ -14,9 +15,9 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [
-    pkgconfig meson ninja gettext libxslt libxml2 gobject-introspection
+    pkgconfig meson ninja gettext libxslt libxml2
     gtk-doc docbook_xsl glib
-  ];
+  ] ++ stdenv.lib.optional enableIntrospection gobject-introspection;
   buildInputs = [
     libX11 bubblewrap xkeyboard_config isocodes wayland
     gtk3 glib libseccomp systemd
@@ -38,12 +39,14 @@ stdenv.mkDerivation rec {
       url = "https://gitlab.gnome.org/GNOME/gnome-desktop/commit/450446b5353e8231edded4d5b5db90a67a9fa9b7.diff";
       sha256 = "07y989x7mbgn3rsm2qfdi8qkkc8i60k28hw87l744nlkydn78kq5";
     })
+
+    ./disable-introspection.patch
   ];
 
   mesonFlags = [
     "-Dgtk_doc=true"
     "-Ddesktop_docs=false"
-  ];
+  ] ++ stdenv.lib.optional (!enableIntrospection) "-Dintrospection=false";
 
   passthru = {
     updateScript = gnome3.updateScript {

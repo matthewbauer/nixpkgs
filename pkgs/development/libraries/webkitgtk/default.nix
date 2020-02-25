@@ -9,7 +9,6 @@
 , ninja
 , pkgconfig
 , gettext
-, gobject-introspection
 , libnotify
 , gnutls
 , libgcrypt
@@ -52,6 +51,7 @@
 , substituteAll
 , gnome3
 , glib
+, enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform, gobject-introspection
 }:
 
 assert enableGeoLocation -> geoclue2 != null;
@@ -91,7 +91,6 @@ stdenv.mkDerivation rec {
     bison
     cmake
     gettext
-    gobject-introspection
     gperf
     ninja
     perl
@@ -100,7 +99,7 @@ stdenv.mkDerivation rec {
     ruby
     glib # for gdbus-codegen
     wayland # for wayland-scanner
-  ];
+  ] ++ optional enableIntrospection gobject-introspection;
 
   buildInputs = [
     at-spi2-core
@@ -151,7 +150,7 @@ stdenv.mkDerivation rec {
   ];
 
   cmakeFlags = [
-    "-DENABLE_INTROSPECTION=ON"
+    "-DENABLE_INTROSPECTION=${if enableIntrospection then "ON" else "OFF"}"
     "-DPORT=GTK"
     "-DUSE_LIBHYPHEN=OFF"
     "-DUSE_WPE_RENDERER=OFF"

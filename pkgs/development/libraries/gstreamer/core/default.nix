@@ -5,7 +5,6 @@
 , ninja
 , pkgconfig
 , gettext
-, gobject-introspection
 , bison
 , flex
 , python3
@@ -21,13 +20,16 @@
 , gtk-doc
 , lib
 , CoreServices
+, enableDoc ? stdenv.hostPlatform == stdenv.buildPlatform
+, enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform
+, gobject-introspection
 }:
 
 stdenv.mkDerivation rec {
   pname = "gstreamer";
   version = "1.16.2";
 
-  outputs = [ "out" "dev" "devdoc" ];
+  outputs = [ "out" "dev" ] ++ stdenv.lib.optional enableDoc "devdoc";
   outputBin = "dev";
 
   src = fetchurl {
@@ -49,9 +51,9 @@ stdenv.mkDerivation rec {
     python3
     makeWrapper
     glib
+  ] ++ lib.optionals enableIntrospection [
     gobject-introspection
-    bash-completion
-
+  ] ++ lib.optionals enableDoc [
     # documentation
     gtk-doc
     docbook_xsl
@@ -75,7 +77,9 @@ stdenv.mkDerivation rec {
   mesonFlags = [
     "-Ddbghelp=disabled" # not needed as we already provide libunwind and libdw, and dbghelp is a fallback to those
     "-Dexamples=disabled" # requires many dependencies and probably not useful for our users
-  ] ++ lib.optionals stdenv.isDarwin [
+  ] ++ lib.optional (!enableIntrospection) "-Dintrospection=disabled"
+    ++ lib.optional (!enableDoc) "-Dgtk_doc=disabled"
+    ++ lib.optionals stdenv.isDarwin [
     # darwin.libunwind doesn't have pkgconfig definitions so meson doesn't detect it.
     "-Dlibunwind=disabled"
     "-Dlibdw=disabled"
