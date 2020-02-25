@@ -74,7 +74,11 @@ self = stdenv.mkDerivation {
     # Fix aarch64-darwin build, remove when upstreaam supports it out of the box.
     # See: https://gitlab.freedesktop.org/mesa/mesa/-/issues/1020
     ./aarch64-darwin.patch
-  ];
+  ]
+    # We don’t provide a build pkg-config version, so we can’t
+    # lookup native wayland scanner properly. This patch just uses
+    # meson’s find_program.
+    ++ lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) ./wayland-scanner-without-pkgconfig.patch;
 
   postPatch = ''
     substituteInPlace meson.build --replace \
