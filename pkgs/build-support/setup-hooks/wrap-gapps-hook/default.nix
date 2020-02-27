@@ -3,12 +3,11 @@
 , makeSetupHook
 , makeWrapper
 , gobject-introspection
-, gtk3
-, librsvg
 , dconf
 , callPackage
 , wrapGAppsHook
 , writeTextFile
+, targetPackages
 }:
 
 makeSetupHook {
@@ -20,16 +19,16 @@ makeSetupHook {
     # required for GSettings-based settings to be persisted.
     # Unfortunately, it also requires the user to have dconf
     # D-Bus service enabled globally (e.g. through a NixOS module).
-    dconf.lib
+    targetPackages.dconf.lib
   ] ++ [
     # TODO: remove this, packages should depend on GTK explicitly.
-    gtk3
+    targetPackages.gtk3
 
     # librsvg provides a module for gdk-pixbuf to allow rendering
     # SVG icons. Most icon themes are SVG-based and so are some
     # graphics in GTK (e.g. cross for closing window in window title bar)
     # so it is pretty much required for applications using GTK.
-    librsvg
+    targetPackages.librsvg
 
     # We use the wrapProgram function.
     makeWrapper
