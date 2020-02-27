@@ -38,9 +38,12 @@ stdenv.mkDerivation rec {
     glib
   ] ++ stdenv.lib.optional enableIntrospection gobject-introspection;
 
+  buildInputs = [
+    glib
+  ];
+
   propagatedBuildInputs = [
     gdk-pixbuf
-    glib
   ];
 
   passthru = {
