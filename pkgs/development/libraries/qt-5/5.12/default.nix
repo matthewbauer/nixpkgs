@@ -25,6 +25,8 @@ top-level attribute to `top-level/all-packages.nix`.
   developerBuild ? false,
   decryptSslTraffic ? false,
   debug ? false,
+
+  buildPackages, splicePackages, pkgs
 }:
 
 with stdenv.lib;
@@ -116,10 +118,18 @@ let
     }
     { inherit self srcs patches; };
 
-  addPackages = self: with self;
+  addPackages = self':
     let
+      self = splicePackages {
+        pkgsBuildBuild = buildPackages.buildPackages.qt512;
+        pkgsBuildHost = buildPackages.qt512;
+        pkgsBuildTarget = {};
+        pkgsHostHost = {};
+        pkgsHostTarget = pkgs.qt512;
+        pkgsTargetTarget = {};
+      };
       callPackage = self.newScope { inherit qtCompatVersion qtModule srcs; };
-    in {
+    in with self; {
 
       mkDerivationWith =
         import ../mkDerivation.nix
