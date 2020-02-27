@@ -14099,6 +14099,7 @@ in
       inherit gtk3;
       inherit (gst_all_1) gstreamer gst-plugins-base;
       inherit llvmPackages_5;
+      inherit buildPackages splicePackages pkgs;
     });
 
   libsForQt512 = recurseIntoAttrs (lib.makeScope qt512.newScope mkLibsForQt5);
