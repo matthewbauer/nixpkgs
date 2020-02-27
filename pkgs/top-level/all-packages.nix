@@ -23712,7 +23712,7 @@ in
     let
       mkPlasma5 = import ../desktops/plasma-5;
       attrs = {
-        inherit libsForQt5 lib fetchurl stdenv;
+        inherit libsForQt5 lib fetchurl;
         gconf = gnome2.GConf;
         inherit gsettings-desktop-schemas;
       };
