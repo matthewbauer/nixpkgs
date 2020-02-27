@@ -26,7 +26,8 @@ existing packages here and modify it as necessary.
 
 {
   libsForQt5, lib, fetchurl,
-  gconf, gsettings-desktop-schemas
+  gconf, gsettings-desktop-schemas,
+  stdenv
 }:
 
 let
@@ -101,7 +102,7 @@ let
       breeze-gtk = callPackage ./breeze-gtk.nix {};
       breeze-qt5 = callPackage ./breeze-qt5.nix {};
       breeze-grub = callPackage ./breeze-grub.nix {};
-      breeze-plymouth = callPackage ./breeze-plymouth {};
+      breeze-plymouth = callPackage ./breeze-plymouth { mkDerivation = stdenv.mkDerivation; };
       discover = callPackage ./discover.nix {};
       kactivitymanagerd = callPackage ./kactivitymanagerd.nix {};
       kde-cli-tools = callPackage ./kde-cli-tools.nix {};
