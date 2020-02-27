@@ -17619,6 +17619,7 @@ in
       inherit gtk3;
       inherit (gst_all_1) gstreamer gst-plugins-base;
       inherit llvmPackages_5;
+      inherit buildPackages splicePackages pkgs;
     });
 
   qt514 = recurseIntoAttrs (makeOverridable
