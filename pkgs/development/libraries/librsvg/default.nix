@@ -1,10 +1,14 @@
 { lib, stdenv, fetchurl, pkgconfig, glib, gdk-pixbuf, pango, cairo, libxml2
-, bzip2, libintl, darwin, rustc, cargo, gnome3
-, vala, gobject-introspection }:
+, bzip2, libintl, darwin, rustc, cargo, gnome3, rust
+, enableVala ? stdenv.hostPlatform == stdenv.buildPlatform, vala
+, enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform, gobject-introspection
+, buildPackages }:
 
 let
   pname = "librsvg";
   version = "2.48.0";
+
+  inherit (rust) toRustTarget;
 in
 stdenv.mkDerivation rec {
   name = "${pname}-${version}";
@@ -20,14 +24,26 @@ stdenv.mkDerivation rec {
 
   propagatedBuildInputs = [ glib gdk-pixbuf cairo ];
 
-  nativeBuildInputs = [ pkgconfig rustc cargo vala gobject-introspection ]
+  preConfigure = stdenv.lib.optionalString (stdenv.hostPlatform != stdenv.buildPlatform) ''
+    mkdir -p .cargo
+    cat >> .cargo/config <<'EOF'
+    [target."${toRustTarget stdenv.buildPlatform}"]
+    "linker" = "${buildPackages.stdenv.cc}/bin/${buildPackages.stdenv.cc.targetPrefix}cc"
+    [target."${toRustTarget stdenv.hostPlatform}"]
+    "linker" = "${stdenv.cc}/bin/${stdenv.cc.targetPrefix}cc"
+    EOF
+  '';
+
+  RUST_TARGET = toRustTarget stdenv.hostPlatform;
+
+  nativeBuildInputs = [ pkgconfig rustc cargo vala gdk-pixbuf ]
     ++ lib.optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [
       ApplicationServices
-    ]);
+    ]) ++ lib.optional (stdenv.hostPlatform == stdenv.buildPlatform) gobject-introspection;
 
   configureFlags = [
-    "--enable-introspection"
-    "--enable-vala"
+    (if enableIntrospection then "--enable-introspection" else "--disable-introspection")
+    (if enableVala then "--enable-vala" else "--disable-vala")
     "--enable-installed-tests"
     "--enable-always-build-tests"
   ] ++ stdenv.lib.optional stdenv.isDarwin "--disable-Bsymbolic";
@@ -63,7 +79,7 @@ stdenv.mkDerivation rec {
   doCheck = false; # fails 20 of 145 tests, very likely to be buggy
 
   # Merge gdkpixbuf and librsvg loaders
-  postInstall = ''
+  postInstall = lib.optionalString (stdenv.hostPlatform == stdenv.buildPlatform) ''
     mv $GDK_PIXBUF/loaders.cache $GDK_PIXBUF/loaders.cache.tmp
     cat ${gdk-pixbuf.out}/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache $GDK_PIXBUF/loaders.cache.tmp > $GDK_PIXBUF/loaders.cache
     rm $GDK_PIXBUF/loaders.cache.tmp
