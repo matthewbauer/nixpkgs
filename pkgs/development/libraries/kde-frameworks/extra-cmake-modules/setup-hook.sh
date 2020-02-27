@@ -110,3 +110,5 @@ ecmHostPathHook() {
     fi
 }
 addEnvHooks "$targetOffset" ecmHostPathHook
+
+addToSearchPath CMAKE_PREFIX_PATH @out@
