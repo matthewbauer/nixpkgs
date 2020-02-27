@@ -14,6 +14,8 @@ stdenv.mkDerivation rec {
   pname = "libnotify";
   version = "0.7.8";
 
+  outputs = [ "out" "bin" "dev" ];
+
   src = fetchurl {
     url = "mirror://gnome/sources/${pname}/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
     sha256 = "1371csx0n92g60b5dmai4mmzdnx8081mc3kcgc6a0xipcq5rw839";
@@ -42,11 +44,8 @@ stdenv.mkDerivation rec {
     glib
   ] ++ stdenv.lib.optional enableIntrospection gobject-introspection;
 
-  buildInputs = [
-    glib
-  ];
-
   propagatedBuildInputs = [
+    glib
     gdk-pixbuf
   ];
 
