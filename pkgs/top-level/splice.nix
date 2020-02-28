@@ -122,6 +122,18 @@ in
 {
   inherit splicePackages;
 
+  makeScopeSplice = attr: newScope: f:
+    lib.makeScope newScope (_: let
+      self = splicePackages {
+        pkgsBuildBuild = builtins.getAttr attr pkgs.buildPackages.buildPackages;
+        pkgsBuildHost = builtins.getAttr attr pkgs.buildPackages;
+        pkgsBuildTarget = {};
+        pkgsHostHost = {};
+        pkgsHostTarget = builtins.getAttr attr pkgs;
+        pkgsTargetTarget = {};
+      };
+    in f self);
+
   # We use `callPackage' to be able to omit function arguments that can be
   # obtained `pkgs` or `buildPackages` and their `xorg` package sets. Use
   # `newScope' for sets of packages in `pkgs' (see e.g. `gnome' below).
