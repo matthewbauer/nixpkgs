@@ -26,7 +26,7 @@ top-level attribute to `top-level/all-packages.nix`.
   decryptSslTraffic ? false,
   debug ? false,
 
-  buildPackages, splicePackages, pkgs
+  buildPackages, makeScopeSplice, pkgs
 }:
 
 with stdenv.lib;
@@ -123,16 +123,8 @@ let
     }
     { inherit self srcs patches; };
 
-  addPackages = self':
+  addPackages = self:
     let
-      self = splicePackages {
-        pkgsBuildBuild = buildPackages.buildPackages.qt512;
-        pkgsBuildHost = buildPackages.qt512;
-        pkgsBuildTarget = {};
-        pkgsHostHost = {};
-        pkgsHostTarget = pkgs.qt512;
-        pkgsTargetTarget = {};
-      };
       callPackage = self.newScope { inherit qtCompatVersion qtModule srcs; };
     in with self; {
 
@@ -209,6 +201,6 @@ let
       } ../hooks/wrap-qt-apps-hook.sh;
     };
 
-   self = makeScope newScope addPackages;
+   self = makeScopeSplice "qt512" newScope addPackages;
 
 in self
