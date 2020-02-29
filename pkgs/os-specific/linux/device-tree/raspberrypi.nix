@@ -2,7 +2,6 @@
 
 stdenvNoCC.mkDerivation {
   name = "raspberrypi-dtbs-${raspberrypifw.version}";
-  nativeBuildInputs = [ raspberrypifw ];
 
   # Rename DTBs so u-boot finds them, like linux-rpi.nix
   buildCommand = ''
