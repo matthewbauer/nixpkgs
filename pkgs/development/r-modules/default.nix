@@ -386,6 +386,11 @@ let
 
   packagesWithBuildInputs = {
     # sort -t '=' -k 2
+    gam = lib.optionals stdenv.isDarwin [ pkgs.libiconv ];
+    quantreg = lib.optionals stdenv.isDarwin [ pkgs.libiconv ];
+    rmutil = lib.optionals stdenv.isDarwin [ pkgs.libiconv ];
+    robustbase = lib.optionals stdenv.isDarwin [ pkgs.libiconv ];
+    SparseM = lib.optionals stdenv.isDarwin [ pkgs.libiconv ];
     svKomodo = [ pkgs.which ];
     nat = [ pkgs.which ];
     nat_templatebrains = [ pkgs.which ];
@@ -714,6 +719,15 @@ let
 
     curl = old.curl.overrideDerivation (attrs: {
       preConfigure = "patchShebangs configure";
+    });
+
+    ggbio = old.ggbio.overrideDerivation (attrs: {
+      patches = [
+        (pkgs.fetchpatch {
+          url = "https://github.com/tengfei/ggbio/commit/b04a9840cf5c0bd0514db2536f2e610bbd364727.patch";
+          sha256 = "blwtObyIYo1UBWz4nlmcJ8Nyw/n0qwmJrtwFWuoUyMg=";
+        })
+      ];
     });
 
     RcppArmadillo = old.RcppArmadillo.overrideDerivation (attrs: {

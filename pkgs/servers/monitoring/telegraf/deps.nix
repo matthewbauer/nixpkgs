@@ -932,8 +932,8 @@
     fetch = {
       type = "git";
       url = "https://github.com/safchain/ethtool";
-      rev =  "42ed695e3de80b9d695f280295fd7994639f209d";
-      sha256 = "0n5hkrzc1bh46nidcssx4539kvcmgj501v3kzh2pljpg27509daj";
+      rev =  "f459e2d136648a780248aba0fcac44740fe3b500";
+      sha256 = "0zhxq588vkicxy4cbjjd20l4n1pzpi7q734595y6zz4zljsp24cs";
     };
   }
   {
@@ -1013,8 +1013,8 @@
     fetch = {
       type = "git";
       url = "https://github.com/stretchr/testify";
-      rev =  "f35b8ab0b5a2cef36673838d662e249dd9c94686";
-      sha256 = "0dlszlshlxbmmfxj5hlwgv3r22x0y1af45gn1vd198nvvs3pnvfs";
+      rev =  "3ebf1ddaeb260c4b1ae502a01c7844fa8c1fa0e9";
+      sha256 = "09r89m1wy4cjv2nps1ykp00qjpi0531r07q3s34hr7m6njk4srkl";
     };
   }
   {

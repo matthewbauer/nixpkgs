@@ -54,7 +54,12 @@ let
 
         mathcompCorePkgs_1_9 mathcomp_1_9
         mathcomp-ssreflect_1_9 mathcomp-fingroup_1_9 mathcomp-algebra_1_9
-        mathcomp-solvable_1_9 mathcomp-field_1_9 mathcomp-character_1_9;
+        mathcomp-solvable_1_9 mathcomp-field_1_9 mathcomp-character_1_9
+
+        mathcompCorePkgs_1_10 mathcomp_1_10
+        mathcomp-ssreflect_1_10 mathcomp-fingroup_1_10 mathcomp-algebra_1_10
+        mathcomp-solvable_1_10 mathcomp-field_1_10 mathcomp-character_1_10
+        ;
       inherit (callPackage ../development/coq-modules/mathcomp/extra.nix { })
         mathcompExtraGen multinomials coqeal
 
@@ -131,7 +136,7 @@ in rec {
     version = "8.10.2";
   };
   coq_8_11 = callPackage ../applications/science/logic/coq {
-    version = "8.11+beta1";
+    version = "8.11.0";
   };
 
   coqPackages_8_5 = mkCoqPackages coq_8_5;

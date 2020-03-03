@@ -14,7 +14,7 @@ stdenv.mkDerivation rec {
   pname = "libnotify";
   version = "0.7.8";
 
-  outputs = [ "out" "bin" "dev" ];
+  outputs = [ "out" "dev" ];
 
   src = fetchurl {
     url = "mirror://gnome/sources/${pname}/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";

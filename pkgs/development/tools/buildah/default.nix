@@ -1,16 +1,16 @@
 { stdenv, buildGoPackage, fetchFromGitHub
-, gpgme, libgpgerror, lvm2, btrfs-progs, pkgconfig, ostree, libselinux, libseccomp
+, gpgme, libgpgerror, lvm2, btrfs-progs, pkg-config, libselinux, libseccomp
 }:
 
 buildGoPackage rec {
   pname = "buildah";
-  version = "1.13.1";
+  version = "1.14.1";
 
   src = fetchFromGitHub {
     owner  = "containers";
     repo   = "buildah";
     rev    = "v${version}";
-    sha256 = "0swhpdr970ik6fhvmj45r84lsp1n6rxm0bgv9i1lvrxy1mdv7r9x";
+    sha256 = "12x80g83xjcjiafcxyqrhg952nq5w91df35d7lnvc2vz8vvpkyx1";
   };
 
   outputs = [ "bin" "man" "out" ];
@@ -18,8 +18,8 @@ buildGoPackage rec {
   goPackagePath = "github.com/containers/buildah";
   excludedPackages = [ "tests" ];
 
-  nativeBuildInputs = [ pkgconfig ];
-  buildInputs = [ gpgme libgpgerror lvm2 btrfs-progs ostree libselinux libseccomp ];
+  nativeBuildInputs = [ pkg-config ];
+  buildInputs = [ gpgme libgpgerror lvm2 btrfs-progs libselinux libseccomp ];
 
   patches = [ ./disable-go-module-mode.patch ];
 
@@ -36,7 +36,7 @@ buildGoPackage rec {
 
   meta = with stdenv.lib; {
     description = "A tool which facilitates building OCI images";
-    homepage = "https://github.com/containers/buildah";
+    homepage = "https://buildah.io/";
     changelog = "https://github.com/containers/buildah/releases/tag/v${version}";
     license = licenses.asl20;
     maintainers = with maintainers; [ Profpatsch vdemeester saschagrunert ];

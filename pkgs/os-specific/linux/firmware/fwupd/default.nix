@@ -1,7 +1,8 @@
-# Updating? Keep $out/etc synchronized with passthru.filesInstalledToEtc
+# Updating? Keep $out/etc synchronized with passthru keys
 
 { stdenv
 , fetchurl
+, fetchpatch
 , substituteAll
 , gtk-doc
 , pkgconfig
@@ -87,13 +88,16 @@ in
 
 stdenv.mkDerivation rec {
   pname = "fwupd";
-  version = "1.3.3";
+  version = "1.3.8";
 
   src = fetchurl {
     url = "https://people.freedesktop.org/~hughsient/releases/fwupd-${version}.tar.xz";
-    sha256 = "0nqzqvx8nzflhb4kzvkdcv7kixb50vh6h21kpkd7pjxp942ndzql";
+    sha256 = "14hbwp3263n4z61ws62vj50kh9a89fz2l29hyv7f1xlas4zz6j8x";
   };
 
+  # libfwupd goes to lib
+  # daemon, plug-ins and libfwupdplugin go to out
+  # CLI programs go to out
   outputs = [ "out" "lib" "dev" "devdoc" "man" "installedTests" ];
 
   nativeBuildInputs = [
@@ -148,9 +152,9 @@ stdenv.mkDerivation rec {
     ./fix-paths.patch
     ./add-option-for-installation-sysconfdir.patch
 
-    # do not require which
-    # https://github.com/fwupd/fwupd/pull/1568
-    ./no-which.patch
+    # install plug-ins and libfwupdplugin to out,
+    # they are not really part of the library
+    ./install-fwupdplugin-to-out.patch
 
     # installed tests are installed to different output
     # we also cannot have fwupd-tests.conf in $out/etc since it would form a cycle
@@ -159,11 +163,18 @@ stdenv.mkDerivation rec {
       # needs a different set of modules than po/make-images
       inherit installedTestsPython;
     })
+
+    # Find the correct lds and crt name when specifying -Defi_ldsdir
+    (fetchpatch {
+      url = "https://github.com/fwupd/fwupd/commit/52cda3db9ca9ab4faf99310edf29df926a713b5c.patch";
+      sha256 = "0hsj79dzamys7ryz33iwxwd58kb1h7gaw637whm0nkvzkqq6rm16";
+    })
   ];
 
   postPatch = ''
     patchShebangs \
-      libfwupd/generate-version-script.py \
+      contrib/get-version.py \
+      contrib/generate-version-script.py \
       meson_post_install.sh \
       po/make-images \
       po/make-images.sh \
@@ -172,11 +183,6 @@ stdenv.mkDerivation rec {
     # we cannot use placeholder in substituteAll
     # https://github.com/NixOS/nix/issues/1846
     substituteInPlace data/installed-tests/meson.build --subst-var installedTests
-
-    # install plug-ins to out, they are not really part of the library
-    substituteInPlace meson.build \
-      --replace "plugin_dir = join_paths(libdir, 'fwupd-plugins-3')" \
-                "plugin_dir = join_paths('${placeholder "out"}', 'fwupd_plugins-3')"
 
     substituteInPlace data/meson.build --replace \
       "install_dir: systemd.get_pkgconfig_variable('systemdshutdowndir')" \
@@ -211,7 +217,12 @@ stdenv.mkDerivation rec {
     "--localstatedir=/var"
     "--sysconfdir=/etc"
     "-Dsysconfdir_install=${placeholder "out"}/etc"
+
+    # We do not want to place the daemon into lib (cyclic reference)
     "--libexecdir=${placeholder "out"}/libexec"
+    # Our builder only adds $lib/lib to rpath but some things link
+    # against libfwupdplugin which is in $out/lib.
+    "-Dc_link_args=-Wl,-rpath,${placeholder "out"}/lib"
   ] ++ stdenv.lib.optionals (!haveDell) [
     "-Dplugin_dell=false"
     "-Dplugin_synaptics=false"
@@ -268,6 +279,12 @@ stdenv.mkDerivation rec {
       "pki/fwupd-metadata/GPG-KEY-Linux-Foundation-Metadata"
       "pki/fwupd-metadata/GPG-KEY-Linux-Vendor-Firmware-Service"
       "pki/fwupd-metadata/LVFS-CA.pem"
+    ];
+
+    # BlacklistPlugins key in fwupd/daemon.conf
+    defaultBlacklistedPlugins = [
+      "test"
+      "invalid"
     ];
 
     tests = {

@@ -151,7 +151,7 @@ let
       publicKey = mkOption {
         example = "xTIBA5rboUvnH4htodjb6e697QjLERt1NAB4mZqp8Dg=";
         type = types.str;
-        description = "The base64 public key the peer.";
+        description = "The base64 public key of the peer.";
       };
 
       presharedKey = mkOption {
@@ -435,7 +435,7 @@ in
           message = "networking.wireguard.interfaces.${interfaceName} peer «${peer.publicKey}» has both presharedKey and presharedKeyFile set, but only one can be used.";
         }) all_peers;
 
-    boot.extraModulePackages = [ kernel.wireguard ];
+    boot.extraModulePackages = optional (versionOlder kernel.kernel.version "5.6") kernel.wireguard;
     environment.systemPackages = [ pkgs.wireguard-tools ];
 
     systemd.services =

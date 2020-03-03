@@ -39,7 +39,7 @@ let
 
         entrypoint = mkOption {
           type = with types; nullOr str;
-          description = "Overwrite the default entrypoint of the image.";
+          description = "Override the default entrypoint of the image.";
           default = null;
           example = "/bin/my-app";
         };
@@ -145,7 +145,7 @@ let
 
             Note that this is a list of <literal>"src:dst"</literal> strings to
             allow for <literal>src</literal> to refer to
-            <literal>/nix/store</literal> paths, which would difficult with an
+            <literal>/nix/store</literal> paths, which would be difficult with an
             attribute set.  There are also a variety of mount options available
             as a third field; please refer to the
             <link xlink:href="https://docs.docker.com/engine/reference/run/#volume-shared-filesystems">
@@ -192,16 +192,34 @@ let
             ["--network=host"]
           '';
         };
+
+        autoStart = mkOption {
+          type = types.bool;
+          default = true;
+          description = ''
+            When enabled, the container is automatically started on boot.
+            If this option is set to false, the container has to be started on-demand via its service.
+          '';
+        };
       };
     };
 
   mkService = name: container: let
     mkAfter = map (x: "docker-${x}.service") container.dependsOn;
   in rec {
-    wantedBy = [ "multi-user.target" ];
+    wantedBy = [] ++ optional (container.autoStart) "multi-user.target";
     after = [ "docker.service" "docker.socket" ] ++ mkAfter;
     requires = after;
+    path = [ pkgs.docker ];
 
+    preStart = ''
+      docker rm -f ${name} || true
+      ${optionalString (container.imageFile != null) ''
+        docker load -i ${container.imageFile}
+        ''}
+      '';
+    postStop = "docker rm -f ${name} || true";
+        
     serviceConfig = {
       ExecStart = concatStringsSep " \\\n  " ([
         "${pkgs.docker}/bin/docker run"
@@ -220,13 +238,7 @@ let
         ++ map escapeShellArg container.cmd
       );
 
-      ExecStartPre = ["-${pkgs.docker}/bin/docker rm -f ${name}"
-                      "-${pkgs.docker}/bin/docker image prune -f"] ++
-        (optional (container.imageFile != null)
-                ["${pkgs.docker}/bin/docker load -i ${container.imageFile}"]);
-
-      ExecStop = ''${pkgs.bash}/bin/sh -c "[ $SERVICE_RESULT = success ] || ${pkgs.docker}/bin/docker stop ${name}"'';
-      ExecStopPost = "-${pkgs.docker}/bin/docker rm -f ${name}";
+      ExecStop = ''${pkgs.bash}/bin/sh -c "[ $SERVICE_RESULT = success ] || docker stop ${name}"'';
 
       ### There is no generalized way of supporting `reload` for docker
       ### containers. Some containers may respond well to SIGHUP sent to their

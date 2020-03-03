@@ -1,5 +1,6 @@
 { buildPythonPackage, lib, fetchgit, isPy3k
 , git, makeWrapper, sassc, hyperkitty, postorius, whoosh
+, django
 }:
 
 buildPythonPackage rec {
@@ -34,6 +35,8 @@ buildPythonPackage rec {
   meta = with lib; {
     description = "Django project for Mailman 3 web interface";
     license = licenses.gpl3;
-    maintainers = with maintainers; [ qyliss ];
+    maintainers = with maintainers; [ peti qyliss ];
+    # mailman-web requires django < 2.2
+    broken = versionOlder "2.2" django.version;
   };
 }

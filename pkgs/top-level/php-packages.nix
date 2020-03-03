@@ -201,13 +201,13 @@ let
 
   maxminddb = buildPecl rec {
     pname = "maxminddb";
-    version = "1.5.0";
+    version = "1.6.0";
 
     src = pkgs.fetchFromGitHub {
       owner = "maxmind";
       repo = "MaxMind-DB-Reader-php";
       rev = "v${version}";
-      sha256 = "1ilgpx36rgihjr8s4bvkbms5hl6xy7mymna3ym2bl4lb15vkr0sm";
+      sha256 = "0sa943ij9pgz55aik93lllb8lh063bvr66ibn77p3y3p41vdiabz";
     };
 
     buildInputs = [ pkgs.libmaxminddb ];
@@ -287,15 +287,27 @@ let
     meta.broken = isPhp74; # Build error
   };
 
+  pdo_oci = buildPecl rec {
+    inherit (php) src version;
+
+    pname = "pdo_oci";
+    sourceRoot = "php-${version}/ext/pdo_oci";
+
+    buildInputs = [ pkgs.oracle-instantclient ];
+    configureFlags = [ "--with-pdo-oci=instantclient,${pkgs.oracle-instantclient.lib}/lib" ];
+
+    postPatch = ''
+      sed -i -e 's|OCISDKMANINC=`.*$|OCISDKMANINC="${pkgs.oracle-instantclient.dev}/include"|' config.m4
+    '';
+  };
+
   pdo_sqlsrv = buildPecl {
-    version = "5.6.1";
+    version = "5.8.0";
     pname = "pdo_sqlsrv";
 
-    sha256 = "02ill1iqffa5fha9iz4y91823scml24ikfk8pn90jyycfwv07x6a";
+    sha256 = "0z4vbyd851b4jr6p69l2ylk91iihndsm2qjb429pxcv8g6dqzqll";
 
-    buildInputs = [ pkgs.unixODBC ];
-
-    meta.broken = isPhp74; # Build error
+    buildInputs = [ pkgs.unixODBC ] ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [ pkgs.libiconv ];
   };
 
   php-cs-fixer = mkDerivation rec {
@@ -614,14 +626,12 @@ let
   };
 
   sqlsrv = buildPecl {
-    version = "5.6.1";
+    version = "5.8.0";
     pname = "sqlsrv";
 
-    sha256 = "0ial621zxn9zvjh7k1h755sm2lc9aafc389yxksqcxcmm7kqmd0a";
+    sha256 = "1kv4krk1w4hri99b0sdgwgy9c4y0yh217wx2y3irhkfi46kdrjnw";
 
-    buildInputs = [ pkgs.unixODBC ];
-
-    meta.broken = isPhp74; # Build error
+    buildInputs = [ pkgs.unixODBC ] ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [ pkgs.libiconv ];
   };
 
   v8 = buildPecl {

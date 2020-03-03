@@ -7,6 +7,11 @@ let
   };
 in
 nodePackages // {
+  "@angular/cli" = nodePackages."@angular/cli".override {
+    prePatch = ''
+      export NG_CLI_ANALYTICS=false
+    '';
+  };
   bower2nix = nodePackages.bower2nix.override {
     buildInputs = [ pkgs.makeWrapper ];
     postInstall = ''
@@ -56,6 +61,10 @@ nodePackages // {
   git-ssb = nodePackages.git-ssb.override {
     buildInputs = [ nodePackages.node-gyp-build ];
   };
+
+  insect = nodePackages.insect.override (drv: {
+    nativeBuildInputs = drv.nativeBuildInputs or [] ++ [ pkgs.psc-package pkgs.purescript nodePackages.pulp ];
+  });
 
   node-inspector = nodePackages.node-inspector.override {
     buildInputs = [ nodePackages.node-pre-gyp ];
