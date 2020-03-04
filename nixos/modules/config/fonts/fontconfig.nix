@@ -60,10 +60,12 @@ let
       <fontconfig>
         <!-- Font directories -->
         ${concatStringsSep "\n" (map (font: "<dir>${font}</dir>") config.fonts.fonts)}
+        ${optionalString (pkgs.stdenv.hostPlatform == pkgs.stdenv.buildPlatform) ''
         <!-- Pre-generated font caches -->
         <cachedir>${cache}</cachedir>
         ${optionalString (pkgs.stdenv.isx86_64 && cfg.cache32Bit) ''
           <cachedir>${cache32}</cachedir>
+        ''}
         ''}
       </fontconfig>
     '';
