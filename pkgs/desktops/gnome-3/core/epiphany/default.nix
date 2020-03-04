@@ -31,6 +31,7 @@
 , libdazzle
 , libhandy
 , buildPackages
+, bash
 }:
 
 stdenv.mkDerivation rec {
