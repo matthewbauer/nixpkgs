@@ -135,12 +135,6 @@ stdenv.mkDerivation rec {
                     experimentalFpMbStatsSupport ||
                     experimentalEmulateHardwareSupport) "experimental")
   ] ++ optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
-    #"--extra-cflags="
-    #"--extra-cxxflags="
-    #"--prefix="
-    #"--libc="
-    #"--libdir="
-    "--enable-external-build"
     # libvpx darwin targets include darwin version (ie. ARCH-darwinXX-gcc, XX being the darwin version)
     # See all_platforms: https://github.com/webmproject/libvpx/blob/master/configure
     # Darwin versions: 10.4=8, 10.5=9, 10.6=10, 10.7=11, 10.8=12, 10.9=13, 10.10=14
