@@ -213,24 +213,9 @@ preInstall() {
 
 postInstall() {
     # Move runtime libraries to $lib.
-    if [[ -n "$targetConfig" && -d "$out/$targetConfig/lib" && -n "$(ls -A $out/$targetConfig/lib)" ]]; then
-        moveToOutput "$targetConfig/lib/lib*.so*" "$lib"
-        moveToOutput "$targetConfig/lib/lib*.la" "$lib"
-        moveToOutput "$targetConfig/lib/lib*.dylib" "$lib"
-        mv "$lib/$targetConfig"/lib/* "$lib/lib/"
-        rmdir -p --ignore-fail-on-non-empty "$lib/$targetConfig/lib" || :
-    elif [[ -n "$targetConfig" && -d "$out/$targetConfig/lib64" && -n "$(ls -A $out/$targetConfig/lib64)" ]]; then
-        moveToOutput "$targetConfig/lib64/lib*.so*" "$lib"
-        moveToOutput "$targetConfig/lib64/lib*.la" "$lib"
-        moveToOutput "$targetConfig/lib64/lib*.dylib" "$lib"
-        mv "$lib/$targetConfig"/lib64/* "$lib/lib/"
-        rmdir -p --ignore-fail-on-non-empty "$lib/$targetConfig/lib64" || :
-    else
-        moveToOutput "lib/lib*.so*" "$lib"
-        moveToOutput "lib/lib*.la"  "$lib"
-        moveToOutput "lib/lib*.dylib" "$lib"
-    fi
-
+    moveToOutput "lib/lib*.so*" "$lib"
+    moveToOutput "lib/lib*.la"  "$lib"
+    moveToOutput "lib/lib*.dylib" "$lib"
     moveToOutput "share/gcc-*/python" "$lib"
 
     for i in "$lib"/lib/*.{la,py}; do
