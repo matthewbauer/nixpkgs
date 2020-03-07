@@ -2,7 +2,6 @@
 , fetchFromGitHub
 , cmake
 , glib
-, gobject-introspection
 , icu
 , libxml2
 , ninja
@@ -10,7 +9,8 @@
 , pkgconfig
 , python3
 , tzdata
-, vala
+, enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform, gobject-introspection
+, enableVapi ? stdenv.hostPlatform == stdenv.buildPlatform, vala
 }:
 
 stdenv.mkDerivation rec {
@@ -28,16 +28,15 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [
     cmake
-    gobject-introspection
     ninja
     perl
     pkgconfig
-    vala
     # Docs building fails:
     # https://github.com/NixOS/nixpkgs/pull/67204
     # previously with https://github.com/NixOS/nixpkgs/pull/61657#issuecomment-495579489
     # gtk-doc docbook_xsl docbook_xml_dtd_43 # for docs
-  ];
+  ] ++ stdenv.lib.optional enableIntrospection gobject-introspection
+    ++ stdenv.lib.optional enableVapi vala;
   installCheckInputs = [
     # running libical-glib tests
     (python3.withPackages (pkgs: with pkgs; [
@@ -52,10 +51,11 @@ stdenv.mkDerivation rec {
   ];
 
   cmakeFlags = [
-    "-DGOBJECT_INTROSPECTION=True"
+    "-DGOBJECT_INTROSPECTION=${if enableIntrospection then "True" else "False"}"
     "-DENABLE_GTK_DOC=False"
-    "-DICAL_GLIB_VAPI=True"
-  ];
+    "-DICAL_GLIB_VAPI=${if enableVapi then "True" else "False"}"
+  ] # see https://github.com/libical/libical/issues/394
+    ++ stdenv.lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) "-DICAL_GLIB=False";
 
   patches = [
     # Will appear in 3.1.0
