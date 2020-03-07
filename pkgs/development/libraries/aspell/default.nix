@@ -30,11 +30,13 @@ stdenv.mkDerivation rec {
   '';
 
   nativeBuildInputs = [ perl ];
-  buildInputs = [ perl ];
+  # buildInputs = [ (stdenv.lib.getBin perl) ];
 
   doCheck = true;
 
   preConfigure = ''
+    addToSearchPath HOST_PATH ${perl.out}/bin
+
     configureFlagsArray=(
       --enable-pkglibdir=$out/lib/aspell
       --enable-pkgdatadir=$out/lib/aspell
