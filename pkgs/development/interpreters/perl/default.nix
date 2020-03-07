@@ -159,8 +159,6 @@ let
         # into $dev/lib/perl5/cross_perl/${version}.
         wrapProgram $dev/bin/perl --prefix PERL5LIB : \
           "$dev/lib/perl5/cross_perl/${version}:$out/lib/perl5/${version}:$out/lib/perl5/${version}/$runtimeArch"
-
-        $STRIP $dev/bin/perl
       ''; # */
 
     meta = {
