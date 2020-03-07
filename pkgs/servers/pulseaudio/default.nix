@@ -93,7 +93,8 @@ stdenv.mkDerivation rec {
     ]
     ++ lib.optional (jackaudioSupport && !libOnly) "--enable-jack"
     ++ lib.optional stdenv.isDarwin "--with-mac-sysroot=/"
-    ++ lib.optional (stdenv.isLinux && useSystemd) "--with-systemduserunitdir=${placeholder "out"}/lib/systemd/user";
+    ++ lib.optional (stdenv.isLinux && useSystemd) "--with-systemduserunitdir=${placeholder "out"}/lib/systemd/user"
+    ++ lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) "--disable-gsettings";
 
   enableParallelBuilding = true;
 
@@ -119,9 +120,11 @@ stdenv.mkDerivation rec {
   '';
 
   preFixup = lib.optionalString stdenv.isLinux ''
-    wrapProgram $out/libexec/pulse/gsettings-helper \
-     --prefix XDG_DATA_DIRS : "$out/share/gsettings-schemas/${name}" \
-     --prefix GIO_EXTRA_MODULES : "${lib.getLib dconf}/lib/gio/modules"
+    if [ -f $out/libexec/pulse/gsettings-helper ]; then
+      wrapProgram $out/libexec/pulse/gsettings-helper \
+       --prefix XDG_DATA_DIRS : "$out/share/gsettings-schemas/${name}" \
+       --prefix GIO_EXTRA_MODULES : "${lib.getLib dconf}/lib/gio/modules"
+    fi
   '';
 
   meta = {
