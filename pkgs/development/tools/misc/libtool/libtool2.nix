@@ -26,9 +26,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  # Don't run the native `strip' when cross-compiling.  This breaks at least
-  # with `.a' files for MinGW.
-  dontStrip = stdenv.hostPlatform != stdenv.buildPlatform;
+  dontStrip = false;
 
   meta = with stdenv.lib; {
     description = "GNU Libtool, a generic library support script";
