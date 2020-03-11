@@ -145,13 +145,13 @@ stdenv.mkDerivation rec {
       (ifMinVer "4.2" (enableFeature libaomSupport "libaom"))
       (disDarwinOrArmFix (ifMinVer "0.9" "--enable-libpulse") "0.9" "--disable-libpulse")
       (ifMinVer "2.5" (if sdlSupport && reqMin "3.2" then "--enable-sdl2" else if sdlSupport then "--enable-sdl" else null)) # autodetected before 2.5, SDL1 support removed in 3.2 for SDL2
-      (ifMinVer "1.2" "--enable-libsoxr")
-      "--enable-libx264"
+      (ifMinVer "1.2" (if (soxr != null) then "--enable-libsoxr" else null))
+      (if (x264 != null) then "--enable-libx264" else null)
       "--enable-libxvid"
       "--enable-zlib"
-      (ifMinVer "2.8" "--enable-libopus")
+      (ifMinVer "2.8" (if (libopus != null) then "--enable-libopus" else null))
       "--enable-libspeex"
-      (ifMinVer "2.8" "--enable-libx265")
+      (ifMinVer "2.8" (if (x265 != null) then "--enable-libx265" else null))
       (ifMinVer "4.2" (enableFeature (dav1d != null) "libdav1d"))
     # Developer flags
       (enableFeature debugDeveloper "debug")
