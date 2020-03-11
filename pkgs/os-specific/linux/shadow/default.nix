@@ -1,6 +1,7 @@
 { stdenv, fetchpatch, fetchFromGitHub, autoreconfHook, libxslt, libxml2
 , docbook_xml_dtd_45, docbook_xsl, itstool, flex, bison
 , pam ? null, glibcCross ? null
+, bash
 }:
 
 let
@@ -38,7 +39,10 @@ stdenv.mkDerivation rec {
       # Obtain XML resources from XML catalog (patch adapted from gtk-doc)
       ./respect-xml-catalog-files-var.patch
       dots_in_usernames
+      ./runtime-shell.patch
     ];
+
+  RUNTIME_SHELL = "${bash}/bin/sh";
 
   # The nix daemon often forbids even creating set[ug]id files.
   postPatch =
