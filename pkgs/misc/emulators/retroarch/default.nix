@@ -40,6 +40,8 @@ in stdenv.mkDerivation rec {
     rev = "v${version}";
   };
 
+  patches = [ ./armv6-find-buildbot-server.patch ];
+
   nativeBuildInputs = [ pkgconfig wayland ]
                       ++ optional withVulkan makeWrapper;
 
