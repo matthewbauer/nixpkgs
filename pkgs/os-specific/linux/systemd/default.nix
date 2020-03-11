@@ -34,6 +34,10 @@ in stdenv.mkDerivation {
   version = "245.3";
   pname = "systemd";
 
+  # extra suffix adds more characters than linux can handle for
+  # kernel.core_pattern (127)
+  dontAddHostSuffix = true;
+
   # When updating, use https://github.com/systemd/systemd-stable tree, not the development one!
   # Also fresh patches should be cherry-picked from that tree to our current one.
   src = fetchFromGitHub {

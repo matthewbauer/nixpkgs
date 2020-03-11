@@ -103,7 +103,7 @@ in rec {
                                       ++ depsHostHost ++ depsHostHostPropagated
                                       ++ buildInputs ++ propagatedBuildInputs
                                       ++ depsTargetTarget ++ depsTargetTargetPropagated) == 0;
-      dontAddHostSuffix = attrs ? outputHash && !noNonNativeDeps || (stdenv.noCC or false);
+      dontAddHostSuffix = attrs ? outputHash && !noNonNativeDeps || (stdenv.noCC or false) || (attrs.dontAddHostSuffix or false);
       supportedHardeningFlags = [ "fortify" "stackprotector" "pie" "pic" "strictoverflow" "format" "relro" "bindnow" ];
       defaultHardeningFlags = if stdenv.hostPlatform.isMusl
                               then supportedHardeningFlags
