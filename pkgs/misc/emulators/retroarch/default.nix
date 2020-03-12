@@ -17,6 +17,7 @@
 , fetchurl
 , wayland
 , libxkbcommon
+, withX11 ? true
 }:
 
 with lib;
@@ -58,7 +59,8 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  configureFlags = lib.optionals stdenv.isLinux [ "--enable-kms" "--enable-egl" ];
+  configureFlags = lib.optionals stdenv.isLinux [ "--enable-kms" "--enable-egl" ]
+                ++ lib.optional (!withX11) "--disable-x11";
 
   postInstall = ''
     cp -r ${fetchFromGitHub {
