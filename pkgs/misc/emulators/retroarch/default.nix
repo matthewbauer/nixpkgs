@@ -40,6 +40,19 @@ in stdenv.mkDerivation rec {
     rev = "v${version}";
   };
 
+  postUnpack = ''
+    cp -r ${fetchFromGitHub {
+      owner = "libretro";
+      repo = "retroarch-assets";
+      rev = "00dd598cb363838296582147da1c59e428d29068";
+      sha256 = "0f27cxljycs30q4ib70fpqa2bhpmi88x3za6wci7g6k925kj297l";
+    }} source/media/assets
+  '';
+
+  patches = [
+    ./lookup-prefix-assets.patch
+  ];
+
   nativeBuildInputs = [ pkgconfig wayland ]
                       ++ optional withVulkan makeWrapper;
 
@@ -58,7 +71,14 @@ in stdenv.mkDerivation rec {
 
   configureFlags = if stdenv.isLinux then [ "--enable-kms" ] else "";
 
-  postInstall = optionalString withVulkan ''
+  postInstall = ''
+    cp -r ${fetchFromGitHub {
+      owner = "libretro";
+      repo = "retroarch-joypad-autoconfig";
+      rev = "652bfed517970427b2b65ebe7da49ebaa8397617";
+      sha256 = "179rq687b82nbgxyazmggal1a84104jx4hp9jprd9vfmalq9442v";
+    }} $out/share/retroarch/autoconfig
+  '' + optionalString withVulkan ''
     wrapProgram $out/bin/retroarch --prefix LD_LIBRARY_PATH ':' ${vulkan-loader}/lib
   '' + optionalString stdenv.targetPlatform.isDarwin ''
     EXECUTABLE_NAME=RetroArch
