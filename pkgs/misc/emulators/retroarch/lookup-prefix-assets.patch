@@ -1,0 +1,41 @@
+diff --git a/Makefile b/Makefile
+index bc0056be1a..d740ff47d1 100644
+--- a/Makefile
++++ b/Makefile
+@@ -26,6 +26,7 @@ DEF_FLAGS :=
+ ASFLAGS :=
+ DEFINES := -DHAVE_CONFIG_H -DRARCH_INTERNAL -D_FILE_OFFSET_BITS=64
+ DEFINES += -DGLOBAL_CONFIG_DIR='"$(GLOBAL_CONFIG_DIR)"'
++DEFINES += -DPREFIX='"$(PREFIX)"'
+ 
+ OBJDIR_BASE := obj-unix
+ 
+diff --git a/frontend/drivers/platform_unix.c b/frontend/drivers/platform_unix.c
+index 253af4fa2a..364ae045e9 100644
+--- a/frontend/drivers/platform_unix.c
++++ b/frontend/drivers/platform_unix.c
+@@ -1722,8 +1722,12 @@ static void frontend_unix_get_env(int *argc,
+          "cores", sizeof(g_defaults.dirs[DEFAULT_DIR_CORE]));
+    fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_CORE_INFO], base_path,
+          "cores", sizeof(g_defaults.dirs[DEFAULT_DIR_CORE_INFO]));
+-   fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_AUTOCONFIG], base_path,
+-         "autoconfig", sizeof(g_defaults.dirs[DEFAULT_DIR_AUTOCONFIG]));
++   if (path_is_directory(PREFIX "/share/retroarch/autoconfig"))
++     fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_AUTOCONFIG], PREFIX,
++           "/share/retroarch/autoconfig", sizeof(g_defaults.dirs[DEFAULT_DIR_AUTOCONFIG]));
++   else
++     fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_AUTOCONFIG], base_path,
++           "autoconfig", sizeof(g_defaults.dirs[DEFAULT_DIR_AUTOCONFIG]));
+ 
+    if (path_is_directory("/usr/local/share/retroarch/assets"))
+       fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_ASSETS],
+@@ -1741,6 +1745,9 @@ static void frontend_unix_get_env(int *argc,
+       fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_ASSETS],
+             "/usr/share/games/retroarch",
+             "assets", sizeof(g_defaults.dirs[DEFAULT_DIR_ASSETS]));
++   else if (path_is_directory(PREFIX "/share/retroarch/assets"))
++      fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_ASSETS], PREFIX,
++            "/share/retroarch/assets", sizeof(g_defaults.dirs[DEFAULT_DIR_ASSETS]));
+    else
+       fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_ASSETS], base_path,
+             "assets", sizeof(g_defaults.dirs[DEFAULT_DIR_ASSETS]));
