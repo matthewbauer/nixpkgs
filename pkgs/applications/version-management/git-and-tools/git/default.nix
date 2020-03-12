@@ -80,6 +80,8 @@ stdenv.mkDerivation {
   configureFlags = stdenv.lib.optionals (stdenv.buildPlatform != stdenv.hostPlatform) [
     "ac_cv_fread_reads_directories=yes"
     "ac_cv_snprintf_returns_bogus=no"
+    "ac_cv_iconv_omits_bom=no"
+    "ac_cv_prog_CURL_CONFIG=${curl.dev}/bin/curl-config"
   ];
 
   preBuild = ''
@@ -88,7 +90,7 @@ stdenv.mkDerivation {
 
   makeFlags = [
     "prefix=\${out}"
-    "SHELL_PATH=${stdenv.shell}"
+    "SHELL_PATH=${if (stdenv.hostPlatform != stdenv.buildPlatform) then "/bin/sh" else stdenv.shell}"
   ]
   ++ (if perlSupport then ["PERL_PATH=${perlPackages.perl}/bin/perl"] else ["NO_PERL=1"])
   ++ (if pythonSupport then ["PYTHON_PATH=${python3}/bin/python"] else ["NO_PYTHON=1"])
