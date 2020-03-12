@@ -90,7 +90,7 @@ stdenv.mkDerivation {
 
   makeFlags = [
     "prefix=\${out}"
-    "SHELL_PATH=${stdenv.shell}"
+    "SHELL_PATH=${if (stdenv.hostPlatform != stdenv.buildPlatform) then "/bin/sh" else stdenv.shell}"
   ]
   ++ (if perlSupport then ["PERL_PATH=${perlPackages.perl}/bin/perl"] else ["NO_PERL=1"])
   ++ (if pythonSupport then ["PYTHON_PATH=${python3}/bin/python"] else ["NO_PYTHON=1"])
