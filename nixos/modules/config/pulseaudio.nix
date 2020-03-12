@@ -45,7 +45,7 @@ let
   uid = ids.uids.pulseaudio;
   gid = ids.gids.pulseaudio;
 
-  stateDir = "/run/pulse";
+  stateDir = "/var/run/pulse";
 
   # Create pulse/client.conf even if PulseAudio is disabled so
   # that we can disable the autospawn feature in programs that
