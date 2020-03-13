@@ -14,7 +14,8 @@ let
     version = "2019-09-29";
     inherit src;
 
-    buildInputs = [ makeWrapper retroarch zlib ] ++ a.extraBuildInputs or [];
+    buildInputs = [ zlib ] ++ a.extraBuildInputs or [];
+    nativeBuildInputs = a.extraNativeBuildInputs or [];
 
     makefile = "Makefile.libretro";
 
@@ -310,8 +311,9 @@ in with stdenv.lib.licenses;
     license = gpl2Plus;
     broken = true;
 
+    extraNativeBuildInputs = [ cmake curl pkgconfig ];
     extraBuildInputs = [
-      cmake curl libGLU libGL pcre pkgconfig sfml
+      libGLU libGL pcre sfml
       gettext hidapi
       libevdev udev
     ] ++ (with xorg; [ libSM libX11 libXi libpthreadstubs libxcb xcbutil libXext libXrandr libXinerama libXxf86vm ]);
@@ -445,7 +447,8 @@ in with stdenv.lib.licenses;
     };
     description = "Port of Hatari to libretro";
     license = gpl2;
-    extraBuildInputs = [ cmake SDL ];
+    extraBuildInputs = [ SDL ];
+    extraNativeBuildInputs = [ cmake ];
   }).override {
     makefile = "Makefile.libretro";
     buildPhase = "make";
@@ -647,7 +650,6 @@ in with stdenv.lib.licenses;
     makefile = "Makefile";
     buildPhase = "make";
   };
-
   parallel-n64 = (mkLibRetroCore rec {
     core = "parallel-n64";
     src = fetchRetro {
@@ -703,7 +705,8 @@ in with stdenv.lib.licenses;
     };
     description = "Port of Play! to libretro";
     license = bsd2;
-    extraBuildInputs = [ cmake boost ];
+    extraBuildInputs = [ boost ];
+    extraNativeBuildInputs = [ cmake ];
   }).override {
     cmakeFlags = [ "-DBUILD_PLAY=OFF -DBUILD_LIBRETRO_CORE=ON" ];
     buildPhase = "make";
@@ -718,7 +721,8 @@ in with stdenv.lib.licenses;
     };
     description = "ppsspp libretro port";
     license = gpl2;
-    extraBuildInputs = [ cmake libGLU libGL ffmpeg python37 xorg.libX11 ];
+    extraNativeBuildInputs = [ cmake ];
+    extraBuildInputs = [ libGLU libGL ffmpeg python37 xorg.libX11 ];
   }).override {
     cmakeFlags = [ "-DLIBRETRO=ON" ];
     makefile = "Makefile";
