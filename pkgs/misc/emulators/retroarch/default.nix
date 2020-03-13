@@ -51,7 +51,6 @@ in stdenv.mkDerivation rec {
   '';
 
   patches = [
-    ./armv6-find-buildbot-server.patch
     ./lookup-prefix-assets.patch
   ];
 
