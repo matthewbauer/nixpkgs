@@ -37,8 +37,6 @@ let
       mkdir -p $out/bin
       mkdir -p $COREDIR
       mv ${d2u a.core}_libretro${stdenv.hostPlatform.extensions.sharedLibrary} $COREDIR
-      makeWrapper ${retroarch}/bin/retroarch $out/bin/retroarch-${core} \
-        --add-flags "-L $COREDIR/${d2u core}_libretro${stdenv.hostPlatform.extensions.sharedLibrary} $@"
     '';
 
     enableParallelBuilding = true;
