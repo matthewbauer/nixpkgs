@@ -11,18 +11,15 @@ stdenv.mkDerivation rec {
   version = "0.1.2.1";
 
   src = fetchFromGitHub {
-    owner = "Hjdskes";
+    owner = "matthewbauer";
     repo = "cage";
-    rev = "v${version}";
-    sha256 = "1i4rm3dpmk7gkl6hfs6a7vwz76ba7yqcdp63nlrdbnq81m9cy2am";
+    rev = "9ac72a7d3f65922a90ef3896a5cebb002f96a1b3";
+    sha256 = "13pqvp6c7gdysqx006l57mrbsrmllb6pk1p9jv8hmnks58m8lxdd";
   };
 
-  postPatch = ''
-    substituteInPlace meson.build --replace \
-      "0.1.2" "${version}"
-  '';
+  depsBuildBuild = [ pkg-config ];
 
-  nativeBuildInputs = [ meson ninja pkg-config wayland scdoc makeWrapper ];
+  nativeBuildInputs = [ meson ninja pkg-config makeWrapper wayland scdoc ];
 
   buildInputs = [
     wlroots wayland wayland-protocols pixman libxkbcommon
