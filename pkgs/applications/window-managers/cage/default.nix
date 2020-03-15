@@ -8,21 +8,18 @@
 
 stdenv.mkDerivation rec {
   pname = "cage";
-  version = "0.1.3";
+  version = "0.1.4";
 
   src = fetchFromGitHub {
-    owner = "Hjdskes";
+    owner = "matthewbauer";
     repo = "cage";
-    rev = "v${version}";
-    sha256 = "0ixl45g0m8b75gvbjm3gf5qg0yplspgs0xpm2619wn5sygc47sb1";
+    rev = "f13d9b218c1de6958c177154e44852278b761e3f";
+    sha256 = "16550h2pyckrkpjhm839i092yvy4kgbmxa6rvma763vf9iarp690";
   };
 
-  patches = [
-    # To fix the build with wlroots 0.14.0:
-    ./wlroots-0_14.patch
-  ];
+  depsBuildBuild = [ pkg-config ];
 
-  nativeBuildInputs = [ meson ninja pkg-config wayland scdoc makeWrapper ];
+  nativeBuildInputs = [ meson ninja pkg-config makeWrapper wayland scdoc ];
 
   buildInputs = [
     wlroots wayland wayland-protocols pixman libxkbcommon
