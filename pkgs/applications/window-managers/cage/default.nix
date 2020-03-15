@@ -24,6 +24,8 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ meson ninja pkgconfig makeWrapper wayland ];
 
+  patches = [ ./allow-no-view.patch ];
+
   buildInputs = [
     wlroots wayland wayland-protocols pixman libxkbcommon
     # TODO: Not specified but required:
