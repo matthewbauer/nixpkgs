@@ -154,7 +154,7 @@ in
     localSystem = mkOption {
       type = types.attrs; # TODO utilize lib.systems.parsedPlatform
       default = { inherit (cfg) system; };
-      example = { system = "aarch64-linux"; config = "aarch64-unknown-linux-gnu"; };
+      example = { config = "aarch64-unknown-linux-gnu"; };
       # Make sure that the final value has all fields for sake of other modules
       # referring to this. TODO make `lib.systems` itself use the module system.
       apply = lib.systems.elaborate;
@@ -177,7 +177,7 @@ in
     crossSystem = mkOption {
       type = types.nullOr types.attrs; # TODO utilize lib.systems.parsedPlatform
       default = null;
-      example = { system = "aarch64-linux"; config = "aarch64-unknown-linux-gnu"; };
+      example = { config = "aarch64-unknown-linux-gnu"; };
       defaultText = literalExample
         ''(import "''${nixos}/../lib").lib.systems.examples.aarch64-multiplatform'';
       description = ''
@@ -237,7 +237,7 @@ in
           nixosExpectedSystem =
             if config.nixpkgs.crossSystem != null
             then config.nixpkgs.crossSystem.system or (lib.systems.parse.doubleFromSystem (lib.systems.parse.mkSystemFromString config.nixpkgs.crossSystem.config))
-            else config.nixpkgs.localSystem.system or (lib.systems.parse.doubleFromSystem (lib.systems.parse.mkSystemFromString config.nixpkgs.localSystem.config));
+            else config.nixpkgs.localSystem.system;
           nixosOption =
             if config.nixpkgs.crossSystem != null
             then "nixpkgs.crossSystem"
