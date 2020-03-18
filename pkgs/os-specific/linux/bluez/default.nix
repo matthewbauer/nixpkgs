@@ -92,7 +92,7 @@ in stdenv.mkDerivation rec {
       ln -s ../test/$a $test/bin/bluez-$a
     done
     popd
-    wrapPythonProgramsIn $test/test "$test/test ${pythonPath}"
+    wrapPythonProgramsIn $test/test "$test/test ${toString pythonPath}"
   '' + ''
     # for bluez4 compatibility for NixOS
     mkdir $out/sbin
