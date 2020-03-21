@@ -1,8 +1,8 @@
 diff --git a/Makefile b/Makefile
-index bc0056be1a..d740ff47d1 100644
+index 81240ccc0b..5c46e8bb22 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -26,6 +26,7 @@ DEF_FLAGS :=
+@@ -22,6 +22,7 @@ DEF_FLAGS :=
  ASFLAGS :=
  DEFINES := -DHAVE_CONFIG_H -DRARCH_INTERNAL -D_FILE_OFFSET_BITS=64
  DEFINES += -DGLOBAL_CONFIG_DIR='"$(GLOBAL_CONFIG_DIR)"'
@@ -11,31 +11,54 @@ index bc0056be1a..d740ff47d1 100644
  OBJDIR_BASE := obj-unix
  
 diff --git a/frontend/drivers/platform_unix.c b/frontend/drivers/platform_unix.c
-index 253af4fa2a..364ae045e9 100644
+index 4aaee2384f..f7645982a0 100644
 --- a/frontend/drivers/platform_unix.c
 +++ b/frontend/drivers/platform_unix.c
-@@ -1722,8 +1722,12 @@ static void frontend_unix_get_env(int *argc,
+@@ -1707,10 +1707,18 @@ static void frontend_unix_get_env(int *argc,
+ 
+    fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_CORE], base_path,
           "cores", sizeof(g_defaults.dirs[DEFAULT_DIR_CORE]));
-    fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_CORE_INFO], base_path,
-          "cores", sizeof(g_defaults.dirs[DEFAULT_DIR_CORE_INFO]));
+-   fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_CORE_INFO], base_path,
+-         "cores", sizeof(g_defaults.dirs[DEFAULT_DIR_CORE_INFO]));
 -   fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_AUTOCONFIG], base_path,
 -         "autoconfig", sizeof(g_defaults.dirs[DEFAULT_DIR_AUTOCONFIG]));
++   if (path_is_directory(PREFIX "/share/retroarch/cores"))
++     fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_CORE_INFO], PREFIX "/share/retroarch",
++           "cores", sizeof(g_defaults.dirs[DEFAULT_DIR_CORE_INFO]));
++   else
++      fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_CORE_INFO], base_path,
++            "cores", sizeof(g_defaults.dirs[DEFAULT_DIR_CORE_INFO]));
 +   if (path_is_directory(PREFIX "/share/retroarch/autoconfig"))
-+     fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_AUTOCONFIG], PREFIX,
-+           "/share/retroarch/autoconfig", sizeof(g_defaults.dirs[DEFAULT_DIR_AUTOCONFIG]));
++     fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_AUTOCONFIG], PREFIX "/share/retroarch",
++           "autoconfig", sizeof(g_defaults.dirs[DEFAULT_DIR_AUTOCONFIG]));
 +   else
 +     fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_AUTOCONFIG], base_path,
 +           "autoconfig", sizeof(g_defaults.dirs[DEFAULT_DIR_AUTOCONFIG]));
  
     if (path_is_directory("/usr/local/share/retroarch/assets"))
        fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_ASSETS],
-@@ -1741,6 +1745,9 @@ static void frontend_unix_get_env(int *argc,
+@@ -1728,6 +1736,9 @@ static void frontend_unix_get_env(int *argc,
        fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_ASSETS],
              "/usr/share/games/retroarch",
              "assets", sizeof(g_defaults.dirs[DEFAULT_DIR_ASSETS]));
 +   else if (path_is_directory(PREFIX "/share/retroarch/assets"))
-+      fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_ASSETS], PREFIX,
-+            "/share/retroarch/assets", sizeof(g_defaults.dirs[DEFAULT_DIR_ASSETS]));
++      fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_ASSETS], PREFIX "/share/retroarch",
++            "assets", sizeof(g_defaults.dirs[DEFAULT_DIR_ASSETS]));
     else
        fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_ASSETS], base_path,
              "assets", sizeof(g_defaults.dirs[DEFAULT_DIR_ASSETS]));
+@@ -1745,8 +1756,12 @@ static void frontend_unix_get_env(int *argc,
+          "records", sizeof(g_defaults.dirs[DEFAULT_DIR_RECORD_OUTPUT]));
+    fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_CURSOR], base_path,
+          "database/cursors", sizeof(g_defaults.dirs[DEFAULT_DIR_CURSOR]));
+-   fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_DATABASE], base_path,
+-         "database/rdb", sizeof(g_defaults.dirs[DEFAULT_DIR_DATABASE]));
++   if (path_is_directory(PREFIX "/share/retroarch/database/rdb"))
++     fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_DATABASE], PREFIX "/share/retroarch",
++           "database/rdb", sizeof(g_defaults.dirs[DEFAULT_DIR_DATABASE]));
++   else
++     fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_DATABASE], base_path,
++           "database/rdb", sizeof(g_defaults.dirs[DEFAULT_DIR_DATABASE]));
+    fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_SHADER], base_path,
+          "shaders", sizeof(g_defaults.dirs[DEFAULT_DIR_SHADER]));
+    fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_CHEATS], base_path,
