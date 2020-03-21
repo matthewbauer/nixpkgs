@@ -72,6 +72,18 @@ stdenv.mkDerivation rec {
       rev = "652bfed517970427b2b65ebe7da49ebaa8397617";
       sha256 = "179rq687b82nbgxyazmggal1a84104jx4hp9jprd9vfmalq9442v";
     }} $out/share/retroarch/autoconfig
+    cp -r ${fetchFromGitHub {
+      owner = "libretro";
+      repo = "libretro-core-info";
+      rev = "0ee1a1caa741bf9e031c34161a1fae2473ccf31b";
+      sha256 = "0gzm2qjldv0fnlsk1vp63w9flhy6i53mz4sr78c5xdkm5brqjly2";
+    }} $out/share/retroarch/cores
+    cp -r ${fetchFromGitHub {
+      owner = "libretro";
+      repo = "libretro-database";
+      rev = "9d00ee5b7f0146791e6ac20248bc514d3a3e5cc5";
+      sha256 = "1kqsmaxkfsn67rb9sh57bakr2rpmlal6l185w4lsidiz46nsqkcn";
+    }} $out/share/retroarch/databases
   '' + optionalString withVulkan ''
     wrapProgram $out/bin/retroarch --prefix LD_LIBRARY_PATH ':' ${vulkan-loader}/lib
   '';
