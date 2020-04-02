@@ -18,6 +18,8 @@ stdenv.mkDerivation {
       [ libGL libGLU ])
     ;
 
+  configureFlags = [ "--with-ft-prefix=${freetype}" ];
+
   enableParallelBuilding = true;
 
   meta = {
