@@ -1,7 +1,10 @@
 { stdenv, fetchFromGitLab
 , pkgconfig, autoreconfHook, libxslt, docbook_xsl, intltool
 , gtk3, udev, systemd
+, withLabelFt ? true, freetype ? null
 }:
+
+assert withLabelFt -> freetype != null;
 
 stdenv.mkDerivation rec {
   pname = "plymouth";
@@ -21,12 +24,18 @@ stdenv.mkDerivation rec {
   ];
 
   buildInputs = [
-    gtk3 udev systemd
+    gtk3 udev systemd freetype
   ];
 
   patches = [
     # https://build.opensuse.org/package/show/openSUSE%3AFactory/plymouth
     ./manpages.patch
+    # ./only_use_fb_for_cirrus_bochs.patch
+  ] ++ stdenv.lib.optionals withLabelFt [
+    # https://gitlab.freedesktop.org/plymouth/plymouth/-/issues/45
+    ./v3-0001-ply-label-Don-t-crash-if-label-plugin-fails.patch
+    ./v3-0002-Add-label-ft-plugin.patch
+    ./v3-0004-Add-HiDPI-support-to-label-ft-plugin.patch
   ];
 
   postPatch = ''
@@ -39,6 +48,11 @@ stdenv.mkDerivation rec {
 
     sed -i "s#%{_localstatedir}/run/plymouth#%{_plymouthruntimedir}#" scripts/plymouth.spec
     sed -i "s#plymouthdrundir = .*#plymouthdrundir = \$(plymouthruntimedir)#" src/Makefile.am
+  '' + stdenv.lib.optionals withLabelFt ''
+    sed -i \
+      -e "s@/usr/share@/etc@" \
+      -e "s@/usr/bin/fc-match@fc-match@" \
+      src/plugins/controls/label-ft/plugin.c
   '';
 
   configurePlatforms = [ "host" ];
@@ -62,6 +76,7 @@ stdenv.mkDerivation rec {
     "--enable-gtk"
     "--enable-pango"
     "--enable-tracing"
+    "--enable-freetype"
     "--enable-documentation"
     "--enable-systemd-integration"
   ];
