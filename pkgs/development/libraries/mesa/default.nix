@@ -13,6 +13,7 @@
 , withValgrind ? stdenv.hostPlatform.isLinux && !stdenv.hostPlatform.isAarch32, valgrind-light
 , enableGalliumNine ? stdenv.isLinux
 , enableOSMesa ? stdenv.isLinux
+, buildPackages
 }:
 
 /** Packaging design:
@@ -128,6 +129,8 @@ stdenv.mkDerivation {
     libXdamage libXxf86vm
   ] ++ optional stdenv.isLinux libdrm
     ++ optionals stdenv.isDarwin [ OpenGL Xplugin ];
+
+  depsBuildBuild = [ buildPackages.stdenv.cc ];
 
   enableParallelBuilding = true;
   doCheck = false;
