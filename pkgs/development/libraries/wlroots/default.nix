@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
   buildInputs = [
     libGL wayland-protocols libinput libxkbcommon pixman
     xcbutilwm libX11 libcap xcbutilimage xcbutilerrors mesa
-    libpng ffmpeg_4
+    libpng ffmpeg_4 wayland
   ];
 
   postInstall = ''
