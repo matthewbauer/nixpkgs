@@ -12,7 +12,8 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [
-    autoreconfHook pkgconfig libxslt docbook_xsl
+    pkgconfig autoreconfHook
+    libxslt docbook_xsl
   ];
 
   buildInputs = [
@@ -26,38 +27,40 @@ stdenv.mkDerivation rec {
       -e "s#plymouththemedir=.*#plymouththemedir=/etc/plymouth/themes#" \
       -e "s#plymouthpolicydir=.*#plymouthpolicydir=/etc/plymouth/#" \
       configure.ac
-
-    configureFlags="
-      --prefix=$out
-      --bindir=$out/bin
-      --sbindir=$out/sbin
-      --exec-prefix=$out
-      --libdir=$out/lib
-      --libexecdir=$out/lib
-      --sysconfdir=/etc
-      --with-systemdunitdir=$out/etc/systemd/system
-      --localstatedir=/var
-      --with-logo=/etc/plymouth/logo.png
-      --with-background-color=0x000000
-      --with-background-start-color-stop=0x000000
-      --with-background-end-color-stop=0x000000
-      --with-release-file=/etc/os-release
-      --without-system-root-install
-      --without-rhgb-compat-link
-      --enable-tracing
-      --enable-systemd-integration
-      --enable-pango
-      --enable-gdm-transition
-      --enable-gtk"
-
-    installFlags="
-      plymouthd_defaultsdir=$out/share/plymouth
-      plymouthd_confdir=$out/etc/plymouth"
   '';
 
+  configurePlatforms = [ "host" ];
+
+  configureFlags = [
+    "--sysconfdir=/etc"
+    "--localstatedir=/var"
+    "--with-systemdunitdir=${placeholder "out"}/etc/systemd/system"
+
+    "--with-logo=/etc/plymouth/logo.png"
+    "--with-release-file=/etc/os-release"
+
+    "--with-background-color=0x000000"
+    "--with-background-start-color-stop=0x000000"
+    "--with-background-end-color-stop=0x000000"
+
+    "--without-rhgb-compat-link"
+    "--without-system-root-install"
+
+    "--enable-gtk"
+    "--enable-pango"
+    "--enable-tracing"
+    "--enable-gdm-transition"
+    "--enable-systemd-integration"
+  ];
+
+  installFlags = [
+    "plymouthd_defaultsdir=$(out)/share/plymouth"
+    "plymouthd_confdir=$(out)/etc/plymouth"
+  ];
+
   meta = with stdenv.lib; {
-    homepage = http://www.freedesktop.org/wiki/Software/Plymouth;
-    description = "A graphical boot animation";
+    homepage = https://www.freedesktop.org/wiki/Software/Plymouth/;
+    description = "Boot splash and boot logger";
     license = licenses.gpl2;
     maintainers = [ maintainers.goibhniu ];
     platforms = platforms.linux;
