@@ -126,7 +126,7 @@ stdenv.mkDerivation {
     ++ lib.optionals stdenv.isLinux [ libomxil-bellagio libva-minimal ]
     ++ lib.optional withValgrind valgrind-light;
 
-  depsBuildBuild = [ pkgconfig ];
+  depsBuildBuild = [ pkgconfig buildPackages.stdenv.cc ];
 
   nativeBuildInputs = [
     pkgconfig meson ninja
