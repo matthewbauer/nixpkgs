@@ -52,6 +52,7 @@
 , gnome3
 , glib
 , enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform, gobject-introspection
+, buildPackages
 }:
 
 assert enableGeoLocation -> geoclue2 != null;
@@ -154,6 +155,7 @@ stdenv.mkDerivation rec {
     "-DPORT=GTK"
     "-DUSE_LIBHYPHEN=OFF"
     "-DUSE_WPE_RENDERER=OFF"
+    "-DWAYLAND_SCANNER=${buildPackages.wayland}/bin/wayland-scanner"
   ] ++ optionals stdenv.isDarwin [
     "-DENABLE_GRAPHICS_CONTEXT_3D=OFF"
     "-DENABLE_GTKDOC=OFF"
