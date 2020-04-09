@@ -11,13 +11,14 @@
 , libtasn1
 , gtk3
 , pango
-, gobject-introspection
 , makeWrapper
 , libxslt
 , vala
 , gnome3
 , python3
 , shared-mime-info
+, libgpgerror
+, enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform, gobject-introspection
 }:
 
 stdenv.mkDerivation rec {
@@ -44,18 +45,21 @@ stdenv.mkDerivation rec {
     python3
     ninja
     gettext
-    gobject-introspection
     libxslt
     makeWrapper
     vala
     shared-mime-info
-  ];
+    gnupg
+    glib
+    gtk3
+  ] ++ stdenv.lib.optional (stdenv.hostPlatform == stdenv.buildPlatform) gobject-introspection;
 
   buildInputs = [
-    gnupg
     libgcrypt
     libtasn1
     pango
+    gnupg
+    libgpgerror
   ];
 
   propagatedBuildInputs = [
@@ -70,7 +74,7 @@ stdenv.mkDerivation rec {
 
   mesonFlags = [
     "-Dgtk_doc=false"
-  ];
+  ] ++ stdenv.lib.optional (!enableIntrospection) "-Dintrospection=false";
 
   doCheck = false; # fails 21 out of 603 tests, needs dbus daemon
 
