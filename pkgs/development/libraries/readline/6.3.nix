@@ -32,6 +32,9 @@ stdenv.mkDerivation {
      in
        import ./readline-6.3-patches.nix patch);
 
+  dontStrip = false;
+  bash_cv_func_sigsetjmp = null;
+
   meta = with stdenv.lib; {
     description = "Library for interactive line editing";
 

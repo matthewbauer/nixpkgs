@@ -32,6 +32,9 @@ stdenv.mkDerivation rec {
     ]
     ++ upstreamPatches;
 
+  dontStrip = false;
+  bash_cv_func_sigsetjmp = null;
+
   meta = with stdenv.lib; {
     description = "Library for interactive line editing";
 
