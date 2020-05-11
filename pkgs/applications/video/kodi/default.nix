@@ -95,6 +95,8 @@ let
       cp ${kodi_src}/tools/depends/target/ffmpeg/{CMakeLists.txt,*.cmake} .
       sed -i 's/ --cpu=''${CPU}//' CMakeLists.txt
       sed -i 's/--strip=''${CMAKE_STRIP}/--strip=''${CMAKE_STRIP} --ranlib=''${CMAKE_RANLIB}/' CMakeLists.txt
+      substituteInPlace configure \
+        --replace '#define FFMPEG_CONFIGURATION "$(c_escape $FFMPEG_CONFIGURATION)"' '#define FFMPEG_CONFIGURATION ""'
     '';
     cmakeFlags = lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
       "-DCROSSCOMPILING=ON"
