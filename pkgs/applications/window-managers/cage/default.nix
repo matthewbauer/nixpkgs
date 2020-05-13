@@ -1,7 +1,7 @@
 { lib, stdenv, fetchFromGitHub
 , meson, ninja, pkg-config, wayland, scdoc, makeWrapper
 , wlroots, wayland-protocols, pixman, libxkbcommon
-, systemd, libGL, libX11, mesa
+, systemd, libGL, libX11, mesa, runtimeShell
 , xwayland ? null
 , nixosTests
 }:
@@ -31,6 +31,7 @@ stdenv.mkDerivation rec {
 
   postFixup = lib.optionalString (xwayland != null) ''
     wrapProgram $out/bin/cage --prefix PATH : "${xwayland}/bin"
+    sed -i 's,${stdenv.shell},${runtimeShell},' $out/bin/cage
   '';
 
   # Tests Cage using the NixOS module by launching xterm:
