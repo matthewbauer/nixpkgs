@@ -1,7 +1,7 @@
 { stdenv, fetchFromGitHub, fetchpatch
 , meson, ninja, pkgconfig, makeWrapper
 , wlroots, wayland, wayland-protocols, pixman, libxkbcommon
-, systemd, libGL, libX11
+, systemd, libGL, libX11, bash
 , xwayland ? null
 }:
 
@@ -29,7 +29,7 @@ stdenv.mkDerivation rec {
   buildInputs = [
     wlroots wayland wayland-protocols pixman libxkbcommon
     # TODO: Not specified but required:
-    systemd libGL libX11
+    systemd libGL libX11 bash
   ];
 
   enableParallelBuilding = true;
