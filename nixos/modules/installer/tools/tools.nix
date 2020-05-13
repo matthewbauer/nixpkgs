@@ -9,6 +9,7 @@ let
   makeProg = args: pkgs.substituteAll (args // {
     dir = "bin";
     isExecutable = true;
+    runtimeShell = pkgs.runtimeShell;
   });
 
   nixos-build-vms = makeProg {
