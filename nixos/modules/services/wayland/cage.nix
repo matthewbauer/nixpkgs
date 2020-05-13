@@ -36,14 +36,14 @@ in {
     # The service is partially based off of the one provided in the
     # cage wiki at
     # https://github.com/Hjdskes/cage/wiki/Starting-Cage-on-boot-with-systemd.
-    systemd.services."cage-tty1" = {
+    systemd.services."cage@" = {
       enable = true;
       after = [
         "systemd-user-sessions.service"
         "plymouth-start.service"
         "plymouth-quit.service"
         "systemd-logind.service"
-        "getty@tty1.service"
+        "getty@%i.service"
       ];
       before = [ "graphical.target" ];
       wants = [ "dbus.socket" "systemd-logind.service" "plymouth-quit.service"];
@@ -64,10 +64,10 @@ in {
 
         # Log this user with utmp, letting it show up with commands 'w' and
         # 'who'. This is needed since we replace (a)getty.
-        UtmpIdentifier = "%n";
+        UtmpIdentifier = "%I";
         UtmpMode = "user";
         # A virtual terminal is needed.
-        TTYPath = "/dev/tty1";
+        TTYPath = "/dev/%I";
         TTYReset = "yes";
         TTYVHangup = "yes";
         TTYVTDisallocate = "yes";
@@ -89,7 +89,7 @@ in {
 
     hardware.opengl.enable = mkDefault true;
 
-    systemd.targets.graphical.wants = [ "cage-tty1.service" ];
+    systemd.targets.graphical.wants = [ "cage@tty1.service" ];
 
     systemd.defaultUnit = "graphical.target";
   };
