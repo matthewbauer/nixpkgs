@@ -90,6 +90,7 @@ in
           (gettyCmd "--noclear --keep-baud pts/%I 115200,38400,9600 $TERM")
         ];
         restartIfChanged = false;
+        enable = mkDefault config.boot.isContainer;
       };
 
     systemd.services.console-getty =
