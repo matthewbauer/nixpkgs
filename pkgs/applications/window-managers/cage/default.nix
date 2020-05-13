@@ -29,7 +29,7 @@ stdenv.mkDerivation rec {
   buildInputs = [
     wlroots wayland wayland-protocols pixman libxkbcommon
     # TODO: Not specified but required:
-    systemd libGL libX11 bash
+    systemd libGL libX11
   ];
 
   enableParallelBuilding = true;
@@ -38,6 +38,7 @@ stdenv.mkDerivation rec {
 
   postFixup = stdenv.lib.optionalString (xwayland != null) ''
     wrapProgram $out/bin/cage --prefix PATH : "${xwayland}/bin"
+    sed -i 's,${stdenv.shell},${bash},' $out/bin/cage
   '';
 
   meta = with stdenv.lib; {
