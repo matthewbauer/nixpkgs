@@ -1,4 +1,5 @@
-{ stdenv, wayland, wayland-protocols, xorgserver, xkbcomp, xkeyboard_config, epoxy, libxslt, libunwind, makeWrapper, egl-wayland }:
+{ stdenv, wayland, wayland-protocols, xorgserver, xkbcomp, xkeyboard_config
+, epoxy, libxslt, libunwind, makeWrapper, egl-wayland, buildPackages }:
 
 with stdenv.lib;
 
@@ -23,6 +24,7 @@ xorgserver.overrideAttrs (oldAttrs: {
     "--with-xkb-bin-directory=${xkbcomp}/bin"
     "--with-xkb-path=${xkeyboard_config}/etc/X11/xkb"
     "--with-xkb-output=$(out)/share/X11/xkb/compiled"
+    "WAYLAND_SCANNER=${buildPackages.wayland}/bin/wayland-scanner"
   ];
 
   postInstall = ''
