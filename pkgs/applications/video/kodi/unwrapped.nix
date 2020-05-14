@@ -31,6 +31,7 @@
 , waylandSupport ? false, wayland, wayland-protocols
 , waylandpp ?  null, libxkbcommon
 , gbmSupport ? false, mesa, libinput
+, raspberryPiSupport ? false, libraspberrypi ? null
 , buildPackages
 }:
 
@@ -72,7 +73,8 @@ let
       "-DPKG_CONFIG_EXECUTABLE=pkg-config"
     ];
     buildInputs = [ libidn libtasn1 p11-kit zlib libva ]
-      ++ lib.optional vdpauSupport libvdpau;
+      ++ lib.optional vdpauSupport libvdpau
+      ++ lib.optional raspberryPiSupport libraspberrypi;
     nativeBuildInputs = [ cmake nasm pkg-config gnutls ];
   };
 
@@ -155,7 +157,8 @@ in stdenv.mkDerivation {
       libxkbcommon.dev
       mesa.dev
       libinput.dev
-    ];
+    ]
+    ++ lib.optional raspberryPiSupport libraspberrypi;
 
     nativeBuildInputs = [
       cmake
