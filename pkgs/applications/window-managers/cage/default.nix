@@ -1,7 +1,7 @@
 { stdenv, fetchFromGitHub, fetchpatch
 , meson, ninja, pkgconfig, makeWrapper
 , wlroots, wayland, wayland-protocols, pixman, libxkbcommon
-, systemd, libGL, libX11, bash
+, systemd, libGL, libX11, runtimeShell
 , xwayland ? null
 }:
 
@@ -38,7 +38,7 @@ stdenv.mkDerivation rec {
 
   postFixup = stdenv.lib.optionalString (xwayland != null) ''
     wrapProgram $out/bin/cage --prefix PATH : "${xwayland}/bin"
-    sed -i 's,${stdenv.shell},${bash},' $out/bin/cage
+    sed -i 's,${stdenv.shell},${runtimeShell},' $out/bin/cage
   '';
 
   meta = with stdenv.lib; {
