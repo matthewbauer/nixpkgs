@@ -7,24 +7,16 @@
 
 stdenv.mkDerivation rec {
   pname = "cage-unstable";
-  version = "2020-01-18";
-  # The last stable release (0.1.1) would require at least the following 3 patches:
-  # - https://github.com/Hjdskes/cage/commit/33bb3c818c5971777b6f09d8821e7f078d38d262.patch
-  # - https://github.com/Hjdskes/cage/commit/51e6c760da51e2b885737d61a61cdc965bb9269d.patch
-  # - https://github.com/Hjdskes/cage/commit/84216ca2a417b237ad61c11e2f3ebbcb91681ece.patch
-  # Which need to be adapted due to other changes. At this point it seems
-  # better to use the current master version until the next stable release.
+  version = "2020-05-15";
 
   src = fetchFromGitHub {
-    owner = "Hjdskes";
+    owner = "matthewbauer";
     repo = "cage";
-    rev = "cc1f975c442ebd691b70196d76aa120ead717810";
-    sha256 = "1gkqx26pvlw00b3fgx6sh87yyjfzyj51jwxvbf9k117npkrf4b2g";
+    rev = "70ecdcb02ea073561c831ba23cbb0ad8853cfca9";
+    sha256 = "0vafg5kj216b5nawld5qh6lpb1762x9jk246ag854njzmhn3dwz8";
   };
 
   nativeBuildInputs = [ meson ninja pkgconfig makeWrapper wayland ];
-
-  patches = [ ./allow-no-view.patch ];
 
   buildInputs = [
     wlroots wayland wayland-protocols pixman libxkbcommon
