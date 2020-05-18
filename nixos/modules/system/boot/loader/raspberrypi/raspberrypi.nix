@@ -24,10 +24,6 @@ let
 
   configTxt =
     pkgs.writeText "config.txt" (''
-      # U-Boot used to need this to work, regardless of whether UART is actually used or not.
-      # TODO: check when/if this can be removed.
-      enable_uart=1
-
       # Prevent the firmware from smashing the framebuffer setup done by the mainline kernel
       # when attempting to show low-voltage or overtemperature warnings.
       avoid_warnings=1
@@ -35,6 +31,10 @@ let
       # Boot in 64-bit mode.
       arm_64bit=1
     '' + (if cfg.uboot.enable then ''
+      # U-Boot used to need this to work, regardless of whether UART is actually used or not.
+      # TODO: check when/if this can be removed.
+      enable_uart=1
+
       kernel=u-boot-rpi.bin
     '' else ''
       kernel=kernel.img
