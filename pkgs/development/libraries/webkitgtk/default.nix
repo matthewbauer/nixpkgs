@@ -53,6 +53,7 @@
 , glib
 , enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform, gobject-introspection
 , buildPackages
+, systemd
 }:
 
 assert enableGeoLocation -> geoclue2 != null;
@@ -129,6 +130,7 @@ stdenv.mkDerivation rec {
     pcre
     sqlite
     woff2
+    systemd
   ] ++ (with xorg; [
     libXdamage
     libXdmcp
