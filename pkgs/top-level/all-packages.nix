@@ -7919,8 +7919,8 @@ in
   zssh = callPackage ../tools/networking/zssh { };
 
   zstd = callPackage ../tools/compression/zstd {
-    cmake = cmake.override {
-      libarchive = libarchive.override { zstd = null; };
+    cmake = buildPackages.cmake.override {
+      libarchive = buildPackages.libarchive.override { zstd = null; };
     };
   };
 
