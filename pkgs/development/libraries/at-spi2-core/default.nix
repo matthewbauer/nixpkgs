@@ -1,4 +1,5 @@
 { stdenv
+, runtimeShell
 , fetchurl
 
 , meson
@@ -53,6 +54,8 @@ stdenv.mkDerivation rec {
     wrapProgram $out/libexec/at-spi-bus-launcher \
       --prefix GIO_EXTRA_MODULES : "${stdenv.lib.getLib dconf}/lib/gio/modules" \
       --prefix XDG_DATA_DIRS : ${gsettings-desktop-schemas}/share/gsettings-schemas/${gsettings-desktop-schemas.name}
+  '' + stdenv.lib.optionalString (stdenv.hostPlatform != stdenv.buildPlatform) ''
+    sed -i 's,${stdenv.shell},${runtimeShell},' $out/libexec/at-spi-bus-launcher
   '';
 
   meta = with stdenv.lib; {
