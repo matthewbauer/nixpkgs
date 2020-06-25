@@ -20,6 +20,7 @@ stdenv.mkDerivation rec {
     sed -e "/INSTALL.*initramfs\/hook/d" \
         -e "/INSTALL.*initcpio\/install/d" \
         -e "/INSTALL.*dracut\/module-setup.sh/d" \
+        -e "s/pkg-config/$PKG_CONFIG/" \
         -i Makefile
   '';
 
