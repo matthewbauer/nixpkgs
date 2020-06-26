@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ autoreconfHook ];
 
-  doCheck = !stdenv.isDarwin;
+  doCheck = false;
   checkInputs = [
     # perl is assumed by perldoc completion
     perl
