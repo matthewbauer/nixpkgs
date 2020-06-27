@@ -20,14 +20,14 @@ let
 
   extlinuxConfBuilder =
     import ../generic-extlinux-compatible/extlinux-conf-builder.nix {
-      pkgs = pkgs.buildPackages;
+      inherit pkgs;
     };
 in
 pkgs.substituteAll {
   src = ./uboot-builder.sh;
   isExecutable = true;
-  inherit (pkgs.buildPackages) bash;
-  path = [pkgs.buildPackages.coreutils pkgs.buildPackages.gnused pkgs.buildPackages.gnugrep];
+  inherit (pkgs) bash;
+  path = [pkgs.coreutils pkgs.gnused pkgs.gnugrep];
   firmware = pkgs.raspberrypifw;
   inherit uboot;
   inherit configTxt;
