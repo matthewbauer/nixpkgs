@@ -16,8 +16,8 @@ stdenv.mkDerivation rec {
   src = fetchFromGitHub {
     owner = "matthewbauer";
     repo = "PackageKit";
-    rev = "268db6315c71ae106d5e865f7b6d4e5bb281b336";
-    sha256 = "161bvr8q6in48mba7s0yvg77pyr8vzfyvg1fcnmbbz5qicq1f5ki";
+    rev = "9a17f5e31d29df998c6254666cb0253536b3ab95";
+    sha256 = "009b1w06v0igqvsk0l8sndi28m6kqv3clbgx574gs8hv01gffwjn";
   };
 
   buildInputs = [
