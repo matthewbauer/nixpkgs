@@ -12,18 +12,20 @@ let
     KeepCache=false
   '';
 
-  vendorConf = ''
+  vendorConf = let url = "https://github.com/NixOS/nixpkgs"; in ''
     [PackagesNotFound]
-    DefaultUrl=https://github.com/NixOS/nixpkgs
-    CodecUrl=https://github.com/NixOS/nixpkgs
-    HardwareUrl=https://github.com/NixOS/nixpkgs
-    FontUrl=https://github.com/NixOS/nixpkgs
-    MimeUrl=https://github.com/NixOS/nixpkgs
+    DefaultUrl=${url}
+    CodecUrl=${url}
+    HardwareUrl=${url}
+    FontUrl=${url}
+    MimeUrl=${url}
   '';
 
 in
 
 {
+
+  imports = [ (mkRemovedOptionModule [ "services" "packagekit" "backend" ] "Always set to Nix" ) ];
 
   options = {
 
