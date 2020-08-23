@@ -53,6 +53,8 @@
 , glib
 , enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform, gobject-introspection
 , buildPackages
+, libwpe
+, libwpe-fdo
 }:
 
 assert enableGeoLocation -> geoclue2 != null;
@@ -120,6 +122,8 @@ stdenv.mkDerivation rec {
     libsecret
     libtasn1
     libwebp
+    libwpe
+    libwpe-fdo
     libxkbcommon
     libxml2
     libxslt
@@ -154,7 +158,6 @@ stdenv.mkDerivation rec {
     "-DENABLE_INTROSPECTION=${if enableIntrospection then "ON" else "OFF"}"
     "-DPORT=GTK"
     "-DUSE_LIBHYPHEN=OFF"
-    "-DUSE_WPE_RENDERER=OFF"
     "-DWAYLAND_SCANNER=${buildPackages.wayland}/bin/wayland-scanner"
   ] ++ optionals stdenv.isDarwin [
     "-DENABLE_GRAPHICS_CONTEXT_3D=OFF"
