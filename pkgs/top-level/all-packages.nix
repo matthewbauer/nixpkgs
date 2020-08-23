@@ -14187,6 +14187,8 @@ in
 
   libixp_hg = callPackage ../development/libraries/libixp-hg { };
 
+  libwpe = callPackage ../development/libraries/libwpe { };
+
   libyaml = callPackage ../development/libraries/libyaml { };
 
   libyamlcpp = callPackage ../development/libraries/libyaml-cpp { };
