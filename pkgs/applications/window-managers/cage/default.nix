@@ -2,21 +2,22 @@
 , meson, ninja, pkgconfig, makeWrapper
 , wlroots, wayland, wayland-protocols, pixman, libxkbcommon
 , systemd, libGL, libX11, runtimeShell
+, scdoc
 , xwayland ? null
 }:
 
 stdenv.mkDerivation rec {
-  pname = "cage-unstable";
-  version = "2020-05-15";
+  pname = "cage";
+  version = "0.1.2.1";
 
   src = fetchFromGitHub {
     owner = "matthewbauer";
     repo = "cage";
-    rev = "4e91062562174aeb396650f566e1f8c0c5e4340c";
-    sha256 = "1g31qz0x0lrac5a8qvgvxignxkm54x9hhf74839r51qsc66dv83n";
+    rev = "9ac72a7d3f65922a90ef3896a5cebb002f96a1b3";
+    sha256 = "13pqvp6c7gdysqx006l57mrbsrmllb6pk1p9jv8hmnks58m8lxdd";
   };
 
-  nativeBuildInputs = [ meson ninja pkgconfig makeWrapper wayland ];
+  nativeBuildInputs = [ meson ninja pkgconfig makeWrapper wayland scdoc ];
 
   buildInputs = [
     wlroots wayland wayland-protocols pixman libxkbcommon
