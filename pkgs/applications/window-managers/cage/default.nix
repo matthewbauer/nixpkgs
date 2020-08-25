@@ -12,8 +12,8 @@ stdenv.mkDerivation rec {
   src = fetchFromGitHub {
     owner = "matthewbauer";
     repo = "cage";
-    rev = "70ecdcb02ea073561c831ba23cbb0ad8853cfca9";
-    sha256 = "0vafg5kj216b5nawld5qh6lpb1762x9jk246ag854njzmhn3dwz8";
+    rev = "4e91062562174aeb396650f566e1f8c0c5e4340c";
+    sha256 = "1g31qz0x0lrac5a8qvgvxignxkm54x9hhf74839r51qsc66dv83n";
   };
 
   nativeBuildInputs = [ meson ninja pkgconfig makeWrapper wayland ];
