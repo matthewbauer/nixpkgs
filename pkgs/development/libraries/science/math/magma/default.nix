@@ -32,4 +32,6 @@ in stdenv.mkDerivation {
     platforms = platforms.unix;
     maintainers = with maintainers; [ tbenst ];
   };
+
+  passthru.cudatoolkit = cudatoolkit;
 }
