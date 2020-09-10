@@ -20,10 +20,11 @@ stdenv.mkDerivation rec {
 
   buildInputs = stdenv.lib.optional stdenv.isDarwin fixDarwinDylibNames;
 
-  nativeBuildInputs = [ meson ninja pkgconfig gettext glib ]
-    ++ stdenv.lib.optional enableIntrospection gobject-introspection;
+  nativeBuildInputs = [ meson ninja pkgconfig gettext ]
+    ++ stdenv.lib.optional enableIntrospection gobject-introspection
+    ++ [ glib ];
 
-  mesonFlags = stdenv.lib.optional (!enableIntrospection) "-Dintrospection=false";
+  mesonFlags = if enableIntrospection then null else ["-Dintrospection=false"];
 
   propagatedBuildInputs = [
     # Required by atk.pc

@@ -39,10 +39,9 @@ stdenv.mkDerivation rec {
       # Obtain XML resources from XML catalog (patch adapted from gtk-doc)
       ./respect-xml-catalog-files-var.patch
       dots_in_usernames
-      ./runtime-shell.patch
-    ];
+    ] ++ stdenv.lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) ./runtime-shell.patch;
 
-  RUNTIME_SHELL = "${bash}/bin/sh";
+  RUNTIME_SHELL = if (stdenv.hostPlatform != stdenv.buildPlatform) then "${bash}/bin/sh" else null;
 
   # The nix daemon often forbids even creating set[ug]id files.
   postPatch =

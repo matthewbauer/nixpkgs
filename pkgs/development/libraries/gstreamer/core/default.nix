@@ -60,6 +60,8 @@ stdenv.mkDerivation rec {
     glib
   ] ++ lib.optionals enableIntrospection [
     gobject-introspection
+  ] ++ [
+    bash-completion
   ] ++ lib.optionals enableDoc [
     # documentation
     gtk-doc

@@ -40,15 +40,16 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [
     meson
     ninja
+  ] ++ stdenv.lib.optional enableVapi vala ++ [
     pkg-config
     python3
     libxslt
     libxml2
     glib
+  ] ++ stdenv.lib.optional enableDoc gtk-doc ++ [
     docbook-xsl-nons
     docbook_xml_dtd_42
-  ] ++ stdenv.lib.optional enableVapi vala
-    ++ stdenv.lib.optional enableDoc gtk-doc;
+  ];
 
   buildInputs = [
     glib

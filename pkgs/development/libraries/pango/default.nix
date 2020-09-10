@@ -4,7 +4,7 @@
 , meson, ninja, glib
 , x11Support? !stdenv.isDarwin, libXft
 , enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform, gobject-introspection
-, enableDoc ? stdenv.hostPlatform == stdenv.buildPlatform && stdenv.isDarwin, gtk-doc
+, enableDoc ? stdenv.hostPlatform == stdenv.buildPlatform && (!stdenv.isDarwin), gtk-doc
 }:
 
 with stdenv.lib;
@@ -37,9 +37,13 @@ in stdenv.mkDerivation rec {
   nativeBuildInputs = [
     meson ninja
     glib # for glib-mkenum
-    pkgconfig docbook_xsl docbook_xml_dtd_43
+    pkgconfig
   ] ++ optional enableIntrospection gobject-introspection
-    ++ optional enableDoc gtk-doc;
+    ++ optional enableDoc gtk-doc
+    ++ [
+    docbook_xsl
+    docbook_xml_dtd_43
+  ];
   buildInputs = [
     fribidi
   ] ++ optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [

@@ -91,9 +91,9 @@ stdenv.mkDerivation rec {
   mesonFlags = [
     "-Dgtk_doc=${boolToString withGtkDoc}"
     "-Dtests=false"
-    "-Dx11_backend=${if x11Support then "true" else "false"}"
-    "-Dwayland_backend=${if waylandSupport then "true" else "false"}"
-  ] ++ stdenv.lib.optional (!enableIntrospection) "-Dintrospection=false";
+  ] ++ stdenv.lib.optional (!x11Support) "-Dx11_backend=false"
+    ++ stdenv.lib.optional (!waylandSupport) "-Dwayland_backend=false"
+    ++ stdenv.lib.optional (!enableIntrospection) "-Dintrospection=false";
 
   # These are the defines that'd you'd get with --enable-debug=minimum (default).
   # See: https://developer.gnome.org/gtk3/stable/gtk-building.html#extra-configuration-options
@@ -122,20 +122,21 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [
     gettext
+  ] ++ optional enableIntrospection gobject-introspection ++ [
     makeWrapper
     meson
     ninja
     pkgconfig
     python3
     sassc
-    glib
-    gdk-pixbuf
-  ] ++ optional waylandSupport wayland
-    ++ optional enableIntrospection gobject-introspection
-    ++ setupHooks ++ optionals withGtkDoc [
+  ] ++ setupHooks ++ optionals withGtkDoc [
     docbook_xml_dtd_43
     docbook_xsl
     gtk-doc
+  ] ++ optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
+    glib
+    gdk-pixbuf
+    wayland
   ];
 
   buildInputs = [
@@ -156,7 +157,6 @@ stdenv.mkDerivation rec {
     gdk-pixbuf
     glib
     gsettings-desktop-schemas
-    pango
   ] ++ optionals x11Support (with xorg; [
     libICE
     libSM
@@ -167,7 +167,7 @@ stdenv.mkDerivation rec {
     libXrender
   ])
   ++ optional stdenv.isDarwin Cocoa  # explicitly propagated, always needed
-  ++ optionals waylandSupport [ mesa wayland wayland-protocols ]
+  ++ optionals waylandSupport [ pango mesa wayland wayland-protocols ]
   ++ optional xineramaSupport xorg.libXinerama
   ++ optional cupsSupport cups
   ;

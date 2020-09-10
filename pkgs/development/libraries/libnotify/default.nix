@@ -29,21 +29,20 @@ stdenv.mkDerivation rec {
     "-Dgtk_doc=false"
   ] ++ stdenv.lib.optional (!enableIntrospection) "-Dintrospection=disabled";
 
-  nativeBuildInputs = [
+  nativeBuildInputs = stdenv.lib.optional enableIntrospection gobject-introspection ++
+  [
     meson
     ninja
     pkgconfig
     libxslt
     docbook-xsl-ns
-    glib
-  ] ++ stdenv.lib.optional enableIntrospection gobject-introspection;
-
-  buildInputs = [
+  ] ++ stdenv.lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
     glib
   ];
 
   propagatedBuildInputs = [
     gdk-pixbuf
+    glib
   ];
 
   passthru = {

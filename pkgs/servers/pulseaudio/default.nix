@@ -119,12 +119,10 @@ stdenv.mkDerivation rec {
     rm -f $out/bin/qpaeq # this is packaged by the "qpaeq" package now, because of missing deps
   '';
 
-  preFixup = lib.optionalString stdenv.isLinux ''
-    if [ -f $out/libexec/pulse/gsettings-helper ]; then
-      wrapProgram $out/libexec/pulse/gsettings-helper \
-       --prefix XDG_DATA_DIRS : "$out/share/gsettings-schemas/${name}" \
-       --prefix GIO_EXTRA_MODULES : "${lib.getLib dconf}/lib/gio/modules"
-    fi
+  preFixup = lib.optionalString (stdenv.isLinux && stdenv.hostPlatform == stdenv.buildPlatform) ''
+    wrapProgram $out/libexec/pulse/gsettings-helper \
+     --prefix XDG_DATA_DIRS : "$out/share/gsettings-schemas/${name}" \
+     --prefix GIO_EXTRA_MODULES : "${lib.getLib dconf}/lib/gio/modules"
   '';
 
   meta = {

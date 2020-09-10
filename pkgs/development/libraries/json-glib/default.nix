@@ -15,15 +15,16 @@ in stdenv.mkDerivation rec {
   };
 
   propagatedBuildInputs = [ glib ];
-  nativeBuildInputs = [ meson ninja pkgconfig gettext glib ]
-    ++ stdenv.lib.optional enableIntrospection gobject-introspection;
+  nativeBuildInputs = [ meson ninja pkgconfig gettext ]
+    ++ stdenv.lib.optional enableIntrospection gobject-introspection
+    ++ [glib];
   buildInputs = stdenv.lib.optional stdenv.isDarwin fixDarwinDylibNames;
 
   outputs = [ "out" "dev" ];
 
   doCheck = true;
 
-  mesonFlags = stdenv.lib.optional (!enableIntrospection) "-Dintrospection=false";
+  mesonFlags = if enableIntrospection then null else ["-Dintrospection=false"];
 
   passthru = {
     updateScript = gnome3.updateScript {

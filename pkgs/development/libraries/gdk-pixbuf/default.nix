@@ -58,12 +58,14 @@ stdenv.mkDerivation rec {
     libxslt
     docbook-xsl-nons
     docbook_xml_dtd_43
-    makeWrapper
-    glib
   ] ++ stdenv.lib.optional stdenv.isDarwin [
     fixDarwinDylibNames
   ] ++ stdenv.lib.optional enableDoc gtk-doc
-    ++ stdenv.lib.optional enableIntrospection gobject-introspection;
+    ++ stdenv.lib.optional enableIntrospection gobject-introspection
+    ++ [
+    makeWrapper
+    glib
+  ];
 
   propagatedBuildInputs = [
     glib

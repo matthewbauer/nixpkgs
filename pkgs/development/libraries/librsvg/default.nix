@@ -27,7 +27,7 @@ stdenv.mkDerivation rec {
 
   propagatedBuildInputs = [ glib gdk-pixbuf cairo ];
 
-  preConfigure = stdenv.lib.optionalString (stdenv.hostPlatform != stdenv.buildPlatform) ''
+  preConfigure = if (stdenv.hostPlatform != stdenv.buildPlatform) then ''
     mkdir -p .cargo
     cat >> .cargo/config <<'EOF'
     [target."${toRustTarget stdenv.buildPlatform}"]
@@ -35,11 +35,12 @@ stdenv.mkDerivation rec {
     [target."${toRustTarget stdenv.hostPlatform}"]
     "linker" = "${stdenv.cc}/bin/${stdenv.cc.targetPrefix}cc"
     EOF
-  '';
+  '' else null;
 
-  RUST_TARGET = toRustTarget stdenv.hostPlatform;
+  RUST_TARGET = if (stdenv.hostPlatform != stdenv.buildPlatform) then toRustTarget stdenv.hostPlatform else null;
 
-  nativeBuildInputs = [ pkgconfig rustc cargo vala gdk-pixbuf ]
+  nativeBuildInputs = [ pkgconfig rustc cargo vala ]
+    ++ lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) gdk-pixbuf
     ++ lib.optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [
       ApplicationServices
     ]) ++ lib.optional (stdenv.hostPlatform == stdenv.buildPlatform) gobject-introspection;

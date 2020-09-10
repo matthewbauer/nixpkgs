@@ -1,6 +1,6 @@
 { stdenv, fetchurl, autoreconfHook, pkgconfig, libxslt, docbook_xsl
 , gtk3, udev, systemd, lib, libpng, pango, libdrm
-, enableGtk ? false
+, enableGtk ? stdenv.hostPlatform == stdenv.buildPlatform
 }:
 
 stdenv.mkDerivation rec {
@@ -16,9 +16,10 @@ stdenv.mkDerivation rec {
     autoreconfHook pkgconfig libxslt docbook_xsl
   ];
 
-  buildInputs = [
-    udev systemd libpng pango libdrm
-  ] ++ lib.optional enableGtk gtk3;
+  buildInputs = lib.optional enableGtk gtk3 ++
+  [
+    udev systemd
+  ] ++ lib.optionals (!enableGtk) [ libpng pango libdrm ];
 
   postPatch = ''
     sed -i \
@@ -44,8 +45,9 @@ stdenv.mkDerivation rec {
     "--enable-systemd-integration"
     "--enable-pango"
     "--enable-gdm-transition"
+    (if enableGtk then "--enable-gtk" else "--disable-gtk")
     "ac_cv_path_SYSTEMD_ASK_PASSWORD_AGENT=${lib.getBin systemd}/bin/systemd-tty-ask-password-agent"
-  ] ++ (if enableGtk then ["--enable-gtk"] else ["--disable-gtk"]);
+  ];
 
   configurePlatforms = [ "host" ];
 

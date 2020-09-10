@@ -60,8 +60,7 @@ in stdenv.mkDerivation rec {
     meson
     ninja
     pkgconfig
-    wayland
-  ];
+  ] ++ lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) wayland;
 
   buildInputs = [
     eglexternalplatform

@@ -38,10 +38,10 @@ stdenv.mkDerivation rec {
     patchShebangs build-aux/meson/post-install.py
   '';
 
-  buildInputs = [ glib ];
-
-  nativeBuildInputs = [ pkgconfig python3 meson ninja glib ]
+  buildInputs = [ glib ]
     ++ stdenv.lib.optional enableIntrospection gobject-introspection;
+
+  nativeBuildInputs = [ pkgconfig python3 meson ninja glib ];
 
   meta = with stdenv.lib; {
     maintainers = teams.gnome.members;

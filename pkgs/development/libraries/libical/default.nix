@@ -28,6 +28,7 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [
     cmake
+  ]  ++ stdenv.lib.optional enableIntrospection gobject-introspection ++ [
     ninja
     perl
     pkgconfig
@@ -35,7 +36,7 @@ stdenv.mkDerivation rec {
     # https://github.com/NixOS/nixpkgs/pull/67204
     # previously with https://github.com/NixOS/nixpkgs/pull/61657#issuecomment-495579489
     # gtk-doc docbook_xsl docbook_xml_dtd_43 # for docs
-  ] ++ stdenv.lib.optional enableIntrospection gobject-introspection
+  ]
     ++ stdenv.lib.optional enableVapi vala;
   installCheckInputs = [
     # running libical-glib tests
