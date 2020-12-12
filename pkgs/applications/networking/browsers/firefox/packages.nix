@@ -1,4 +1,4 @@
-{ config, stdenv, lib, callPackage, fetchurl, nss_3_44 }:
+{ stdenv, lib, callPackage, fetchurl, fetchpatch }:
 
 let
   common = opts: callPackage (import ./common.nix opts) {};
@@ -7,14 +7,21 @@ in
 rec {
   firefox = common rec {
     pname = "firefox";
-    ffversion = "82.0.3";
+    ffversion = "83.0";
     src = fetchurl {
       url = "mirror://mozilla/firefox/releases/${ffversion}/source/firefox-${ffversion}.source.tar.xz";
-      sha512 = "0j5s5fkph9bm87lv53d4xvfj02qjfqzj5graxcc8air49iqswfmqjdzghna6bj9m8fbn6f5klgm6jbrmavdsycbps0y88x23b6kab5i";
+      sha512 = "3va5a9471677jfzkhqp8xkba45n0bcpphbabhqbcbnps6p85m3y98pl5jy9q7cpq3a6gxc4ax7bp90yz2nfvfq7i64iz397xpprri2a";
     };
 
     patches = [
-      ./no-buildconfig-ffx76.patch
+      # Fix compilation on aarch64 with newer rust version
+      # See https://bugzilla.mozilla.org/show_bug.cgi?id=1677690
+      # and https://bugzilla.redhat.com/show_bug.cgi?id=1897675
+      (fetchpatch {
+        name = "aarch64-simd-bgz-1677690.patch";
+        url = "https://github.com/mozilla/gecko-dev/commit/71597faac0fde4f608a60dd610d0cefac4972cc3.patch";
+        sha256 = "1f61nsgbv2c2ylgjs7wdahxrrlgc19gjy5nzs870zr1g832ybwin";
+      })
     ];
 
     meta = {
@@ -35,15 +42,11 @@ rec {
 
   firefox-esr-78 = common rec {
     pname = "firefox-esr";
-    ffversion = "78.4.1esr";
+    ffversion = "78.5.0esr";
     src = fetchurl {
       url = "mirror://mozilla/firefox/releases/${ffversion}/source/firefox-${ffversion}.source.tar.xz";
-      sha512 = "3gfhipbihyznnh822lxams6rm0bcslh31b58lzibjx8a9dn99hy3p04h07slygcqazbz1rrs7b2b8q321fknp27aisk0sz8cynrcw18";
+      sha512 = "20h53cn7p4dds1yfm166iwbjdmw4fkv5pfk4z0pni6x8ddjvg19imzs6ggmpnfhaji8mnlknm7xp5j7x9vi24awvdxdds5n88rh25hd";
     };
-
-    patches = [
-      ./no-buildconfig-ffx76.patch
-    ];
 
     meta = {
       description = "A web browser built from Firefox Extended Support Release source tree";
