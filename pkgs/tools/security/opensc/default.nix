@@ -1,5 +1,5 @@
 { stdenv, fetchFromGitHub, autoreconfHook, pkgconfig, zlib, readline, openssl
-, libiconv, pcsclite, libassuan, libXt, fetchpatch
+, libiconv, pcsclite, libassuan, libXt
 , docbook_xsl, libxslt, docbook_xml_dtd_412
 , Carbon, PCSC, buildPackages
 , withApplePCSC ? stdenv.isDarwin
@@ -7,13 +7,13 @@
 
 stdenv.mkDerivation rec {
   pname = "opensc";
-  version = "0.20.0";
+  version = "0.21.0";
 
   src = fetchFromGitHub {
     owner = "OpenSC";
     repo = "OpenSC";
     rev = version;
-    sha256 = "0mg8qmhww3li1isfgvn5hang1hq58zra057ilvgci88csfziv5lv";
+    sha256 = "sha256-OjOfA1pIu8NeN+hPuow5UVMKsg0PrsLojw5h05/Qm+o=";
   };
 
   nativeBuildInputs = [ pkgconfig autoreconfHook ];

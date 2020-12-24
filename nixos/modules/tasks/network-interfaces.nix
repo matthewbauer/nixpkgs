@@ -381,15 +381,20 @@ in
       # syntax). Note: We also allow underscores for compatibility/legacy
       # reasons (as undocumented feature):
       type = types.strMatching
-        "^$|^[[:alpha:]]([[:alnum:]_-]{0,61}[[:alnum:]])?$";
+        "^$|^[[:alnum:]]([[:alnum:]_-]{0,61}[[:alnum:]])?$";
       description = ''
         The name of the machine. Leave it empty if you want to obtain it from a
         DHCP server (if using DHCP). The hostname must be a valid DNS label (see
-        RFC 1035 section 2.3.1: "Preferred name syntax") and as such must not
-        contain the domain part. This means that the hostname must start with a
-        letter, end with a letter or digit, and have as interior characters only
+        RFC 1035 section 2.3.1: "Preferred name syntax", RFC 1123 section 2.1:
+        "Host Names and Numbers") and as such must not contain the domain part.
+        This means that the hostname must start with a letter or digit,
+        end with a letter or digit, and have as interior characters only
         letters, digits, and hyphen. The maximum length is 63 characters.
         Additionally it is recommended to only use lower-case characters.
+        If (e.g. for legacy reasons) a FQDN is required as the Linux kernel
+        network node hostname (uname --nodename) the option
+        boot.kernel.sysctl."kernel.hostname" can be used as a workaround (but
+        the 64 character limit still applies).
       '';
     };
 
@@ -1057,7 +1062,6 @@ in
       ];
 
     boot.kernelModules = [ ]
-      ++ optional cfg.enableIPv6 "ipv6"
       ++ optional hasVirtuals "tun"
       ++ optional hasSits "sit"
       ++ optional hasBonds "bonding";

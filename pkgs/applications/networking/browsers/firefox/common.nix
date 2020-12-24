@@ -4,16 +4,22 @@
 
 { lib, stdenv, pkgconfig, pango, perl, python2, python3, zip
 , libjpeg, zlib, dbus, dbus-glib, bzip2, xorg
-, freetype, fontconfig, file, nspr, nss, libnotify
+, freetype, fontconfig, file, nspr, nss_3_53, libnotify
 , yasm, libGLU, libGL, sqlite, unzip, makeWrapper
 , hunspell, libXdamage, libevent, libstartup_notification
-, libvpx, libvpx_1_8
-, icu, icu67, libpng, jemalloc, glib
+, libvpx_1_8
+, icu67, libpng, jemalloc, glib
 , autoconf213, which, gnused, cargo, rustc, llvmPackages
-, rust-cbindgen, nodejs, nasm, fetchpatch
+, rust-cbindgen, rust-cbindgen_0_15, nodejs, nasm, fetchpatch
+, gnum4
 , debugBuild ? false
 
 ### optionals
+
+## backported libraries
+
+, nss_latest
+
 
 ## optional libraries
 
@@ -23,6 +29,7 @@
 , gtk3Support ? true, gtk2, gtk3, wrapGAppsHook
 , waylandSupport ? true, libxkbcommon
 , gssSupport ? true, kerberos
+, pipewireSupport ? waylandSupport && webrtcSupport, pipewire
 
 ## privacy-related options
 
@@ -69,6 +76,7 @@
 }:
 
 assert stdenv.cc.libc or null != null;
+assert pipewireSupport -> !waylandSupport || !webrtcSupport -> throw "pipewireSupport requires both wayland and webrtc support.";
 
 let
   flag = tf: x: [(if tf then "--enable-${x}" else "--disable-${x}")];
@@ -84,6 +92,9 @@ let
   execdir = if stdenv.isDarwin
             then "/Applications/${binaryNameCapitalized}.app/Contents/MacOS"
             else "/bin";
+
+  nss_pkg = if lib.versionAtLeast ffversion "82" then nss_latest else nss_3_53;
+  rust-cbindgen_pkg = if lib.versionAtLeast ffversion "83" then rust-cbindgen_0_15 else rust-cbindgen;
 in
 
 stdenv.mkDerivation ({
@@ -94,7 +105,33 @@ stdenv.mkDerivation ({
 
   patches = [
     ./env_var_for_system_dir.patch
-  ]
+  ] ++
+  lib.optional (lib.versionOlder ffversion "83") ./no-buildconfig-ffx76.patch ++
+  lib.optional (lib.versionAtLeast ffversion "84") ./no-buildconfig-ffx84.patch ++
+
+  # there are two flavors of pipewire support
+  # The patches for the ESR release and the patches for the current stable
+  # release.
+  # Until firefox upstream stabilizes pipewire support we will have to continue
+  # tracking multiple versions here.
+  lib.optional (pipewireSupport && lib.versionOlder ffversion "83")
+    (fetchpatch {
+      # https://src.fedoraproject.org/rpms/firefox/blob/master/f/firefox-pipewire-0-3.patch
+      url = "https://src.fedoraproject.org/rpms/firefox/raw/e99b683a352cf5b2c9ff198756859bae408b5d9d/f/firefox-pipewire-0-3.patch";
+      sha256 = "0qc62di5823r7ly2lxkclzj9rhg2z7ms81igz44nv0fzv3dszdab";
+    })
+    ++
+    # This picks pipewire patches from fedora that are part of https://bugzilla.mozilla.org/show_bug.cgi?id=1672944
+    lib.optionals (pipewireSupport && lib.versionAtLeast ffversion "83") (let
+      fedora_revision = "d6756537dd8cf4d9816dc63ada66ea026e0fd128";
+      mkPWPatch = spec: fetchpatch {
+        inherit (spec) name sha256;
+        url = "https://src.fedoraproject.org/rpms/firefox/raw/${fedora_revision}/f/${spec.name}";
+      };
+    in map mkPWPatch [
+        { name = "pw6.patch"; sha256 = "12lhx9wjpw0ahbfmw07wsx76bb223mr453q9cg8cq951vyskch3s"; }
+    ])
+
   ++ patches;
 
 
@@ -112,35 +149,40 @@ stdenv.mkDerivation ({
     xorg.libXext unzip makeWrapper
     libevent libstartup_notification /* cairo */
     libpng jemalloc glib
-    nasm
+    nasm icu67 libvpx_1_8
     # >= 66 requires nasm for the AV1 lib dav1d
     # yasm can potentially be removed in future versions
     # https://bugzilla.mozilla.org/show_bug.cgi?id=1501796
     # https://groups.google.com/forum/#!msg/mozilla.dev.platform/o-8levmLU80/SM_zQvfzCQAJ
-    nspr nss
+    nspr nss_pkg
   ]
-  ++ lib.optionals (lib.versionOlder ffversion "75") [ libvpx sqlite ]
-  ++ lib.optional  (lib.versionAtLeast ffversion "75.0") libvpx_1_8
-  ++ lib.optional  (lib.versionOlder ffversion "78") icu
-  ++ lib.optional  (lib.versionAtLeast ffversion "78.0") icu67
   ++ lib.optional  alsaSupport alsaLib
   ++ lib.optional  pulseaudioSupport libpulseaudio # only headers are needed
   ++ lib.optional  gtk3Support gtk3
   ++ lib.optional  gssSupport kerberos
-  ++ lib.optional  waylandSupport libxkbcommon
+  ++ lib.optionals waylandSupport [ libxkbcommon ]
+  ++ lib.optionals pipewireSupport [ pipewire ]
+  ++ lib.optionals (lib.versionAtLeast ffversion "82") [ gnum4 ]
   ++ lib.optionals stdenv.isDarwin [ CoreMedia ExceptionHandling Kerberos
                                      AVFoundation MediaToolbox CoreLocation
                                      Foundation libobjc AddressBook cups ];
 
-  NIX_CFLAGS_COMPILE = toString ([
+  NIX_CFLAGS_COMPILE = toString [
     "-I${glib.dev}/include/gio-unix-2.0"
-    "-I${nss.dev}/include/nss"
-  ]
-  ++ lib.optional (pname == "firefox-esr" && lib.versionOlder ffversion "69")
-    "-Wno-error=format-security");
+    "-I${nss_pkg.dev}/include/nss"
+  ];
+
+  MACH_USE_SYSTEM_PYTHON = "1";
 
   postPatch = ''
     rm -rf obj-x86_64-pc-linux-gnu
+  '' + lib.optionalString (pipewireSupport && lib.versionOlder ffversion "83") ''
+    # substitute the /usr/include/ lines for the libraries that pipewire provides.
+    # The patch we pick from fedora only contains the generated moz.build files
+    # which hardcode the dependency paths instead of running pkg_config.
+    substituteInPlace \
+      media/webrtc/trunk/webrtc/modules/desktop_capture/desktop_capture_generic_gn/moz.build \
+      --replace /usr/include ${pipewire.dev}/include
   '' + lib.optionalString (lib.versionAtLeast ffversion "80") ''
     substituteInPlace dom/system/IOUtils.h \
       --replace '#include "nspr/prio.h"'          '#include "prio.h"'
@@ -162,7 +204,7 @@ stdenv.mkDerivation ({
       pkgconfig
       python2
       python3
-      rust-cbindgen
+      rust-cbindgen_pkg
       rustc
       which
     ]
@@ -228,16 +270,7 @@ stdenv.mkDerivation ({
     "--with-system-nspr"
     "--with-system-nss"
   ]
-  ++ lib.optionals (lib.versionOlder ffversion "78") [
-    "--with-system-bz2"
-    "--enable-startup-notification"
-    "--disable-gconf"
-  ]
-  ++ lib.optional (lib.versionOlder ffversion "75") "--enable-system-sqlite"
   ++ lib.optional (stdenv.isDarwin) "--disable-xcode-checks"
-  ++ lib.optionals (lib.versionOlder ffversion "69") [
-    "--enable-webrender=build"
-  ]
 
   ++ flag alsaSupport "alsa"
   ++ flag pulseaudioSupport "pulseaudio"
@@ -299,22 +332,20 @@ stdenv.mkDerivation ({
     version = ffversion;
     isFirefox3Like = true;
     gtk = gtk2;
+    inherit alsaSupport;
     inherit nspr;
     inherit ffmpegSupport;
     inherit gssSupport;
     inherit execdir;
     inherit browserName;
   } // lib.optionalAttrs gtk3Support { inherit gtk3; };
-} //
-lib.optionalAttrs (lib.versionAtLeast ffversion "74") {
-  hardeningDisable = [ "format" ]; # -Werror=format-security
-} //
-# the build system verifies checksums of the bundled rust sources
-# ./third_party/rust is be patched by our libtool fixup code in stdenv
-# unfortunately we can't just set this to `false` when we do not want it.
-# See https://github.com/NixOS/nixpkgs/issues/77289 for more details
 
-lib.optionalAttrs (lib.versionAtLeast ffversion "72") {
+  hardeningDisable = [ "format" ]; # -Werror=format-security
+
+  # the build system verifies checksums of the bundled rust sources
+  # ./third_party/rust is be patched by our libtool fixup code in stdenv
+  # unfortunately we can't just set this to `false` when we do not want it.
+  # See https://github.com/NixOS/nixpkgs/issues/77289 for more details
   # Ideally we would figure out how to tell the build system to not
   # care about changed hashes as we are already doing that when we
   # fetch the sources. Any further modifications of the source tree
@@ -323,4 +354,6 @@ lib.optionalAttrs (lib.versionAtLeast ffversion "72") {
 
   # on aarch64 this is also required
   dontUpdateAutotoolsGnuConfigScripts = true;
+
+  requiredSystemFeatures = [ "big-parallel" ];
 })

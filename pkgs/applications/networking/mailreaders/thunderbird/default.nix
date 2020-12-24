@@ -6,6 +6,7 @@
 , curl
 , dbus
 , dbus-glib
+, fetchpatch
 , fetchurl
 , file
 , fontconfig
@@ -31,7 +32,7 @@
 , nasm
 , nodejs
 , nspr
-, nss
+, nss_3_53
 , pango
 , perl
 , pkgconfig
@@ -69,13 +70,13 @@ assert waylandSupport -> gtk3Support == true;
 
 stdenv.mkDerivation rec {
   pname = "thunderbird";
-  version = "78.2.1";
+  version = "78.6.0";
 
   src = fetchurl {
     url =
       "mirror://mozilla/thunderbird/releases/${version}/source/thunderbird-${version}.source.tar.xz";
     sha512 =
-      "2iya9a5qaini524wrdrnxx6wsrgb8fa2b1m42mlypskxjjgb7n66vpxlbpi9x9mqzc63ca2ag36fjpbpsvbv5ppxvpfwk2j1zbfvb5w";
+      "0hx9gg3ngpvgshrz9j7ni4kh3chadqd5w5fpywjjw4naj0k53d0i9jjhq4p6fyvf6rb2g825ibqq794lr9drn6nrfndh5w1yn5lw69n";
   };
 
   nativeBuildInputs = [
@@ -117,7 +118,7 @@ stdenv.mkDerivation rec {
     libvpx
     libwebp
     nspr
-    nss
+    nss_3_53
     pango
     perl
     sqlite
@@ -141,7 +142,7 @@ stdenv.mkDerivation rec {
 
   NIX_CFLAGS_COMPILE =[
     "-I${glib.dev}/include/gio-unix-2.0"
-    "-I${nss.dev}/include/nss"
+    "-I${nss_3_53.dev}/include/nss"
   ];
 
   patches = [
@@ -320,6 +321,8 @@ stdenv.mkDerivation rec {
       gnugrep curl runtimeShell;
   };
 
+  requiredSystemFeatures = [ "big-parallel" ];
+
   meta = with stdenv.lib; {
     description = "A full-featured e-mail client";
     homepage = "https://www.thunderbird.net";
@@ -327,6 +330,7 @@ stdenv.mkDerivation rec {
       eelco
       lovesegfault
       pierron
+      vcunat
     ];
     platforms = platforms.linux;
     license = licenses.mpl20;

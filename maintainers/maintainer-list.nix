@@ -806,6 +806,12 @@
     githubId = 574938;
     name = "Jonathan Glines";
   };
+  austinbutler = {
+    email = "austinabutler@gmail.com";
+    github = "austinbutler";
+    githubId = 354741;
+    name = "Austin Butler";
+  };
   avaq = {
     email = "nixpkgs@account.avaq.it";
     github = "avaq";
@@ -3541,6 +3547,12 @@
     githubId = 993484;
     name = "Greg Hale";
   };
+  immae = {
+    email = "ismael@bouya.org";
+    github = "immae";
+    githubId = 510202;
+    name = "Ismaël Bouya";
+  };
   imuli = {
     email = "i@imu.li";
     github = "imuli";
@@ -3838,6 +3850,16 @@
     github = "jfrankenau";
     githubId = 2736480;
     name = "Johannes Frankenau";
+  };
+  jfroche = {
+    name = "Jean-François Roche";
+    email = "jfroche@pyxel.be";
+    github = "jfroche";
+    githubId = 207369;
+    keys = [{
+      longkeyid = "dsa1024/0xD1D09DE169EA19A0";
+      fingerprint = "7EB1 C02A B62B B464 6D7C  E4AE D1D0 9DE1 69EA 19A0";
+    }];
   };
   jgeerds = {
     email = "jascha@geerds.org";
@@ -4905,6 +4927,12 @@
     github = "loskutov";
     githubId = 1202012;
     name = "Ignat Loskutov";
+  };
+  lostnet = {
+    email = "lost.networking@gmail.com";
+    github = "lostnet";
+    githubId = 1422781;
+    name = "Will Young";
   };
   louisdk1 = {
     email = "louis@louis.dk";

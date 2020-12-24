@@ -72,6 +72,13 @@ default-package-overrides:
   # gi-gdkx11-4.x requires gtk-4.x, which is still under development and
   # not yet available in Nixpkgs
   - gi-gdkx11 < 4
+  # This bumps hledger from 1.19 to 1.19.1.  There is a small bug in 1.19 that
+  # is fixed in 1.19.1.
+  # https://github.com/simonmichael/hledger/issues/1349
+  - hledger ==1.19.1
+  - hledger-lib ==1.19.1
+  - hledger-ui ==1.19.1
+  - hledger-web ==1.19.1
   # LTS Haskell 16.12
   - abstract-deque ==0.3
   - abstract-par ==0.3.3
@@ -918,13 +925,13 @@ default-package-overrides:
   - ghost-buster ==0.1.1.0
   - gi-atk ==2.0.21
   - gi-cairo ==1.0.23
-  - gi-cairo-connector ==0.0.1
-  - gi-cairo-render ==0.0.1
+  - gi-cairo-connector ==0.1.0
+  - gi-cairo-render ==0.1.0
   - gi-dbusmenu ==0.4.7
   - gi-dbusmenugtk3 ==0.4.8
   - gi-gdk ==3.0.22
   - gi-gdkpixbuf ==2.0.23
-  - gi-gdkx11 ==3.0.9
+  - gi-gdkx11 ==3.0.10
   - gi-gio ==2.0.26
   - gi-glib ==2.0.23
   - gi-gobject ==2.0.22
@@ -5347,23 +5354,16 @@ broken-packages:
   - ghcprofview
   - ght
   - gi-cairo-again
-  - gi-cairo-connector
-  - gi-cairo-render
-  - gi-dbusmenu
-  - gi-dbusmenugtk3
-  - gi-gdkx11
   - gi-graphene
   - gi-gsk
   - gi-gstpbutils
   - gi-gsttag
   - gi-gtk-declarative
   - gi-gtk-declarative-app-simple
-  - gi-gtk-hs
   - gi-gtkosxapplication
   - gi-handy
   - gi-poppler
   - gi-wnck
-  - gi-xlib
   - giak
   - Gifcurry
   - ginsu
@@ -5379,7 +5379,6 @@ broken-packages:
   - git-fmt
   - git-gpush
   - git-jump
-  - git-mediate
   - git-monitor
   - git-object
   - git-remote-ipfs
@@ -5397,7 +5396,6 @@ broken-packages:
   - github-webhooks
   - githud
   - gitignore
-  - gitit
   - gitlab-api
   - gitlib
   - gitlib-cmdline
@@ -5581,8 +5579,6 @@ broken-packages:
   - gtfs
   - gtfs-realtime
   - gtk-serialized-event
-  - gtk-sni-tray
-  - gtk-strut
   - gtk-toy
   - gtk2hs-hello
   - gtk2hs-rpn
@@ -5659,7 +5655,6 @@ broken-packages:
   - Haggressive
   - hahp
   - haiji
-  - hail
   - hailgun-send
   - hairy
   - hakaru
@@ -10204,7 +10199,6 @@ broken-packages:
   - Tablify
   - tabloid
   - tabs
-  - taffybar
   - tag-bits
   - tag-stream
   - tagged-exception-core

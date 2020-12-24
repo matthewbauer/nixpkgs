@@ -1,20 +1,21 @@
 { stdenv, fetchFromGitHub, fetchpatch, mkDerivation, SDL2, frei0r, gettext, mlt
 , jack1, pkgconfig, qtbase, qtmultimedia, qtwebkit, qtx11extras, qtwebsockets
-, qtquickcontrols, qtgraphicaleffects, libmlt, qmake, qttools
+, qtquickcontrols, qtgraphicaleffects, libmlt, qmake, qttools, genericUpdater
+, common-updater-scripts
 }:
 
-assert stdenv.lib.versionAtLeast libmlt.version "6.20.0";
-assert stdenv.lib.versionAtLeast mlt.version "6.20.0";
+assert stdenv.lib.versionAtLeast libmlt.version "6.22.1";
+assert stdenv.lib.versionAtLeast mlt.version "6.22.1";
 
 mkDerivation rec {
   pname = "shotcut";
-  version = "20.07.11";
+  version = "20.10.31";
 
   src = fetchFromGitHub {
     owner = "mltframework";
     repo = "shotcut";
     rev = "v${version}";
-    sha256 = "0ajg0bpdckhvmmsliy1xky9p4mdypnaw3z3cvfsdrm0zcihbgazv";
+    sha256 = "16ypq1v396pibhh33nm78p6hr5fz3h74l0ykg9f72b8whw23jyz6";
   };
 
   enableParallelBuilding = true;
@@ -26,7 +27,11 @@ mkDerivation rec {
   ];
 
   NIX_CFLAGS_COMPILE = "-I${libmlt}/include/mlt++ -I${libmlt}/include/mlt";
-  qmakeFlags = [ "QMAKE_LRELEASE=${stdenv.lib.getDev qttools}/bin/lrelease" "SHOTCUT_VERSION=${version}" ];
+  qmakeFlags = [
+    "QMAKE_LRELEASE=${stdenv.lib.getDev qttools}/bin/lrelease"
+    "SHOTCUT_VERSION=${version}"
+    "DEFINES+=SHOTCUT_NOUPGRADE"
+  ];
 
   prePatch = ''
     sed 's_shotcutPath, "qmelt"_"${mlt}/bin/melt"_' -i src/jobs/meltjob.cpp
@@ -46,6 +51,12 @@ mkDerivation rec {
     mkdir -p $out/share/shotcut
     cp -r src/qml $out/share/shotcut/
   '';
+
+  passthru.updateScript = genericUpdater {
+    inherit pname version;
+    versionLister = "${common-updater-scripts}/bin/list-git-tags ${src.meta.homepage}";
+    rev-prefix = "v";
+  };
 
   meta = with stdenv.lib; {
     description = "A free, open source, cross-platform video editor";

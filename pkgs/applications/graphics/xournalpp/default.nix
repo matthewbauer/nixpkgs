@@ -4,7 +4,7 @@
 , cmake
 , gettext
 , wrapGAppsHook
-, pkgconfig
+, pkg-config
 
 , glib
 , gsettings-desktop-schemas
@@ -22,16 +22,16 @@
 
 stdenv.mkDerivation rec {
   pname = "xournalpp";
-  version = "1.0.18";
+  version = "1.0.20";
 
   src = fetchFromGitHub {
     owner = "xournalpp";
     repo = pname;
     rev = version;
-    sha256 = "0a9ygbmd4dwgck3k8wsrm2grynqa0adb12wwspzmzvpisbadffjy";
+    sha256 = "1c7n03xm3m4lwcwxgplkn25i8c6s3i7rijbkcx86br1j4jadcs3k";
   };
 
-  nativeBuildInputs = [ cmake gettext pkgconfig wrapGAppsHook ];
+  nativeBuildInputs = [ cmake gettext pkg-config wrapGAppsHook ];
   buildInputs =
     [ glib
       gsettings-desktop-schemas
@@ -50,12 +50,10 @@ stdenv.mkDerivation rec {
 
   hardeningDisable = [ "format" ];
 
-  enableParallelBuilding = true;
-
   meta = with stdenv.lib; {
     description = "Xournal++ is a handwriting Notetaking software with PDF annotation support";
-    homepage    = "https://github.com/xournalpp/xournalpp";
-    license     = licenses.gpl2;
+    homepage    = "https://xournalpp.github.io/";
+    license     = licenses.gpl2Plus;
     maintainers = with maintainers; [ andrew-d sikmir ];
     platforms   = platforms.linux;
   };

@@ -2,17 +2,18 @@
 , ncurses, perl , cyrus_sasl, gss, gpgme, kerberos, libidn, libxml2, notmuch, openssl
 , lmdb, libxslt, docbook_xsl, docbook_xml_dtd_42, elinks, mailcap, runtimeShell, sqlite, zlib
 , glibcLocales
+, fetchpatch
 }:
 
 stdenv.mkDerivation rec {
-  version = "20200821";
+  version = "20201127";
   pname = "neomutt";
 
   src = fetchFromGitHub {
     owner  = "neomutt";
     repo   = "neomutt";
     rev    = version;
-    sha256 = "0l66xf6qp2fdhm5h2v58bbc73pwj72c80mriqac9pfyjh5padir5";
+    sha256 = "sha256-BkDGKZmpwahDw1vD67CyWfxD93H83kcpv5JBGVL5F/o=";
   };
 
   buildInputs = [

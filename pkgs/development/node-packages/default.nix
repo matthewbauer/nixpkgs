@@ -103,7 +103,7 @@ let
     };
 
     node-red = super.node-red.override {
-      meta.broken = since "10";
+      buildInputs = [ self.node-pre-gyp ];
     };
 
     pnpm = super.pnpm.override {
@@ -175,6 +175,7 @@ let
 
         self.node-pre-gyp
       ];
+      meta.broken = true;
     };
 
     thelounge = super.thelounge.override {

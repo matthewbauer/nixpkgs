@@ -1,7 +1,7 @@
 { lib
 , fetchurl
 , mkDerivation
-, kdeApplications
+, libkcddb
 , kinit
 , kdelibs4support
 , solid
@@ -41,6 +41,11 @@ mkDerivation rec {
   ];
 
   buildInputs = [
+    cmake
+    exempi
+    extra-cmake-modules
+    karchive
+    libkcddb
     kdelibs4support
     solid
     kxmlgui
@@ -53,7 +58,7 @@ mkDerivation rec {
     exempi
     extra-cmake-modules
     libcdio
-    kdeApplications.libkcddb
+    libkcddb
     poppler
   ];
 

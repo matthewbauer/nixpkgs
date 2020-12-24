@@ -94,8 +94,6 @@ self: super: builtins.intersectAttrs super {
   # Won't find it's header files without help.
   sfml-audio = appendConfigureFlag super.sfml-audio "--extra-include-dirs=${pkgs.openal}/include/AL";
 
-  # profiling is disabled to allow C++/C mess to work, which is fixed in GHC 8.8
-  cachix = disableLibraryProfiling super.cachix;
   hercules-ci-agent = disableLibraryProfiling super.hercules-ci-agent;
 
   # avoid compiling twice by providing executable as a separate output (with small closure size)
@@ -571,9 +569,20 @@ self: super: builtins.intersectAttrs super {
   }));
 
   # Expects z3 to be on path so we replace it with a hard
+  #
+  # The tests expect additional solvers on the path, replace the
+  # available ones also with hard coded paths, and remove the missing
+  # ones from the test.
   sbv = overrideCabal super.sbv (drv: {
     postPatch = ''
-      sed -i -e 's|"z3"|"${pkgs.z3}/bin/z3"|' Data/SBV/Provers/Z3.hs'';
+      sed -i -e 's|"abc"|"${pkgs.abc-verifier}/bin/abc"|' Data/SBV/Provers/ABC.hs
+      sed -i -e 's|"boolector"|"${pkgs.boolector}/bin/boolector"|' Data/SBV/Provers/Boolector.hs
+      sed -i -e 's|"cvc4"|"${pkgs.cvc4}/bin/cvc4"|' Data/SBV/Provers/CVC4.hs
+      sed -i -e 's|"yices-smt2"|"${pkgs.yices}/bin/yices-smt2"|' Data/SBV/Provers/Yices.hs
+      sed -i -e 's|"z3"|"${pkgs.z3}/bin/z3"|' Data/SBV/Provers/Z3.hs
+
+      sed -i -e 's|\[abc, boolector, cvc4, mathSAT, yices, z3, dReal\]|[abc, boolector, cvc4, yices, z3]|' SBVTestSuite/SBVConnectionTest.hs
+   '';
   });
 
   # The test-suite requires a running PostgreSQL server.

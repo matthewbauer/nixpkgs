@@ -85,7 +85,7 @@ in {
     package = mkOption {
       type = types.package;
       description = "Which package to use for the Nextcloud instance.";
-      relatedPackages = [ "nextcloud17" "nextcloud18" "nextcloud19" ];
+      relatedPackages = [ "nextcloud18" "nextcloud19" "nextcloud20" ];
     };
 
     maxUploadSize = mkOption {
@@ -354,7 +354,7 @@ in {
           recommended to upgrade to nextcloud19 after that.
         '')
         ++ (optional (versionOlder cfg.package.version "19") ''
-          A legacy Nextcloud install (from before NixOS 20.09/unstable) may be installed.
+          A legacy Nextcloud install (from before NixOS 20.09) may be installed.
 
           If/After nextcloud18 is installed successfully, you can safely upgrade to
           nextcloud19. If not, please upgrade to nextcloud18 first since Nextcloud doesn't
@@ -435,7 +435,7 @@ in {
               then ''"$(<"${toString c.dbpassFile}")"''
               else if c.dbpass != null
               then ''"${toString c.dbpass}"''
-              else null;
+              else ''""'';
             adminpass = if c.adminpassFile != null
               then ''"$(<"${toString c.adminpassFile}")"''
               else ''"${toString c.adminpass}"'';
@@ -449,8 +449,7 @@ in {
               ${if c.dbhost != null then "--database-host" else null} = ''"${c.dbhost}"'';
               ${if c.dbport != null then "--database-port" else null} = ''"${toString c.dbport}"'';
               ${if c.dbuser != null then "--database-user" else null} = ''"${c.dbuser}"'';
-              ${if (any (x: x != null) [c.dbpass c.dbpassFile])
-                 then "--database-pass" else null} = dbpass;
+              "--database-pass" = dbpass;
               ${if c.dbtableprefix != null
                 then "--database-table-prefix" else null} = ''"${toString c.dbtableprefix}"'';
               "--admin-user" = ''"${c.adminuser}"'';
@@ -542,7 +541,10 @@ in {
       environment.systemPackages = [ occ ];
 
       services.nginx.enable = mkDefault true;
-      services.nginx.virtualHosts.${cfg.hostName} = {
+
+      services.nginx.virtualHosts.${cfg.hostName} = let
+        major = toInt (versions.major cfg.package.version);
+      in {
         root = cfg.package;
         locations = {
           "= /robots.txt" = {
@@ -555,7 +557,7 @@ in {
           };
           "/" = {
             priority = 900;
-            extraConfig = "try_files $uri $uri/ /index.php$request_uri;";
+            extraConfig = "rewrite ^ /index.php;";
           };
           "~ ^/store-apps" = {
             priority = 201;
@@ -579,7 +581,7 @@ in {
           "~ ^/(?:\\.|autotest|occ|issue|indie|db_|console)".extraConfig = ''
             return 404;
           '';
-          "~ \\.php(?:$|/)" = {
+          "~ ^\\/(?:index|remote|public|cron|core\\/ajax\\/update|status|ocs\\/v[12]|updater\\/.+|oc[ms]-provider\\/.+|.+\\/richdocumentscode\\/proxy)\\.php(?:$|\\/)" = {
             priority = 500;
             extraConfig = ''
               include ${config.services.nginx.package}/conf/fastcgi.conf;
@@ -597,19 +599,18 @@ in {
               fastcgi_read_timeout 120s;
             '';
           };
-          "~ \\.(?:css|js|svg|gif|map)$".extraConfig = ''
+          "~ \\.(?:css|js|woff2?|svg|gif|map)$".extraConfig = ''
             try_files $uri /index.php$request_uri;
             expires 6M;
-            access_log off;
-          '';
-          "~ \\.woff2?$".extraConfig = ''
-            try_files $uri /index.php$request_uri;
-            expires 7d;
             access_log off;
           '';
           "~ ^\\/(?:updater|ocs-provider|ocm-provider)(?:$|\\/)".extraConfig = ''
             try_files $uri/ =404;
             index index.php;
+          '';
+          "~ \\.(?:png|html|ttf|ico|jpg|jpeg|bcmap|mp4|webm)$".extraConfig = ''
+            try_files $uri /index.php$request_uri;
+            access_log off;
           '';
         };
         extraConfig = ''

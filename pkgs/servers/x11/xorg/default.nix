@@ -703,11 +703,11 @@ lib.makeScope newScope (self: with self; {
   }) {};
 
   libX11 = callPackage ({ stdenv, pkgconfig, fetchurl, xorgproto, libxcb, xtrans }: stdenv.mkDerivation {
-    name = "libX11-1.6.8";
+    name = "libX11-1.6.12";
     builder = ./builder.sh;
     src = fetchurl {
-      url = "mirror://xorg/individual/lib/libX11-1.6.8.tar.bz2";
-      sha256 = "1mbkwhhprhf49s2iwx7kiliprsdvd690zk44x3h53ql9q52si2dj";
+      url = "mirror://xorg/individual/lib/libX11-1.6.12.tar.bz2";
+      sha256 = "1ivfzl1qwk8zh7gc0m5vb58gdxz11jwg7w3d356w16j1d5s2427i";
     };
     hardeningDisable = [ "bindnow" "relro" ];
     nativeBuildInputs = [ pkgconfig ];
@@ -2692,11 +2692,11 @@ lib.makeScope newScope (self: with self; {
   }) {};
 
   xorgserver = callPackage ({ stdenv, pkgconfig, fetchurl, xorgproto, openssl, libX11, libXau, libXaw, libxcb, xcbutil, xcbutilwm, xcbutilimage, xcbutilkeysyms, xcbutilrenderutil, libXdmcp, libXfixes, libxkbfile, libXmu, libXpm, libXrender, libXres, libXt }: stdenv.mkDerivation {
-    name = "xorg-server-1.20.8";
+    name = "xorg-server-1.20.10";
     builder = ./builder.sh;
     src = fetchurl {
-      url = "mirror://xorg/individual/xserver/xorg-server-1.20.8.tar.bz2";
-      sha256 = "0ih15m7gh1z1ly6z7g82bkni719yisqmbk61a1wgp82bxrmn8yyi";
+      url = "mirror://xorg/individual/xserver/xorg-server-1.20.10.tar.bz2";
+      sha256 = "16bwrf0ag41l7jbrllbix8z6avc5yimga7ihvq4ch3a5hb020x4p";
     };
     hardeningDisable = [ "bindnow" "relro" ];
     nativeBuildInputs = [ pkgconfig ];

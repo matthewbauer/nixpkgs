@@ -56,7 +56,7 @@ let
     #!${runtimeShell}
     runtime_paths="/lib32:/lib64:${lib.concatStringsSep ":" ldPath}"
     if [ "$1" == "--print-steam-runtime-library-paths" ]; then
-      echo "$runtime_paths"
+      echo "$runtime_paths''${LD_LIBRARY_PATH:+:}$LD_LIBRARY_PATH"
       exit 0
     fi
     export LD_LIBRARY_PATH="$runtime_paths''${LD_LIBRARY_PATH:+:}$LD_LIBRARY_PATH"
@@ -223,7 +223,7 @@ in buildFHSUserEnv rec {
     mkdir -p $out/share/applications
     ln -s ${steam}/share/icons $out/share
     ln -s ${steam}/share/pixmaps $out/share
-    sed "s,/usr/bin/steam,$out/bin/steam,g" ${steam}/share/applications/steam.desktop > $out/share/applications/steam.desktop
+    sed "s,/usr/bin/steam,steam,g" ${steam}/share/applications/steam.desktop > $out/share/applications/steam.desktop
   '';
 
   profile = ''

@@ -1,12 +1,16 @@
 #! /usr/bin/env nix-shell
-#! nix-shell -i python -p python3 nix
+#! nix-shell -i python -p python3 nix nix-prefetch-git
 
 import csv
 import json
+import re
 import subprocess
+import sys
+
 from codecs import iterdecode
+from collections import OrderedDict
+from datetime import datetime
 from os.path import abspath, dirname
-from sys import stderr
 from urllib.request import urlopen
 
 HISTORY_URL = 'https://omahaproxy.appspot.com/history?os=linux'
@@ -24,10 +28,34 @@ def nix_prefetch_url(url, algo='sha256'):
     out = subprocess.check_output(['nix-prefetch-url', '--type', algo, url])
     return out.decode('utf-8').rstrip()
 
+def nix_prefetch_git(url, rev):
+    print(f'nix-prefetch-git {url} {rev}')
+    out = subprocess.check_output(['nix-prefetch-git', '--quiet', '--url', url, '--rev', rev])
+    return json.loads(out)
+
+def get_file_revision(revision, file_path):
+    url = f'https://raw.githubusercontent.com/chromium/chromium/{revision}/{file_path}'
+    with urlopen(url) as http_response:
+        return http_response.read()
+
+def get_channel_dependencies(channel):
+    deps = get_file_revision(channel['version'], 'DEPS')
+    gn_pattern = b"'gn_version': 'git_revision:([0-9a-f]{40})'"
+    gn_commit = re.search(gn_pattern, deps).group(1).decode()
+    gn = nix_prefetch_git('https://gn.googlesource.com/gn', gn_commit)
+    return {
+        'gn': {
+            'version': datetime.fromisoformat(gn['date']).date().isoformat(),
+            'url': gn['url'],
+            'rev': gn['rev'],
+            'sha256': gn['sha256']
+        }
+    }
+
 channels = {}
 last_channels = load_json(JSON_PATH)
 
-print(f'GET {HISTORY_URL}', file=stderr)
+print(f'GET {HISTORY_URL}', file=sys.stderr)
 with urlopen(HISTORY_URL) as resp:
     builds = csv.DictReader(iterdecode(resp, 'utf-8'))
     for build in builds:
@@ -56,8 +84,22 @@ with urlopen(HISTORY_URL) as resp:
             # the next one.
             continue
 
+        channel['deps'] = get_channel_dependencies(channel)
+
         channels[channel_name] = channel
 
 with open(JSON_PATH, 'w') as out:
-    json.dump(channels, out, indent=2)
+    def get_channel_key(item):
+        channel_name = item[0]
+        if channel_name == 'stable':
+            return 0
+        elif channel_name == 'beta':
+            return 1
+        elif channel_name == 'dev':
+            return 2
+        else:
+            print(f'Error: Unexpected channel: {channel_name}', file=sys.stderr)
+            sys.exit(1)
+    sorted_channels = OrderedDict(sorted(channels.items(), key=get_channel_key))
+    json.dump(sorted_channels, out, indent=2)
     out.write('\n')

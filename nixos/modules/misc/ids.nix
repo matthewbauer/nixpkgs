@@ -346,6 +346,7 @@ in
       paperless = 315;
       #mailman = 316;  # removed 2019-08-30
       zigbee2mqtt = 317;
+      # shadow = 318; # unused
 
       # When adding a uid, make sure it doesn't match an existing gid. And don't use uids above 399!
 
@@ -467,7 +468,7 @@ in
       #minecraft = 114; # unused
       vault = 115;
       #ripped = 116; # unused
-      #murmur = 117; # unused
+      murmur = 117;
       foundationdb = 118;
       newrelic = 119;
       starbound = 120;
@@ -647,6 +648,7 @@ in
       paperless = 315;
       #mailman = 316;  # removed 2019-08-30
       zigbee2mqtt = 317;
+      shadow = 318;
 
       # When adding a gid, make sure it doesn't match an existing
       # uid. Users and groups with the same name should have equal

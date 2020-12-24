@@ -177,7 +177,7 @@ let
             ++ lib.optional (!cgiSupport) "--disable-cgi"
             ++ lib.optional (!cliSupport) "--disable-cli"
             ++ lib.optional fpmSupport    "--enable-fpm"
-            ++ lib.optional pearSupport [ "--with-pear=$(out)/lib/php/pear" "--enable-xml" "--with-libxml" ]
+            ++ lib.optional pearSupport [ "--with-pear" "--enable-xml" "--with-libxml" ]
             ++ lib.optionals (pearSupport && (lib.versionOlder version "7.4")) [
               "--enable-libxml"
               "--with-libxml-dir=${libxml2.dev}"
@@ -272,16 +272,16 @@ let
         };
 
   php73base = callPackage generic (_args // {
-    version = "7.3.20";
-    sha256 = "1pl9bjwvdva2yx4sh465z9cr4bnr8mvv008w71sy1kqsj6a7ivf6";
+    version = "7.3.24";
+    sha256 = "1655rj4w63n5fkvdj3kz9f5jfyjgvzw8a6j8zkzgic1p42xszdsm";
 
     # https://bugs.php.net/bug.php?id=76826
     extraPatches = lib.optional stdenv.isDarwin ./php73-darwin-isfinite.patch;
   });
 
   php74base = callPackage generic (_args // {
-    version = "7.4.8";
-    sha256 = "0ql01sfg8l7y2bfwmnjxnfw9irpibnz57ssck24b00y00nkd6j3a";
+    version = "7.4.12";
+    sha256 = "0rwrl7xgfq2bbgmy34klgfsqa7v935074ibanmic9pwy4g676vvf";
   });
 
   defaultPhpExtensions = { all, ... }: with all; ([

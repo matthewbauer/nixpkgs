@@ -45,6 +45,7 @@ mapAliases ({
   antimicro = throw "antimicro has been removed as it was broken, see antimicroX instead."; # added 2020-08-06
   arduino_core = arduino-core;  # added 2015-02-04
   asciidocFull = asciidoc-full;  # added 2014-06-22
+  asterisk_15 = throw "Asterisk 15 is end of life and has been removed."; # added 2020-10-07
   at_spi2_atk = at-spi2-atk; # added 2018-02-25
   at_spi2_core = at-spi2-core; # added 2018-02-25
   avldrums-lv2 = x42-avldrums; # added 2020-03-29
@@ -129,6 +130,7 @@ mapAliases ({
   fast-neural-doodle = throw "fast-neural-doodle has been removed, as the upstream project has been abandoned"; # added 2020-03-28
   fetchFromGithub = throw "You meant fetchFromGitHub, with a capital H.";
   ffadoFull = ffado; # added 2018-05-01
+  firefox-esr-68 = throw "Firefox 68 ESR reached end of life with its final release 68.12esr on 2020-08-25 and was therefore removed from nixpkgs";
   firefox-esr-wrapper = firefox-esr;  # 2016-01
   firefox-wrapper = firefox;          # 2016-01
   firefoxWrapper = firefox;           # 2015-09
@@ -210,11 +212,15 @@ mapAliases ({
   idea = jetbrains; # added 2017-04-03
   infiniband-diags = rdma-core; # added 2019-08-09
   inotifyTools = inotify-tools;
+  jasper = throw "jasper has been removed: abandoned upstream with many vulnerabilities";
   jbuilder = dune; # added 2018-09-09
   jikes = throw "deprecated in 2019-10-07: jikes was abandoned by upstream";
   joseki = apache-jena-fuseki; # added 2016-02-28
   json_glib = json-glib; # added 2018-02-25
   kdecoration-viewer = throw "kdecoration-viewer has been removed from nixpkgs, as there is no upstream activity"; # 2020-06-16
+  julia_07 = throw "deprecated in favor of julia_10 LTS"; # added 2020-09-15
+  julia_11 = throw "deprecated in favor of latest Julia version"; # added 2020-09-15
+  kdeconnect = kdeApplications.kdeconnect-kde; # added 2020-10-28
   kdiff3-qt5 = kdiff3; # added 2017-02-18
   keepass-keefox = keepass-keepassrpc; # backwards compatibility alias, added 2018-02
   keepassx-community = keepassxc; # added 2017-11
@@ -294,6 +300,8 @@ mapAliases ({
   mcgrid = throw "mcgrid has been removed from nixpkgs, as it's not compatible with rivet 3"; # added 2020-05-23
   mcomix = throw "mcomix has been removed from nixpkgs, as it's unmaintained"; # added 2019-12-10
   mirage = throw "mirage has been femoved from nixpkgs, as it's unmaintained"; # added 2019-12-10
+  mopidy-local-images = throw "mopidy-local-images has been removed as it's unmaintained. It's functionality has been merged into the mopidy-local extension."; # added 2020-10-18
+  mopidy-local-sqlite = throw "mopidy-local-sqlite has been removed as it's unmaintained. It's functionality has been merged into the mopidy-local extension."; # added 2020-10-18
   mysql-client = hiPrio mariadb.client;
   memtest86 = memtest86plus; # added 2019-05-08
   mesa_noglu = mesa; # added 2019-05-28
@@ -727,4 +735,63 @@ mapAliases ({
   /* Cleanup before 21.03 */
   riot-desktop = throw "riot-desktop is now element-desktop!";
   riot-web = throw "riot-web is now element-web";
+
+  ant-dracula-theme = throw "ant-dracula-theme is now dracula-theme, and theme name is Dracula instead of Ant-Dracula.";
+
+  /* If these are in the scope of all-packages.nix, they cause collisions
+  between mixed versions of qt. See:
+  https://github.com/NixOS/nixpkgs/pull/101369 */
+
+  inherit (kdeFrameworks) breeze-icons oxygen-icons5;
+  inherit (kdeApplications)
+    akonadi akregator ark
+    bomber bovo
+    dolphin dragon
+    elisa
+    ffmpegthumbs filelight
+    granatier gwenview
+    k3b
+    kaddressbook kalzium kapptemplate kapman kate katomic
+    kblackbox kblocks kbounce
+    kcachegrind kcalc kcharselect kcolorchooser
+    kdenlive kdf kdialog kdiamond
+    keditbookmarks
+    kfind kfloppy
+    kget kgpg
+    khelpcenter
+    kig kigo killbots kitinerary
+    kleopatra klettres klines
+    kmag kmail kmines kmix kmplot
+    knavalbattle knetwalk knights
+    kollision kolourpaint kompare konsole kontact korganizer
+    kpkpass
+    krdc kreversi krfb
+    kshisen ksquares ksystemlog
+    kteatime ktimer ktouch kturtle
+    kwalletmanager kwave
+    marble minuet
+    okular
+    picmi
+    spectacle
+    yakuake
+  ;
+  inherit (plasma5)
+    bluedevil breeze-gtk breeze-qt5 breeze-grub breeze-plymouth discover
+    kactivitymanagerd kde-cli-tools kde-gtk-config kdeplasma-addons kgamma5
+    kinfocenter kmenuedit kscreen kscreenlocker ksshaskpass ksysguard
+    kwallet-pam kwayland-integration kwin kwrited milou oxygen plasma-browser-integration
+    plasma-desktop plasma-integration plasma-nm plasma-pa plasma-vault plasma-workspace
+    plasma-workspace-wallpapers polkit-kde-agent powerdevil sddm-kcm
+    systemsettings user-manager xdg-desktop-portal-kde
+  ;
+  inherit (plasma5.thirdParty)
+    plasma-applet-caffeine-plus
+    kwin-dynamic-workspaces
+    kwin-tiling
+    krohnkite
+  ;
+  inherit (libsForQt5)
+    sddm
+  ;
+
 })

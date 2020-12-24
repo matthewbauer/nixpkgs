@@ -2,8 +2,7 @@
 , cmake, pkgconfig, zlib, libpng, makeWrapper
 , enableGSL ? true, gsl
 , enableGhostScript ? true, ghostscript
-, enableMuPDF ? true, mupdf
-, enableJPEG2K ? false, jasper ? null  # disabled by default, jasper has unfixed CVE
+, enableMuPDF ? true, mupdf_1_17
 , enableDJVU ? true, djvulibre
 , enableGOCR ? false, gocr # Disabled by default due to crashes
 , enableTesseract ? true, leptonica, tesseract4
@@ -90,7 +89,7 @@ in stdenv.mkDerivation rec {
         cp ${k2pdfopt_src}/mupdf_mod/pdf-* ./source/pdf/
       '';
     };
-    mupdf_modded = mupdf.overrideAttrs ({ patches ? [], ... }: {
+    mupdf_modded = mupdf_1_17.overrideAttrs ({ patches ? [], ... }: {
       patches = patches ++ [ mupdf_patch ];
       # This function is missing in font.c, see font-win32.c
       postPatch = ''
@@ -144,7 +143,6 @@ in stdenv.mkDerivation rec {
     optional enableGSL gsl ++
     optional enableGhostScript ghostscript ++
     optional enableMuPDF mupdf_modded ++
-    optional enableJPEG2K jasper ++
     optional enableDJVU djvulibre ++
     optional enableGOCR gocr ++
     optionals enableTesseract [ leptonica_modded tesseract_modded ];

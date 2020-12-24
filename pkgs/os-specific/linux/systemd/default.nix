@@ -1,7 +1,7 @@
 { stdenv, lib, fetchFromGitHub, pkgconfig, intltool, gperf, libcap
 , curl, kmod, gnupg, gnutar, xz, pam, acl, libuuid, m4, e2fsprogs, utillinux, libffi
 , glib, kbd, libxslt, coreutils, libgcrypt, libgpgerror, libidn2, libapparmor
-, audit, lz4, bzip2, pcre2
+, audit, lz4, bzip2, libmicrohttpd, pcre2
 , linuxHeaders ? stdenv.cc.libc.linuxHeaders
 , iptables, gnu-efi, bashInteractive
 , gettext, docbook_xsl, docbook_xml_dtd_42, docbook_xml_dtd_45
@@ -18,7 +18,7 @@
 }:
 
 let
-  version = "246";
+  version = "246.6";
 in stdenv.mkDerivation {
   inherit version;
   pname = "systemd";
@@ -29,7 +29,7 @@ in stdenv.mkDerivation {
     owner = "systemd";
     repo = "systemd-stable";
     rev = "v${version}";
-    sha256 = "0zrkyxrh5rm45f2l1rnjyv229bcyzawfw7c63jqxwix75px60dyw";
+    sha256 = "1yhj2jlighqqpw1xk9q52f3pncjn47ipi224k35d6syb94q2b988";
   };
 
   # If these need to be regenerated, `git am path/to/00*.patch` them into a
@@ -54,6 +54,7 @@ in stdenv.mkDerivation {
     ./0016-systemd-sleep-execute-scripts-in-etc-systemd-system-.patch
     ./0017-kmod-static-nodes.service-Update-ConditionFileNotEmp.patch
     ./0018-path-util.h-add-placeholder-for-DEFAULT_PATH_NORMAL.patch
+    ./0019-revert-get-rid-of-seat_can_multi_session.patch
   ];
 
   postPatch = ''
@@ -82,7 +83,7 @@ in stdenv.mkDerivation {
   buildInputs =
     [ linuxHeaders libcap curl.dev kmod xz pam acl
       cryptsetup libuuid glib libgcrypt libgpgerror libidn2
-      pcre2 ] ++
+      libmicrohttpd pcre2 ] ++
       stdenv.lib.optional withKexectools kexectools ++
       stdenv.lib.optional withLibseccomp libseccomp ++
     [ libffi audit lz4 bzip2 libapparmor
@@ -111,7 +112,7 @@ in stdenv.mkDerivation {
     "-Dhostnamed=true"
     "-Dnetworkd=true"
     "-Dportabled=false"
-    "-Dremote=false"
+    "-Dremote=true"
     "-Dsysusers=false"
     "-Dtimedated=true"
     "-Dtimesyncd=true"
