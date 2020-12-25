@@ -51,13 +51,12 @@ stdenv.mkDerivation rec {
     libevdev
     mtdev
     libwacom
-    (python3.withPackages (pp: with pp; [
-      pp.libevdev # already in scope
-      pyudev
-      pyyaml
-      setuptools
-    ]))
-  ]
+  ] ++ optional (python3 != null) (python3.withPackages (pp: with pp; [
+    pp.libevdev # already in scope
+    pyudev
+    pyyaml
+    setuptools
+  ]))
     ++ optionals eventGUISupport [ cairo glib gtk3 ];
 
   checkInputs = [
