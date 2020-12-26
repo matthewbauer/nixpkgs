@@ -1,6 +1,6 @@
 { stdenv, fetchFromGitHub, pkgconfig, glib, freetype, cairo, libintl
 , meson, ninja
-, gobject-introspection
+, enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform, gobject-introspection
 , icu, graphite2, harfbuzz # The icu variant uses and propagates the non-icu one.
 , ApplicationServices, CoreText
 , withCoreText ? false
@@ -43,12 +43,13 @@ stdenv.mkDerivation {
     (mesonFeatureFlag "graphite" withGraphite2)
     (mesonFeatureFlag "icu" withIcu)
     (mesonFeatureFlag "coretext" withCoreText)
+    (mesonFeatureFlag "introspection" enableIntrospection)
   ];
 
   nativeBuildInputs = [
     meson
     ninja
-    gobject-introspection
+  ] ++ stdenv.lib.optional enableIntrospection gobject-introspection ++ [
     libintl
     pkgconfig
     python3
