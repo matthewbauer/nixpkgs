@@ -56,6 +56,7 @@ stdenv.mkDerivation {
     gtk-doc
     docbook-xsl-nons
     docbook_xml_dtd_43
+    glib
   ];
 
   buildInputs = [ glib freetype cairo ] # recommended by upstream
