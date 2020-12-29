@@ -75,8 +75,8 @@ let majorVersion = "9";
       ++ optional langFortran ../gfortran-driving.patch
       ++ optional (targetPlatform.libc == "musl" && targetPlatform.isPower) ../ppc-musl.patch
       ++ optional (!crossStageStatic && targetPlatform.isMinGW) (fetchpatch {
-        url = "https://raw.githubusercontent.com/lhmouse/MINGW-packages/${import ../common/mfcgthreads-patches-repo.nix}/mingw-w64-gcc-git/9000-gcc-${majorVersion}-branch-Added-mcf-thread-model-support-from-mcfgthread.patch";
-        sha256 = "1in5kvcknlpi9z1vvjw6jfmwy8k12zvbqlqfnq84qpm99r0rh00a";
+        url = "https://raw.githubusercontent.com/lhmouse/MINGW-packages-dev/062ab54a396b838c68756ac240901003be1177d1/mingw-w64-gcc-git/9000-gcc-9-branch-Added-mcf-thread-model-support-from-mcfgthread.patch";
+        sha256 = "1r9a3w9jvjx78l0sa101ksa10nj6ng0wyg8mah9v2mcx3xh848pj";
       });
 
     /* Cross-gcc settings (build == host != target) */

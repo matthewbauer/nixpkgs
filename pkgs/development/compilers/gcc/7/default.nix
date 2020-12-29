@@ -69,8 +69,8 @@ let majorVersion = "7";
       ++ optional (targetPlatform.libc == "musl" && targetPlatform.isPower) ../ppc-musl.patch
       ++ optional (targetPlatform.libc == "musl") ../libgomp-dont-force-initial-exec.patch
       ++ optional (!crossStageStatic && targetPlatform.isMinGW) (fetchpatch {
-        url = "https://raw.githubusercontent.com/lhmouse/MINGW-packages/${import ../common/mfcgthreads-patches-repo.nix}/mingw-w64-gcc-git/9000-gcc-${majorVersion}-branch-Added-mcf-thread-model-support-from-mcfgthread.patch";
-        sha256 = "1nyjnshpq5gbcbbpfv27hy4ajvycmgkpiabkjlxnnrnq1d99k1ay";
+        url = "https://raw.githubusercontent.com/lhmouse/MINGW-packages-dev/062ab54a396b838c68756ac240901003be1177d1/mingw-w64-gcc-git/9000-gcc-7-branch-Added-mcf-thread-model-support-from-mcfgthread.patch";
+        sha256 = "05lxh1k5i4g3mx2hrcdsbymrlqzlispyfsbb0fk68gqgw3dsxh0g";
       });
 
     /* Cross-gcc settings (build == host != target) */

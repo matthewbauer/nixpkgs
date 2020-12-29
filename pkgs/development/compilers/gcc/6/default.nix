@@ -72,8 +72,8 @@ let majorVersion = "6";
       ++ optional langFortran ../gfortran-driving.patch
       ++ optional (targetPlatform.libc == "musl") ../libgomp-dont-force-initial-exec.patch
       ++ optional (!crossStageStatic && targetPlatform.isMinGW) (fetchpatch {
-        url = "https://raw.githubusercontent.com/lhmouse/MINGW-packages/${import ../common/mfcgthreads-patches-repo.nix}/mingw-w64-gcc-git/9000-gcc-${majorVersion}-branch-Added-mcf-thread-model-support-from-mcfgthread.patch";
-        sha256 = "1c449jgm1vx9g4kv82bxmvlgrwb8f6kwkl0gqmjlmhf7f4hjy2nr";
+        url = "https://raw.githubusercontent.com/lhmouse/MINGW-packages-dev/062ab54a396b838c68756ac240901003be1177d1/mingw-w64-gcc-git/9000-gcc-6-branch-Added-mcf-thread-model-support-from-mcfgthread.patch";
+        sha256 = "1m3960qsf5ydq12qwr0vjgc4h1g3093zm43f3k4mcsq3x8d4i8h5";
       });
 
     javaEcj = fetchurl {
