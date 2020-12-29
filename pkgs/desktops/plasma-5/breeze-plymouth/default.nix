@@ -27,6 +27,7 @@ mkDerivation {
   name = "breeze-plymouth";
   nativeBuildInputs = [ extra-cmake-modules ] ++ lib.optionals (logoFile != null) [ imagemagick netpbm perl ];
   buildInputs = [ plymouth ];
+  dontWrapQtApps = true;
   patches = [
     ./install-paths.patch
   ];

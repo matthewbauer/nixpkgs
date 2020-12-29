@@ -1,6 +1,6 @@
 { lib, debug, wrapQtAppsHook }:
 
-let inherit (lib) optional; in
+let inherit (lib) optionals; in
 
 mkDerivation:
 
@@ -9,7 +9,7 @@ args:
 let
   args_ = {
 
-    nativeBuildInputs = (args.nativeBuildInputs or []) ++ [ wrapQtAppsHook ];
+    nativeBuildInputs = (args.nativeBuildInputs or []) ++ optionals (!(args.dontWrapQtApps or false)) [ wrapQtAppsHook ];
 
   };
 in
