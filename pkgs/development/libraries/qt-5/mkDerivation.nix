@@ -24,7 +24,8 @@ let
 
     enableParallelBuilding = args.enableParallelBuilding or true;
 
-    nativeBuildInputs = (args.nativeBuildInputs or []) ++ [ wrapQtAppsHook ];
+    nativeBuildInputs = (args.nativeBuildInputs or [])
+      ++ optional (!(args.dontWrapQtApps or false)) [ wrapQtAppsHook ];
 
   };
 in
