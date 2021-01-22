@@ -161,6 +161,8 @@ in stdenv.mkDerivation {
 
     src = kodi_src;
 
+    patches = [ ./fix-localtime.patch ];
+
     buildInputs = [
       gnutls libidn libtasn1 nasm p11-kit
       libxml2 python2Packages.python
