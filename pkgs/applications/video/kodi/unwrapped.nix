@@ -210,11 +210,6 @@ in stdenv.mkDerivation {
       cmakeFlags+=" -DWITH_TEXTUREPACKER=$PWD/tools/depends/native/TexturePacker/bin"
     '';
 
-    postPatch = ''
-      substituteInPlace xbmc/platform/posix/PosixTimezone.cpp \
-        --replace 'usr/share/zoneinfo' 'etc/zoneinfo'
-    '';
-
     postInstall = ''
       for p in $(ls $out/bin/) ; do
         wrapProgram $out/bin/$p \
