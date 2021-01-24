@@ -1,5 +1,6 @@
 { stdenv
 , fetchurl
+, fetchpatch
 , perl
 , python3
 , ruby
@@ -65,19 +66,26 @@ stdenv.mkDerivation rec {
 
   outputs = [ "out" "dev" ];
 
-  separateDebugInfo = stdenv.isLinux;
+  separateDebugInfo = stdenv.hostPlatform.isLinux;
 
   src = fetchurl {
     url = "https://webkitgtk.org/releases/${pname}-${version}.tar.xz";
     sha256 = "0zsy3say94d9bhaan0l6mfr59z03a5x4kngyy8b2i20n77q19skd";
   };
 
-  patches = optionals stdenv.isLinux [
+  patches = optionals stdenv.hostPlatform.isLinux [
     (substituteAll {
       src = ./fix-bubblewrap-paths.patch;
       inherit (builtins) storeDir;
     })
     ./libglvnd-headers.patch
+  ] ++ optional stdenv.hostPlatform.isDarwin [
+    (fetchpatch {
+      name = "use_apple_icu_as_fallback.patch";
+      url = "https://bug-220081-attachments.webkit.org/attachment.cgi?id=416707&action=diff&format=raw";
+      excludes = [ "ChangeLog" "Source/WTF/ChangeLog" ];
+      sha256 = "000was24gskf3m1i23rx6k98vn77n4d49qr54rdf2nb1b1fjmf42";
+    })
   ];
 
   preConfigure = stdenv.lib.optionalString (stdenv.hostPlatform != stdenv.buildPlatform) ''
@@ -122,8 +130,6 @@ stdenv.mkDerivation rec {
     libsecret
     libtasn1
     libwebp
-    libwpe
-    libwpe-fdo
     libxkbcommon
     libxml2
     libxslt
@@ -138,10 +144,12 @@ stdenv.mkDerivation rec {
     libXdmcp
     libXt
     libXtst
-  ]) ++ optionals stdenv.isDarwin [
+  ]) ++ optionals stdenv.hostPlatform.isDarwin [
     libedit
     readline
-  ] ++ optionals stdenv.isLinux [
+  ] ++ optionals stdenv.hostPlatform.isLinux [
+    libwpe
+    libwpe-fdo
     bubblewrap
     libseccomp
     systemd
@@ -158,22 +166,27 @@ stdenv.mkDerivation rec {
     "-DENABLE_INTROSPECTION=ON"
     "-DPORT=GTK"
     "-DUSE_LIBHYPHEN=OFF"
-  ] ++ optionals stdenv.isDarwin [
-    "-DENABLE_GRAPHICS_CONTEXT_3D=OFF"
+  ] ++ optionals stdenv.hostPlatform.isDarwin [
+    "-DENABLE_GRAPHICS_CONTEXT_GL=OFF"
     "-DENABLE_GTKDOC=OFF"
     "-DENABLE_MINIBROWSER=OFF"
-    "-DENABLE_OPENGL=OFF"
     "-DENABLE_QUARTZ_TARGET=ON"
     "-DENABLE_VIDEO=ON"
     "-DENABLE_WEBGL=OFF"
     "-DENABLE_WEB_AUDIO=OFF"
     "-DENABLE_X11_TARGET=OFF"
-    "-DUSE_ACCELERATE=0"
     "-DUSE_SYSTEM_MALLOC=ON"
-  ] ++ optional (stdenv.isLinux && enableGLES) "-DENABLE_GLES2=ON";
+    "-DUSE_SYSTEMD=OFF"
+    "-DUSE_APPLE_ICU=OFF"
+    "-DENABLE_WEB_CRYPTO=OFF"
+  ] ++ optional (stdenv.hostPlatform.isLinux && enableGLES) "-DENABLE_GLES2=ON";
 
   postPatch = ''
     patchShebangs .
+  ''
+    # can’t find malloc_size & malloc_good_size otherwise
+   + optionalString stdenv.hostPlatform.isDarwin ''
+    sed -i '1i#include<malloc/malloc.h>' Source/WTF/wtf/FastMalloc.cpp
   '';
 
   meta = {
