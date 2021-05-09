@@ -1,6 +1,9 @@
 { stdenv, fetchFromGitLab, intltool, meson, ninja, pkgconfig, gtk-doc, docbook_xsl, docbook_xml_dtd_412, glib, json-glib, libsoup, libnotify, gdk-pixbuf
 , modemmanager, avahi, glib-networking, python3, wrapGAppsHook, gobject-introspection, vala
 , withDemoAgent ? false
+, withModemManager ? stdenv.hostPlatform == stdenv.buildPlatform && !stdenv.hostPlatform.isDarwin
+, withIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform
+, withDoc ? stdenv.hostPlatform == stdenv.buildPlatform
 }:
 
 with stdenv.lib;
@@ -21,19 +24,22 @@ stdenv.mkDerivation rec {
     ./add-option-for-installation-sysconfdir.patch
   ];
 
-  outputs = [ "out" "dev" "devdoc" ];
+  outputs = [ "out" "dev" ] ++ stdenv.lib.optional withDoc "devdoc";
 
   nativeBuildInputs = [
-    pkgconfig intltool meson ninja wrapGAppsHook python3 vala gobject-introspection
+    pkgconfig intltool meson ninja wrapGAppsHook python3 vala
+    glib
     # devdoc
-    gtk-doc docbook_xsl docbook_xml_dtd_412
-  ];
+  ] ++ optionals withDoc [ gtk-doc docbook_xsl docbook_xml_dtd_412 ]
+    ++ optional withIntrospection gobject-introspection;
+
+  depsBuildBuild = [ pkgconfig ];
 
   buildInputs = [
     glib json-glib libsoup avahi
   ] ++ optionals withDemoAgent [
     libnotify gdk-pixbuf
-  ] ++ optionals (!stdenv.isDarwin) [ modemmanager ];
+  ] ++ optionals withModemManager [ modemmanager ];
 
   propagatedBuildInputs = [ glib glib-networking ];
 
@@ -44,12 +50,13 @@ stdenv.mkDerivation rec {
     "-Dsysconfdir_install=${placeholder "out"}/etc"
     "-Ddbus-srv-user=geoclue"
     "-Ddbus-sys-dir=${placeholder "out"}/share/dbus-1/system.d"
-  ] ++ optionals stdenv.isDarwin [
+  ] ++ optionals (!withModemManager) [
     "-D3g-source=false"
     "-Dcdma-source=false"
     "-Dmodem-gps-source=false"
     "-Dnmea-source=false"
-  ];
+  ] ++ optional (!withIntrospection) "-Dintrospection=false"
+    ++ optional (!withDoc) "-Dgtk-doc=false";
 
   postPatch = ''
     chmod +x demo/install-file.py
