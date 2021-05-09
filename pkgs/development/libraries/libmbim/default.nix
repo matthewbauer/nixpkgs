@@ -1,11 +1,12 @@
 { stdenv
 , fetchurl
 , pkg-config
-, gobject-introspection
 , glib
 , python3
 , systemd
 , libgudev
+, enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform
+, gobject-introspection
 }:
 
 stdenv.mkDerivation rec {
@@ -21,14 +22,12 @@ stdenv.mkDerivation rec {
 
   configureFlags = [
     "--with-udev-base-dir=${placeholder "out"}/lib/udev"
-    "--enable-introspection"
-  ];
+  ] ++ stdenv.lib.optional enableIntrospection "--enable-introspection";
 
   nativeBuildInputs = [
     pkg-config
     python3
-    gobject-introspection
-  ];
+  ] ++ stdenv.lib.optional enableIntrospection gobject-introspection;
 
   buildInputs = [
     glib
