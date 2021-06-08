@@ -3,5 +3,6 @@ import ./generic.nix (rec {
   sha256 = "sha256-tKfMTnjmPzeGJOCRkhW5EK9bsqCvyBn60pgnLp9Awbk=";
   patches = [
     ./tramp-detect-wrapped-gvfsd.patch
+    ./fix-architecture-for-apple-silicon.patch
   ];
 })

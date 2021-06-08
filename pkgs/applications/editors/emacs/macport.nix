@@ -1,6 +1,7 @@
 { lib, stdenv, fetchurl, ncurses, pkg-config, texinfo, libxml2, gnutls, gettext, autoconf, automake, jansson
-, AppKit, Carbon, Cocoa, IOKit, OSAKit, Quartz, QuartzCore, WebKit
+, AppKit, Carbon, Cocoa, IOKit, OSAKit, Quartz, QuartzCore, WebKit, UniformTypeIdentifiers
 , ImageCaptureCore, GSS, ImageIO # These may be optional
+, sigtool
 }:
 
 stdenv.mkDerivation rec {
@@ -28,11 +29,11 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  nativeBuildInputs = [ pkg-config autoconf automake ];
+  nativeBuildInputs = [ pkg-config autoconf automake sigtool ];
 
   buildInputs = [ ncurses libxml2 gnutls texinfo gettext jansson
     AppKit Carbon Cocoa IOKit OSAKit Quartz QuartzCore WebKit
-    ImageCaptureCore GSS ImageIO   # may be optional
+    ImageCaptureCore GSS ImageIO UniformTypeIdentifiers   # may be optional
   ];
 
   postUnpack = ''
@@ -43,6 +44,8 @@ stdenv.mkDerivation rec {
     # extract retina image resources
     tar xzfv $hiresSrc --strip 1 -C $sourceRoot
   '';
+
+  patches = [ ./fix-architecture-for-apple-silicon.patch ];
 
   postPatch = ''
     patch -p1 < patch-mac

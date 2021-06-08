@@ -1,0 +1,24 @@
+From a88f63500e475f842e5fbdd9abba4ce122cdb082 Mon Sep 17 00:00:00 2001
+From: Artem Loenko <artyom.loenko@mac.com>
+Date: Tue, 29 Dec 2020 20:41:14 +0100
+Subject: * src/Makefile.in (DO_CODESIGN): Fix architecture for Apple Silicon
+
+---
+ src/Makefile.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/Makefile.in b/src/Makefile.in
+index 19304cca04..39c0f12fe6 100644
+--- a/src/Makefile.in
++++ b/src/Makefile.in
+@@ -338,7 +338,7 @@ HAVE_PDUMPER = @HAVE_PDUMPER@
+ 
+ ## ARM Macs require that all code have a valid signature.  Since pump
+ ## invalidates the signature, we must re-sign to fix it.
+-DO_CODESIGN=$(patsubst arm-apple-darwin%,yes,@configuration@)
++DO_CODESIGN=$(patsubst aarch64-apple-darwin%,yes,@configuration@)
+ 
+ # 'make' verbosity.
+ AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
+-- 
+cgit v1.2.1

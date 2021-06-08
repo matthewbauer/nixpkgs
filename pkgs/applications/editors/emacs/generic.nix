@@ -10,7 +10,7 @@
 , Xaw3d, libXcursor,  pkg-config, gettext, libXft, dbus, libpng, libjpeg, giflib
 , libtiff, librsvg, gconf, libxml2, imagemagick, gnutls, libselinux
 , alsaLib, cairo, acl, gpm, AppKit, GSS, ImageIO, m17n_lib, libotf
-, jansson, harfbuzz
+, jansson, harfbuzz, sigtool
 , dontRecurseIntoAttrs ,emacsPackagesFor
 , libgccjit, targetPlatform, makeWrapper # native-comp params
 , systemd ? null
@@ -102,7 +102,8 @@ let emacs = stdenv.mkDerivation (lib.optionalAttrs nativeComp {
 
   nativeBuildInputs = [ pkg-config makeWrapper ]
     ++ lib.optionals srcRepo [ autoreconfHook texinfo ]
-    ++ lib.optional (withX && (withGTK3 || withXwidgets)) wrapGAppsHook;
+    ++ lib.optional (withX && (withGTK3 || withXwidgets)) wrapGAppsHook
+    ++ lib.optional (stdenv.hostPlatform.isDarwin && stdenv.hostPlatform.isAarch64) sigtool;
 
   buildInputs =
     [ ncurses gconf libxml2 gnutls alsaLib acl gpm gettext jansson harfbuzz.dev ]

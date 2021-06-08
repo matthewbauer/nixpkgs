@@ -23333,6 +23333,7 @@ in
     acl = null;
     gpm = null;
     inherit (darwin.apple_sdk.frameworks) AppKit GSS ImageIO;
+    inherit (darwin) sigtool;
   };
 
   emacs27-nox = lowPrio (appendToName "nox" (emacs27.override {
@@ -23345,8 +23346,8 @@ in
   emacsMacport = callPackage ../applications/editors/emacs/macport.nix {
     inherit (darwin.apple_sdk.frameworks)
       AppKit Carbon Cocoa IOKit OSAKit Quartz QuartzCore WebKit
-      ImageCaptureCore GSS ImageIO;
-    stdenv = if stdenv.cc.isClang then llvmPackages_6.stdenv else stdenv;
+      ImageCaptureCore GSS ImageIO UniformTypeIdentifiers;
+    inherit (darwin) sigtool;
   };
 
   emacsPackagesFor = emacs: import ./emacs-packages.nix {
