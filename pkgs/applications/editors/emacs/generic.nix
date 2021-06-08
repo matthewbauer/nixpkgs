@@ -46,7 +46,7 @@ assert withXwidgets -> withGTK3 && webkitgtk != null;
 let emacs = stdenv.mkDerivation (lib.optionalAttrs nativeComp {
   NATIVE_FULL_AOT = "1";
   LIBRARY_PATH = "${lib.getLib stdenv.cc.libc}/lib";
-} // lib.optionalAttrs stdenv.isDarwin {
+} // lib.optionalAttrs (stdenv.hostPlatform.isDarwin && stdenv.hostPlatform.isx86_64) {
   CFLAGS = "-DMAC_OS_X_VERSION_MAX_ALLOWED=101200";
 } // {
   inherit pname version patches;
