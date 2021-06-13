@@ -44,7 +44,7 @@ let
   };
 
   emacsWithPackages = { pkgs, lib }: import ../build-support/emacs/wrapper.nix {
-    inherit (pkgs) makeWrapper runCommand;
+    inherit (pkgs) makeWrapper runCommand gcc;
     inherit (pkgs.xorg) lndir;
     inherit lib;
   };
