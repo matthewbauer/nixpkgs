@@ -86,6 +86,7 @@ stdenv.mkDerivation rec {
   patches = [
     ./fix-qemu-ga.patch
     ./9p-ignore-noatime.patch
+    ./remove-qemu-refs.patch
     (fetchpatch {
       name = "CVE-2021-3545.patch";
       url = "https://gitlab.com/qemu-project/qemu/-/commit/121841b25d72d13f8cad554363138c360f1250ea.patch";
