@@ -28,11 +28,10 @@ stdenv.mkDerivation {
     })
   ];
 
-  makeFlags = [ "prefix=$(out)" ]
+  makeFlags = [ "prefix=$(out)" "CC=${stdenv.cc.targetPrefix}cc" ]
     ++ optional gnutlsSupport "CRYPTO=GNUTLS"
     ++ optional opensslSupport "CRYPTO=OPENSSL"
-    ++ optional stdenv.isDarwin "SYS=darwin"
-    ++ optional stdenv.cc.isClang "CC=clang";
+    ++ optional stdenv.hostPlatform.isDarwin "SYS=darwin";
 
   propagatedBuildInputs = [ zlib ]
     ++ optionals gnutlsSupport [ gnutls nettle ]
