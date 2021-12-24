@@ -230,14 +230,6 @@ in {
       message = ''options networking.wireless."${name}".{psk,pskRaw,auth} are mutually exclusive'';
     });
 
-    warnings =
-      optional (cfg.interfaces == [] && config.systemd.services.wpa_supplicant.wantedBy != [])
-      ''
-        No network interfaces for wpa_supplicant have been configured: the service
-        may randomly fail to start at boot. You should specify at least one using the option
-        networking.wireless.interfaces.
-      '';
-
     environment.systemPackages = [ package ];
 
     services.dbus.packages = [ package ];
