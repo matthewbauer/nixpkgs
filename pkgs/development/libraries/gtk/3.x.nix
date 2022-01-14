@@ -47,6 +47,7 @@
 , Cocoa
 , broadwaySupport ? true
 , enableIntrospection ? stdenv.hostPlatform == stdenv.buildPlatform
+, buildPackages
 }:
 
 let
@@ -106,6 +107,7 @@ stdenv.mkDerivation rec {
     glib
     gdk-pixbuf
     wayland
+    buildPackages.gtk3
   ];
 
   buildInputs = [
