@@ -6,6 +6,7 @@
 , dbus
 , networkmanager
 , spidermonkey_68
+, spidermonkey_78
 , pcre
 , gsettings-desktop-schemas
 , glib
@@ -45,7 +46,7 @@ stdenv.mkDerivation rec {
     JavaScriptCore
   ] else [
     glib
-    spidermonkey_68
+    (if stdenv.hostPlatform == stdenv.buildPlatform then spidermonkey_68 else spidermonkey_78)
     dbus
     networkmanager
   ]);
