@@ -27576,16 +27576,16 @@ in
   kodiPackages = recurseIntoAttrs (kodi.packages);
 
   kodi = callPackage ../applications/video/kodi {
-    jre_headless = jdk11_headless;
+    jre_headless = buildPackages.jdk11_headless;
   };
 
   kodi-wayland = callPackage ../applications/video/kodi {
-    jre_headless = jdk11_headless;
+    jre_headless = buildPackages.jdk11_headless;
     waylandSupport = true;
   };
 
   kodi-gbm = callPackage ../applications/video/kodi {
-    jre_headless = jdk11_headless;
+    jre_headless = buildPackages.jdk11_headless;
     gbmSupport = true;
   };
 

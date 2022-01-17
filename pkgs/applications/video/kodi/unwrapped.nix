@@ -203,11 +203,11 @@ in stdenv.mkDerivation {
     '' + lib.optionalString (stdenv.hostPlatform != stdenv.buildPlatform) ''
       # Need these tools on the build system when cross compiling,
       # hacky, but have found no other way.
-      CXX=${stdenv.cc.targetPrefix}c++ LD=ld make -C tools/depends/native/JsonSchemaBuilder
-      cmakeFlags+=" -DWITH_JSONSCHEMABUILDER=$PWD/tools/depends/native/JsonSchemaBuilder/bin"
+      CXX=c++ LD=ld make CONFIGURE="./configure --prefix=$PWD/tools/depends/native/JsonSchemaBuilder --host=${stdenv.buildPlatform.config}" -C tools/depends/native/JsonSchemaBuilder
+      cmakeFlagsArray+=("-DWITH_JSONSCHEMABUILDER=$PWD/tools/depends/native/JsonSchemaBuilder/bin")
 
-      CXX=${stdenv.cc.targetPrefix}c++ LD=ld make EXTRA_CONFIGURE= -C tools/depends/native/TexturePacker
-      cmakeFlags+=" -DWITH_TEXTUREPACKER=$PWD/tools/depends/native/TexturePacker/bin"
+      CXX=c++ LD=ld make EXTRA_CONFIGURE=--host=${stdenv.buildPlatform.config} -C tools/depends/native/TexturePacker
+      cmakeFlagsArray+=("-DWITH_TEXTUREPACKER=$PWD/tools/depends/native/TexturePacker/bin")
     '';
 
     postInstall = ''
