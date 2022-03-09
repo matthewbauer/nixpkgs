@@ -99,7 +99,7 @@ in {
       buildLlvmPackages = buildPackages.llvmPackages_9;
       llvmPackages = pkgs.llvmPackages_9;
     };
-    ghc902 = callPackage ../development/compilers/ghc/9.0.2.nix {
+    ghc901 = callPackage ../development/compilers/ghc/9.0.1.nix {
       bootPkgs =
         # aarch64 ghc8107Binary exceeds max output size on hydra
         # the oldest ghc with aarch64-darwin support is 8.10.5
@@ -108,11 +108,11 @@ in {
         else
           packages.ghc8107Binary;
       inherit (buildPackages.python3Packages) sphinx;
-      inherit (buildPackages.darwin) autoSignDarwinBinariesHook xattr;
-      buildTargetLlvmPackages = pkgsBuildTarget.llvmPackages_9;
-      llvmPackages = pkgs.llvmPackages_9;
+      inherit (buildPackages.darwin) autoSignDarwinBinariesHook;
+      buildLlvmPackages = buildPackages.llvmPackages_10;
+      llvmPackages = pkgs.llvmPackages_10;
     };
-    ghc921 = callPackage ../development/compilers/ghc/9.2.1.nix {
+    ghc922 = callPackage ../development/compilers/ghc/9.2.2.nix {
       bootPkgs =
         # aarch64 ghc8107Binary exceeds max output size on hydra
         if stdenv.isAarch64 || stdenv.isAarch32 then
@@ -213,14 +213,14 @@ in {
       ghc = bh.compiler.ghc8107;
       compilerConfig = callPackage ../development/haskell-modules/configuration-ghc-8.10.x.nix { };
     };
-    ghc902 = callPackage ../development/haskell-modules {
-      buildHaskellPackages = bh.packages.ghc902;
-      ghc = bh.compiler.ghc902;
+    ghc901 = callPackage ../development/haskell-modules {
+      buildHaskellPackages = bh.packages.ghc901;
+      ghc = bh.compiler.ghc901;
       compilerConfig = callPackage ../development/haskell-modules/configuration-ghc-9.0.x.nix { };
     };
-    ghc921 = callPackage ../development/haskell-modules {
-      buildHaskellPackages = bh.packages.ghc921;
-      ghc = bh.compiler.ghc921;
+    ghc922 = callPackage ../development/haskell-modules {
+      buildHaskellPackages = bh.packages.ghc922;
+      ghc = bh.compiler.ghc922;
       compilerConfig = callPackage ../development/haskell-modules/configuration-ghc-9.2.x.nix { };
     };
     ghcHEAD = callPackage ../development/haskell-modules {

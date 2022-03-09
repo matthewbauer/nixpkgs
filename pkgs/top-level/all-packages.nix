@@ -13331,6 +13331,8 @@ with pkgs;
     stdenv = clangStdenv;
   };
 
+  jacinda = haskell.lib.compose.justStaticExecutables haskell.packages.ghc922.jacinda;
+
   janet = callPackage ../development/interpreters/janet {};
 
   jelly = callPackage ../development/interpreters/jelly {};

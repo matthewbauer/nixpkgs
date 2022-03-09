@@ -43,29 +43,6 @@ self: super: {
   unix = null;
   xhtml = null;
 
-  # Workaround for https://gitlab.haskell.org/ghc/ghc/-/issues/20594
-  tf-random = overrideCabal {
-    doHaddock = !pkgs.stdenv.isAarch64;
-  } super.tf-random;
-
-  aeson = appendPatch (pkgs.fetchpatch {
-    url = "https://gitlab.haskell.org/ghc/head.hackage/-/raw/dfd024c9a336c752288ec35879017a43bd7e85a0/patches/aeson-1.5.6.0.patch";
-    sha256 = "07rk7f0lhgilxvbg2grpl1p5x25wjf9m7a0wqmi2jr0q61p9a0nl";
-    # The revision information is newer than that included in the patch
-    excludes = ["*.cabal"];
-  }) (doJailbreak super.aeson);
-
-  # Tests use Data.Semigroup.Option
-  aeson_2_0_1_0 = dontCheck (doJailbreak super.aeson_2_0_1_0);
-
-  basement = overrideCabal (drv: {
-    # This is inside a conditional block so `doJailbreak` doesn't work
-    postPatch = "sed -i -e 's,<4.16,<4.17,' basement.cabal";
-  }) (appendPatch (pkgs.fetchpatch {
-    url = "https://gitlab.haskell.org/ghc/head.hackage/-/raw/dfd024c9a336c752288ec35879017a43bd7e85a0/patches/basement-0.0.12.patch";
-    sha256 = "0c8n2krz827cv87p3vb1vpl3v0k255aysjx9lq44gz3z1dhxd64z";
-  }) super.basement);
-
   # Tests fail because of typechecking changes
   conduit = dontCheck super.conduit;
 
